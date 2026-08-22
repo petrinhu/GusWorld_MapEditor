@@ -6,3 +6,5 @@ compile_commands.json
 *.a
 *.so
 *.so.*
+.claude/settings.local.json
+.claude/scheduled_tasks.lock
