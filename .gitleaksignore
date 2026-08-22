@@ -1,0 +1,28 @@
+# Falsos-positivos auditados do gitleaks. Formato: <fingerprint> por linha
+# (gitleaks le este arquivo por padrao, --gitleaks-ignore-path default ".").
+#
+# CONTRACT.md, secao 8.2 "Hardcoded Secrets -- Zero Tolerance": o valor
+# "sk-live-abc123xyz789" e o ANTI-EXEMPLO didatico do proprio manual --
+# o comentario na linha acima dele, no manual, diz literalmente
+# "INCORRECT -- NEVER commit this". E o exemplo do que NAO fazer, valor
+# fictício, nunca foi uma chave real. Confirmado por leitura direta do
+# manual em 22/08/2026 (tarefa de CI do devops-sre).
+#
+# O CI deste projeto roda `gitleaks detect --source .` (historico
+# completo, mesmo padrao do GlintFx e do restante do ecossistema -- ver
+# .github/workflows/ci.yml, job "secrets"), entao o fingerprint carrega o
+# SHA do commit que introduziu a linha pela primeira vez no historico:
+#
+#   b205d01b490fbea0366f2c9ba3d9e46263a316e4:CONTRACT.md:generic-api-key:570
+#
+# ATENCAO -- fragilidade conhecida e assumida: se o historico for
+# reescrito (rebase, squash, amend) ANTES do push, esse SHA muda e o CI
+# volta a acusar esta mesma linha, sem novidade nenhuma. Para regenerar o
+# fingerprint depois de qualquer reescrita de historico, rodar a partir da
+# raiz do repo:
+#
+#   gitleaks detect --source . --redact --no-banner -v 2>&1 | grep Fingerprint
+#
+# e substituir a linha abaixo pelo valor impresso. Nao e um segredo novo:
+# e sempre a mesma linha do CONTRACT.md, so o commit-de-origem muda.
+b205d01b490fbea0366f2c9ba3d9e46263a316e4:CONTRACT.md:generic-api-key:570
