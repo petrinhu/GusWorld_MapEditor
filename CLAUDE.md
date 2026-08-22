@@ -14,7 +14,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 4. Ordem nova do líder entra em `GODS_LAWS.md` **no instante em que ele a dá**, com data e o texto dele verbatim.
 5. Agente nenhum revoga, flexibiliza ou reinterpreta lei. Só o líder.
 
-**Gatilhos (dispara quando você vai...):**
+**Os gatilhos vivem no índice do próprio `GODS_LAWS.md`**, na tabela "Índice de gatilhos" no topo do arquivo, com uma linha por lei. Não há cópia deles aqui: índice duplicado envelhece em silêncio e passa a mentir sobre quais leis existem.
 
-| | Dispara ao... | Lei |
-|---|---|---|
+## Pendências
+
+A tabela de pendências e planejamento do projeto está em `TODO.md` na raiz, ordenada por execução; a coluna `Onda` marca passos paralelizáveis e a coluna `WSJF` traz o valor calculado de cada item. A seção de **Proveniência** do próprio arquivo diz de onde veio cada peça: lei e decisão guardam a conclusão, não a procedência.
