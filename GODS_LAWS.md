@@ -1,0 +1,149 @@
+# GODS_LAWS.md
+
+> Ordens expressas do líder (petrus). Este arquivo **não é declaração, é execução**: cada lei tem um **gatilho**, e o gatilho é conferido **no momento da ação**, não no fim.
+
+## Protocolo de uso (obrigatório)
+
+1. **Antes de agir**, varra a coluna "Gatilho" da tabela abaixo. Se algum gatilho casa com o que você está prestes a fazer, leia a lei inteira antes do primeiro comando, não depois.
+2. **Ao despachar subagent**, cole no prompt da task o texto completo das leis cujo gatilho casa com aquela task, mais o caminho absoluto deste arquivo. Subagent **não herda** este contexto e não vai ler por conta própria.
+3. **Ao relatar ao líder**, se você tocou uma área com lei, diga qual lei aplicou e como. Silêncio não é prova de conformidade.
+4. **Lei nova entra aqui no instante em que o líder a dá**, com data e o texto dele verbatim entre aspas. Não espere "um momento melhor" para registrar.
+5. **Nenhum agente revoga, flexibiliza ou reinterpreta lei.** Só o líder. Na dúvida sobre o alcance de uma lei, pergunte via `AskUserQuestion` antes de agir.
+6. Conflito entre uma lei daqui e qualquer outro documento (manual, memória, hábito, preferência do agente): **a lei daqui vence**.
+
+## Índice de gatilhos
+
+| Lei | Gatilho: dispara quando você vai... | Resumo |
+|---|---|---|
+| [L-01](#l-01) | escrever qualquer linha que toque janela, entrada, desenho ou som | Só a API pública do GlintFx. Nunca contornar, nunca terceiro, nunca o SO |
+| [L-02](#l-02) | tocar em mapa, em qualquer sentido | Avisar o GlintFx do que foi feito; inalcançável, mandar pelo bus |
+| [L-03](#l-03) | pensar em formato de arquivo de mapa | O formato é do GlintFx. Somos consumidores, não autores dele |
+| [L-04](#l-04) | decidir o que o editor edita | Só mapa. Carta, item e NPC estão fora |
+| [L-05](#l-05) | precisar de algo do líder, ou ter mais de uma opção | `AskUserQuestion`, sem `preview`, recomendada primeiro |
+| [L-06](#l-06) | executar qualquer trabalho de produto ou código | O main orquestra e não implementa. Auditoria com C-level fable, execução com sonnet |
+| [L-07](#l-07) | criar arquivo de licença, ou publicar o repositório | AGPL-3.0-or-later, a mesma do GlintFx |
+| [L-08](#l-08) | procurar onde mora o domínio de mapa compartilhado | A `gusmap-core` está aposentada. Não é base, não é referência |
+| [L-09](#l-09) | escrever teste, portão de CI ou auditoria | Mesmo rigor do GlintFx, adaptado ao nosso projeto |
+| [L-10](#l-10) | mexer em CI | Cinco alvos: Fedora 44 primário, Ubuntu, Arch, CachyOS, Windows |
+| [L-11](#l-11) | procurar como o editor anterior fazia alguma coisa | O projeto é do zero. O editor anterior não é base nem referência |
+| [L-12](#l-12) | criar diretório, decidir onde um tipo mora, ou incluir header | Camadas horizontais finas; o GlintFx só na casca externa; regra fiscalizada por portão de CI |
+| [L-13](#l-13) | escrever qualquer operação de edição, ou mexer em histórico | Comando com pilha linear, transação por gesto, seleção fora, histórico persistido em arquivo próprio |
+
+---
+
+## L-01
+
+**Data:** 14/08/2026, reafirmada em 21/08/2026. **Verbatim (maiúsculas do líder):** *"NAO USE RMLUI NEM SDL3!!!!"*, e em 21/08: *"aceita apenas link com framework GlintFx em ../Glintfx e [github]/petrinhu/GlintFx e com o SO. Você NUNCA cria workarounds nem passa por cima da camada de GlintFx."*
+
+Toda interação com janela, entrada, desenho, som e recurso passa **exclusivamente** pela API pública do GlintFx. É proibido incluir header ou linkar biblioteca de terceiro (RmlUi, SDL, GLFW, Qt, o que for) e é proibido falar direto com o sistema operacional.
+
+**Aplicação, e é a parte que se esquece:** se a função não existe no GlintFx, **não invente contorno**. Registre a necessidade no bus e **espere parado**. Se houver outra fatia ou onda que possa avançar enquanto a pendência corre, avise o líder. Wayland ou X11 não é problema nosso: o intermediário é o GlintFx.
+
+## L-02
+
+**Data:** 22/08/2026. **Verbatim:** *"sempre que tocar em mapa, avise o que fez a @GlintFx e se ele estiver inalcancavel, mande via bus"*.
+
+**Toda vez** que este projeto tocar em mapa — ler, gravar, desenhar, alterar estrutura, decidir algo sobre o assunto, ou descobrir um fato que mude o entendimento — o GlintFx é avisado **do que foi feito**, não do que se pretende fazer.
+
+**Aplicação:** o canal preferencial é a sessão viva do GlintFx (mensagem direta entre sessões). **Se ela estiver inalcançável, a mensagem vai pelo bus** (`gusworld_ia_autocomm`, `inbox/glintfx/`), que é assíncrono e não depende de a outra sessão estar aberta. Nunca "deixar para avisar depois": o aviso é parte do ato de tocar em mapa, não uma tarefa separada. Isto existe porque o GlintFx é dono do formato (L-03) e não pode descobrir por acaso o que o consumidor fez com o contrato dele.
+
+## L-03
+
+**Data:** 21/08/2026, decorrente da lei **L-30 do GlintFx**, aceita pelo líder e comunicada por eles pelo bus.
+
+**O GlintFx é dono do formato de arquivo de mapa.** Matriz `x,y`, objetos posicionados nela, hitbox, colisão, parede, porta e ponto de teleporte como marcador genérico com destino, mais busca de caminho e visibilidade. A lib publica **leitor e escritor**, os dois públicos.
+
+**O `gusworld_mapeditor` deixa de definir o formato e passa a gravá-lo**, como qualquer consumidor no mundo. Necessidade nossa **não vira campo por decisão nossa**: vira pedido, descrito em palavras, julgado por eles.
+
+**Aplicação:** é proibido criar formato concorrente, camada de tradução, ou "formato do editor que depois converte". Se o editor precisa gravar algo que o formato deles não carrega (histórico, nota de autor, camada de trabalho), isso vai em **arquivo ao lado**, nunca dentro do formato de mapa — regra declarada por eles e aceita aqui.
+
+## L-04
+
+**Data:** 21/08/2026, via `AskUserQuestion`.
+
+**O editor edita SÓ MAPA:** grade de células, objetos posicionados, hitbox, portas e pontos de teleporte. **Carta, item e NPC do jogo estão fora do escopo** — são conteúdo do GusWorld, não do mapa.
+
+**Aplicação:** proposta de "aproveitar que o editor já abre arquivo" para editar catálogo de conteúdo é violação desta lei, e vira pergunta ao líder, nunca decisão de agente.
+
+## L-05
+
+**Data:** 21/08/2026. **Verbatim:** *"obrigatoriamente use AskUserQuestion ao me trazer perguntas ou precisar algo de mim"*.
+
+Toda pergunta ao líder e toda decisão com mais de um caminho vai por `AskUserQuestion`. **Nunca usar o campo `preview`** — o líder não quer o painel lateral; detalhe técnico vai no corpo da mensagem, com as opções curtas. A opção recomendada vem primeiro, marcada como recomendação.
+
+**Aplicação:** decisão de design, arquitetura, escopo, stack ou qualquer coisa cara de reverter **nunca** é tomada por agente. Diante de dúvida, pergunte antes de agir, não depois de implementar.
+
+## L-06
+
+**Data:** 21/08/2026. **Verbatim:** *"main apenas orquestra, interage comigo e dispara agentes. Auditorias apenas com clevel bigtech fable, trabalhadores sonnet bigtech"*.
+
+O main **não implementa produto nem código**: orquestra, conversa com o líder e despacha agentes. **Auditoria é feita por C-level da constelação bigtech em modelo fable**; execução é feita por agents operacionais em modelo sonnet.
+
+**Aplicação:** implementador, revisor e orquestrador são **três agentes diferentes**. Relatório de agente não é prova: o main reconfere build limpo e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
+
+## L-07
+
+**Data:** 21/08/2026, via `AskUserQuestion`, dentro do item *"será usado para distribuição, conjuntamente com GlintFx, FOSS"*.
+
+**Licença: AGPL-3.0-or-later**, a mesma do GlintFx — ecossistema sob licença única, sem atrito de compatibilidade.
+
+**Aplicação:** o repositório `petrinhu/GusWorld_MapEditor` está **privado e sem licença** neste momento. Publicar sem o arquivo de licença no lugar é violação. Cabeçalho SPDX em todo arquivo de código, como o GlintFx faz.
+
+## L-08
+
+**Data:** 21/08/2026, via `AskUserQuestion`.
+
+A biblioteca **`gusmap-core` está aposentada**. Ela era dona do formato `.gmap` (esquema v3, selo HMAC) e perdeu a razão de existir com a L-03.
+
+**Aplicação:** não é base, não é referência, não é "o que já funcionava". Não clonar, não copiar trecho, não citar o desenho dela como argumento. O achado técnico que sobrevive dela é um **aviso**, não um projeto: a chave do selo HMAC era derivada de um literal aberto no fonte do jogo, ou seja, o selo não protegia contra ninguém.
+
+## L-09
+
+**Data:** 21/08/2026. **Verbatim:** *"veja como glintfx faz os testes dele e auditorias no codigo etc, aqui deve ser identico mas adaptado ao nosso projeto, só que mantendo o mesmo rigor"*.
+
+O rigor de teste, portão de CI e auditoria é **o mesmo do GlintFx**, adaptado ao nosso domínio — nunca relaxado por sermos menores.
+
+**Aplicação, com um defeito real já herdado deles:** um portão que **varre zero arquivos e imprime verde** passa nos dois autotestes de praxe (o positivo, que planta violação, e o negativo, que prova que entrada limpa sai zero), porque ambos rodam sobre arquivos que existem. "Olhei e está limpo" e "não olhei nada" produzem a mesma saída. **Todo portão nosso declara quantos arquivos varreu, e sair com zero varridos é falha, não sucesso.**
+
+## L-10
+
+**Data:** 21/08/2026. **Verbatim:** *"CI com runners Fedora 44 (principal), Ubuntu, Arch, CachyOs (original, não arch renomeado), windows"*.
+
+Cinco alvos, **cinco entradas distintas** na matriz de CI. **Fedora 44 é o primário**, por ser o sistema do líder, e fica pinado na versão, nunca em `latest`. **CachyOS não é Arch renomeado** e não é coberto pelo job de Arch.
+
+## L-11
+
+**Data:** 21/08/2026. **Verbatim:** *"ja tentei fazer esse editor uma vez com o claude, mas tive vários problemas e estou fazendo DO ZERO tudo com relacao ao codigo, sempre assentado sobre GlintFx"*.
+
+O código deste projeto **nasce do zero**. O editor anterior — que chegou a ter janela, grade, inspetor, `Document` e undo/redo — **não é base, não é referência, não é canon**.
+
+**Aplicação:** ao encontrar rastro do predecessor (memória de sessão anterior, tag antiga, descrição de arquitetura passada), **pare a escavação e siga do zero**. Necessidade descrita em palavras é insumo legítimo; "copia o que já estava lá" não é. Esta lei espelha a L-01 do GlintFx e existe pela mesma razão.
+
+## L-12
+
+**Data:** 22/08/2026, via `AskUserQuestion`, sobre a ordem original *"vamos discutir as camadas: hexagonal? espinha? Sugira. PROIBIDO monolitos."*
+
+**Camadas horizontais finas**, com a dependência apontando só para dentro:
+
+1. **Domínio** — POCO puro. Documento de mapa, célula, objeto posicionado, hitbox, porta, teleporte, seleção, comando, pilha de histórico. **Zero GlintFx, zero sistema operacional, zero terceiro.**
+2. **Aplicação** — um caso de uso por operação de edição, cada um pequeno e testável sozinho. Nunca um serviço-deus com dezenas de métodos.
+3. **Casca de plataforma** — fina, **única camada autorizada a incluir header do GlintFx**, que chama a API deles **direto, sem interface própria**.
+
+**Por que sem interface:** o GlintFx é a única implementação que vai existir, por lei; e a API de janela, desenho e entrada **ainda não existe** — desenhar uma porta hoje é supor a forma dela. Isso produziria exatamente a "camada de tradução" já proibida no ecossistema.
+
+**Aplicação:** a proteção do domínio **não** vem de interface, vem de **regra de dependência fiscalizada por portão de CI** — `domain` nunca inclui `application` nem `platform`; `application` nunca inclui header do GlintFx. O portão declara quantos arquivos varreu (L-09). Se um dia houver razão **concreta** (não hipotética) para fingir a fronteira em teste, a saída é um `concept` de C++23 resolvido em compilação, nunca interface virtual.
+
+**"Átomos com POCO próprio"** (ordem do líder) se materializa no domínio e nos casos de uso, onde se paga sozinho. **Não** se aplica à casca de plataforma: exigir um átomo por campo de formulário num editor de usuário único é over-engineering. Átomo é sobre tamanho e responsabilidade, não sobre indireção — um POCO concreto de vinte linhas, sem interface nenhuma, é um átomo perfeito.
+
+## L-13
+
+**Data:** 22/08/2026, via `AskUserQuestion`, sobre a ordem original *"quero undo e redo, com varios passos, veja na web como fazer essa sincronia"*.
+
+**Comando com pilha linear.** Cada operação de edição é um comando pequeno, **serializável**, com desfazer próprio. Nada de instantâneo do mapa inteiro por passo, nada de árvore de histórico.
+
+Quatro regras que vêm com a lei:
+
+1. **Uma intenção é um passo de desfazer.** Arrastar o pincel por quarenta células é **um** passo, agrupado por **transação explícita** que abre no início do gesto e fecha no fim — não por heurística de "parece a mesma ação".
+2. **A seleção fica FORA do histórico.** Desfazer só volta mudança de conteúdo do mapa; seleção e câmera são estado de sessão. Decisão do líder, apoiada na reclamação pública contra o comportamento oposto no Figma.
+3. **O histórico PERSISTE entre sessões**, decisão do líder contra o padrão universal da indústria (Krita, Photoshop e Qt não persistem). Ele mora em **arquivo do editor ao lado do mapa** (L-03), nunca dentro do formato do GlintFx. **Três consequências assumidas:** cada comando precisa de serialização versionada; o arquivo de histórico grava uma impressão digital do mapa e **recusa reaplicar** se o mapa mudou por fora; e tudo isso **depende do identificador estável de objeto**, que é decisão do GlintFx — sem ele, histórico persistente é impossível, não difícil.
+4. **As vistas assinam os sinais do histórico e nunca guardam cópia própria do estado.** Painel com caminho de atualização paralelo diverge do histórico exatamente no caso de seleção múltipla — defeito documentado por quem já construiu editor de nível.
