@@ -95,6 +95,42 @@ def _walk_sorted(root: Path):
         yield dirpath, dirnames, filenames
 
 
+def find_layer_dirs(root: Path) -> dict[str, list[Path]]:
+    """Percorre `root` e devolve, para cada uma das tres camadas, a lista de
+    diretorios cujo NOME (sem diferenciar maiuscula) bate com o nome da
+    camada -- independente de o diretorio ter arquivo de codigo dentro,
+    estar vazio ou so ter arquivo que nao casa com CPP_EXTENSIONS.
+
+    Existe para a TRAVA decidida pelo lider em 22/08/2026 (ver
+    check_layers.py e check_allowed_includes.py): a existencia do
+    DIRETORIO, nao a contagem de arquivo, e o gatilho. Se a checagem
+    fosse "total de arquivo C++ == 0", criar `domain/` so com um `.md`
+    dentro nao mudaria o total e o portao continuaria mudo -- exatamente
+    o buraco que a lei pede para fechar.
+
+    Usa a MESMA poda de diretorio de build/VCS/dependencia vendorizada
+    que iter_cpp_files, para uma pasta "domain" dentro de uma dependencia
+    baixada (_deps, vendor, node_modules, ...) nao contar como se fosse
+    camada nossa."""
+    root = Path(root)
+    found: dict[str, list[Path]] = {name: [] for name in LAYER_NAMES}
+    if root.is_file():
+        return found
+    for dirpath, dirnames, _filenames in _walk_sorted(root):
+        for d in dirnames:
+            low = d.lower()
+            if low in LAYER_NAMES:
+                found[low].append(Path(dirpath) / d)
+        _prune_dirs(dirnames)
+    return found
+
+
+def any_layer_dir_exists(root: Path) -> bool:
+    """Atalho: True se QUALQUER uma das tres pastas de camada existe em
+    algum lugar da arvore (vazia ou nao)."""
+    return any(paths for paths in find_layer_dirs(root).values())
+
+
 def classify_layer(path: Path, root: Path) -> Optional[str]:
     """Devolve 'domain', 'application' ou 'platform' se algum componente do
     caminho (relativo a `root`), comparado sem diferenciar maiusculas, bater

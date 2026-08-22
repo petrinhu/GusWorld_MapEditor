@@ -3,16 +3,25 @@
 """
 tools/ci/selftest_check_layers.py
 
-Autoteste de check_layers.py com TRES controles (GODS_LAWS.md L-09, ordem
-explicita da tarefa que criou este arquivo -- dois controles nao bastam):
+Autoteste de check_layers.py com QUATRO controles (GODS_LAWS.md L-09 +
+decisao do lider de 22/08/2026 sobre a TRAVA "verde declarando zero"):
 
     1. POSITIVO -- planta violacao de camada, prova que o portao acusa.
     2. NEGATIVO -- arvore limpa (so includes permitidos entre camadas),
        prova que o portao nao acusa fantasma.
-    3. VAZIO    -- diretorio sem nenhum arquivo domain/application/platform,
-       prova que o portao FALHA (nao passa em silencio) quando nao ha nada
-       para varrer. E o controle que os outros dois nunca exercitam, e o
-       motivo exato pelo qual GODS_LAWS.md L-09 existe.
+    3. VAZIO    -- diretorio sem NENHUMA pasta domain/application/platform
+       (so um arquivo decorativo fora de qualquer camada). Depois da
+       trava, este e o caminho VERDE ("nada a verificar"): prova que o
+       portao sai 0 e que a mensagem NAO afirma verificacao bem-sucedida
+       (nunca a linha "check_layers: OK").
+    4. TRAVA    -- prova as DUAS direcoes da trava, para as TRES pastas
+       SEPARADAMENTE (o buraco classico desse tipo de guarda e a condicao
+       so olhar a primeira da lista): (a) baseline sem pasta nenhuma ->
+       exit 0, sem afirmar sucesso; (b) so a pasta <nome> existindo VAZIA
+       -> exit 1; (c) so a pasta <nome> existindo com um arquivo que NAO
+       casa a extensao C++ (.md) -> exit 1 -- este ultimo e o buraco
+       explicito que o lider apontou (criar domain/ com um .md dentro nao
+       pode deixar o portao mudo de novo).
 
 Roda o script real via subprocess (nao importa a funcao e chama direto),
 porque o que precisa ser provado e o comportamento observavel do PORTAO
@@ -22,7 +31,7 @@ GitHub Actions vai invoca-lo.
 Uso:
     python3 tools/ci/selftest_check_layers.py
 
-Exit 0 = os tres controles se comportaram como esperado.
+Exit 0 = os quatro controles se comportaram como esperado.
 Exit 1 = pelo menos um controle falhou (o portao real tem um defeito).
 """
 from __future__ import annotations
@@ -81,15 +90,68 @@ def control_negativo() -> tuple[bool, str]:
 def control_vazio() -> tuple[bool, str]:
     with tempfile.TemporaryDirectory(prefix="layers-vazio-") as td:
         root = Path(td)
-        # Nenhum arquivo domain/application/platform -- so um arquivo
-        # decorativo fora de qualquer camada, para provar que o portao
-        # nao conta "qualquer .cpp" como camada, e ainda assim falha.
+        # Nenhuma pasta domain/application/platform em lugar nenhum -- so
+        # um arquivo decorativo fora de qualquer camada, para provar que
+        # o portao nao conta "qualquer .cpp" como camada. Com a TRAVA
+        # (decisao do lider, 22/08/2026), este e o caminho VERDE: nao ha
+        # pasta de camada, entao 0 varrido e "nada a verificar", nao falha.
         _write(root, "solto.cpp", "#include <vector>\n")
 
         r = _run(root)
-        ok = r.returncode == 1 and "0 arquivos de camada" in r.stderr
+        ok = (
+            r.returncode == 0
+            and "NADA A VERIFICAR" in r.stdout
+            and "check_layers: OK" not in r.stdout
+        )
         detail = f"exit={r.returncode}\nstdout={r.stdout}\nstderr={r.stderr}"
         return ok, detail
+
+
+def control_trava() -> tuple[bool, str]:
+    """4o controle (exigencia do coordenador, 22/08/2026): prova as DUAS
+    direcoes da trava, pastas domain/application/platform SEPARADAMENTE --
+    nao so uma, porque o defeito classico de guarda como esta e a condicao
+    checar so a primeira da lista e ficar cega para as outras duas."""
+    detalhes: list[str] = []
+    ok_geral = True
+
+    # (a) baseline: nenhuma pasta de camada -- verde, sem afirmar sucesso.
+    with tempfile.TemporaryDirectory(prefix="layers-trava-baseline-") as td:
+        root = Path(td)
+        r = _run(root)
+        ok = (
+            r.returncode == 0
+            and "NADA A VERIFICAR" in r.stdout
+            and "check_layers: OK" not in r.stdout
+        )
+        detalhes.append(f"baseline (sem pasta nenhuma): {'PASS' if ok else 'FAIL'} "
+                         f"exit={r.returncode} stdout={r.stdout!r}")
+        ok_geral = ok_geral and ok
+
+    for nome in ("domain", "application", "platform"):
+        # (b) so <nome>/ existindo, VAZIA.
+        with tempfile.TemporaryDirectory(prefix=f"layers-trava-{nome}-vazia-") as td:
+            root = Path(td)
+            (root / nome).mkdir(parents=True)
+            r = _run(root)
+            ok = r.returncode == 1 and "pasta de camada existindo" in r.stderr
+            detalhes.append(f"{nome}/ vazia: {'PASS' if ok else 'FAIL'} "
+                             f"exit={r.returncode} stderr={r.stderr!r}")
+            ok_geral = ok_geral and ok
+
+        # (c) so <nome>/ existindo, com arquivo que NAO casa extensao C++
+        #     -- o buraco explicito apontado pelo lider (.md dentro de
+        #     domain/ nao pode deixar o portao mudo).
+        with tempfile.TemporaryDirectory(prefix=f"layers-trava-{nome}-md-") as td:
+            root = Path(td)
+            _write(root, f"{nome}/leia.md", "nada de codigo aqui\n")
+            r = _run(root)
+            ok = r.returncode == 1 and "pasta de camada existindo" in r.stderr
+            detalhes.append(f"{nome}/leia.md (nao casa extensao): {'PASS' if ok else 'FAIL'} "
+                             f"exit={r.returncode} stderr={r.stderr!r}")
+            ok_geral = ok_geral and ok
+
+    return ok_geral, "\n".join(detalhes)
 
 
 def main() -> int:
@@ -97,6 +159,7 @@ def main() -> int:
         ("positivo", control_positivo),
         ("negativo", control_negativo),
         ("vazio", control_vazio),
+        ("trava", control_trava),
     ]
     falhou = False
     for nome, fn in controles:
@@ -109,7 +172,7 @@ def main() -> int:
     if falhou:
         print("selftest_check_layers: FALHA -- ver controle(s) acima.")
         return 1
-    print("selftest_check_layers: OK -- os tres controles se comportaram como esperado.")
+    print("selftest_check_layers: OK -- os quatro controles se comportaram como esperado.")
     return 0
 
 

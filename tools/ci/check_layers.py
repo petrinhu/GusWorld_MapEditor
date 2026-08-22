@@ -19,18 +19,36 @@ de topo especifico (nem `src/domain/`, nem `domain/`, nem `libs/x/domain/`)
 
 GODS_LAWS.md L-09, regra que motivou esta tarefa: um portao que varre ZERO
 arquivos e imprime verde e indistinguivel de um portao que olhou e nao
-achou nada. Por isso este script SEMPRE declara quantos arquivos varreu
-por camada, e VARRER ZERO NO TOTAL E FALHA, nao sucesso -- hoje (2026-08-22)
-isso significa que este job sai vermelho, porque o codigo de aplicacao
-ainda nao existe (GODS_LAWS.md L-11/L-12). E o comportamento certo: melhor
-vermelho e honesto do que verde e mentiroso.
+achou nada. Este script SEMPRE declara quantos arquivos varreu por camada.
+
+TRAVA decidida pelo lider em 22/08/2026, depois de ver o job "leis" vermelho
+por dias (raciocinio dele: CI vermelho por meses treina todo mundo a
+ignorar vermelho, e ai o vermelho de verdade passa batido). O gatilho da
+trava e a EXISTENCIA DE DIRETORIO (domain/ ou application/ ou platform/ em
+qualquer lugar da arvore -- layer_common.any_layer_dir_exists), nao a
+contagem de arquivo, para nao ter buraco: criar `domain/` so com um `.md`
+dentro nao muda o total de arquivo C++, mas MUDA a existencia do diretorio,
+e a trava tem de perceber isso.
+
+    - NENHUMA das tres pastas existe em lugar nenhum da arvore E total==0:
+      Exit 0. Este e o caminho "ainda nao ha o que auditar" -- a mensagem
+      NUNCA afirma "OK", "limpo" ou "sucesso", porque nao houve verificacao
+      nenhuma, so ausencia de alvo (GODS_LAWS.md L-11).
+    - QUALQUER uma das tres pastas existe (vazia ou nao) E total==0:
+      Exit 1. A pasta de camada existe e mesmo assim nada foi varrido --
+      sintoma de filtro quebrado ou arvore incoerente, exatamente a mesma
+      semantica de "varrer zero e falha" que valia antes da trava.
+    - total > 0: segue a checagem de violacao de dependencia normalmente,
+      trava nao entra em jogo.
 
 Uso:
     python3 tools/ci/check_layers.py [RAIZ]
 
 RAIZ default: diretorio de trabalho atual (a raiz do repo, em CI).
-Exit 0 = pelo menos um arquivo por camada foi varrido e nenhuma violacao.
-Exit 1 = zero arquivos de camada varridos, OU violacao de dependencia.
+Exit 0 = nenhuma das tres pastas de camada existe ainda (nada a verificar),
+         OU pelo menos um arquivo por camada foi varrido e nenhuma violacao.
+Exit 1 = uma pasta de camada existe mas 0 arquivo foi varrido dentro dela,
+         OU violacao de dependencia.
 """
 from __future__ import annotations
 
@@ -39,8 +57,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from layer_common import (  # noqa: E402
+    any_layer_dir_exists,
     classify_layer,
     extract_includes,
+    find_layer_dirs,
     iter_cpp_files,
     path_segments,
 )
@@ -113,13 +133,31 @@ def main(argv: list[str]) -> int:
     total, violations = run(root)
 
     if total == 0:
+        dirs_found = find_layer_dirs(root)
+        if not any_layer_dir_exists(root):
+            print(
+                "check_layers: NADA A VERIFICAR -- 0 arquivos de camada "
+                "varridos e NENHUMA das pastas domain/application/platform "
+                f"existe ainda em lugar nenhum de '{root}'. Isto NAO e uma "
+                "verificacao bem-sucedida: e ausencia de alvo (GODS_LAWS.md "
+                "L-11, projeto do zero). Decisao do lider em 22/08/2026: "
+                "este caminho sai 0 SO enquanto nenhuma das tres pastas "
+                "existir; no instante em que uma aparecer, varrer zero "
+                "arquivos volta a ser falha."
+            )
+            return 0
+        existentes = ", ".join(
+            f"{nome} ({len(paths)} dir.)" for nome, paths in dirs_found.items() if paths
+        )
         print(
-            "check_layers: FALHA -- 0 arquivos de camada (domain/application/"
-            "platform) encontrados sob "
-            f"'{root}'. GODS_LAWS.md L-09: varrer zero arquivos NUNCA e "
-            "sucesso. Se o codigo de aplicacao ainda nao existe "
-            "(GODS_LAWS.md L-11), este vermelho e o comportamento ESPERADO, "
-            "nao um bug do portao.",
+            "check_layers: FALHA -- ha pasta de camada existindo "
+            f"({existentes}) mas 0 arquivo de codigo C++ foi varrido dentro "
+            f"delas sob '{root}'. Isto NAO e o caminho \"projeto ainda nao "
+            "comecou\" (GODS_LAWS.md L-11): a pasta ja existe, entao isto e "
+            "sintoma de filtro de extensao errado, pasta so com arquivo que "
+            "nao casa (ex.: um .md dentro de domain/), ou arvore quebrada. "
+            "GODS_LAWS.md L-09 continua valendo aqui: varrer zero, com "
+            "pasta existindo, e falha, nao sucesso.",
             file=sys.stderr,
         )
         return 1

@@ -29,14 +29,25 @@ falar direto com o sistema operacional"), e mesmo dentro de platform,
 sistema operacional so entra via GlintFx, entao nem platform ganha
 excecao para header de SO.
 
-GODS_LAWS.md L-09: este portao tambem declara quantos arquivos varreu e
-falha se varrer zero -- mesma razao do check_layers.py irmao.
+GODS_LAWS.md L-09: este portao tambem declara quantos arquivos varreu.
+
+TRAVA decidida pelo lider em 22/08/2026 (mesma semantica do check_layers.py
+irmao, gatilho em layer_common.any_layer_dir_exists): enquanto NENHUMA das
+tres pastas de camada (domain/application/platform) existir em lugar
+nenhum da arvore, varrer zero arquivos C++ sai 0 -- e ausencia de alvo, a
+mensagem nunca afirma "OK"/"limpo"/"sucesso". No instante em que QUALQUER
+uma das tres passar a existir, varrer zero volta a ser falha (exit 1),
+porque a pasta ja existe e mesmo assim nao ha nada para varrer no repo
+inteiro -- sintoma de arvore quebrada, nao de projeto novo.
 
 Uso:
     python3 tools/ci/check_allowed_includes.py [RAIZ]
 
-Exit 0 = pelo menos um arquivo C++ varrido e nenhum include fora da lista.
-Exit 1 = zero arquivos varridos, OU include nao permitido encontrado.
+Exit 0 = nenhuma das tres pastas de camada existe ainda (nada a
+         verificar), OU pelo menos um arquivo C++ foi varrido e nenhum
+         include fora da lista.
+Exit 1 = uma pasta de camada existe mas 0 arquivo C++ foi varrido no repo
+         inteiro, OU include nao permitido encontrado.
 """
 from __future__ import annotations
 
@@ -45,8 +56,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from layer_common import (  # noqa: E402
+    any_layer_dir_exists,
     classify_layer,
     extract_includes,
+    find_layer_dirs,
     iter_cpp_files,
 )
 
@@ -166,11 +179,30 @@ def main(argv: list[str]) -> int:
     scanned, violations = run(root)
 
     if scanned == 0:
+        if not any_layer_dir_exists(root):
+            print(
+                "check_allowed_includes: NADA A VERIFICAR -- 0 arquivos C++ "
+                "varridos e NENHUMA das pastas domain/application/platform "
+                f"existe ainda em lugar nenhum de '{root}'. Isto NAO e uma "
+                "verificacao bem-sucedida: e ausencia de alvo (GODS_LAWS.md "
+                "L-11, projeto do zero). Decisao do lider em 22/08/2026: "
+                "este caminho sai 0 SO enquanto nenhuma das tres pastas "
+                "existir; no instante em que uma aparecer, varrer zero "
+                "arquivos volta a ser falha."
+            )
+            return 0
+        dirs_found = find_layer_dirs(root)
+        existentes = ", ".join(
+            f"{nome} ({len(paths)} dir.)" for nome, paths in dirs_found.items() if paths
+        )
         print(
-            "check_allowed_includes: FALHA -- 0 arquivos C++ varridos sob "
-            f"'{root}'. GODS_LAWS.md L-09: varrer zero arquivos NUNCA e "
-            "sucesso. Se o codigo de aplicacao ainda nao existe "
-            "(GODS_LAWS.md L-11), este vermelho e o comportamento ESPERADO.",
+            "check_allowed_includes: FALHA -- ha pasta de camada existindo "
+            f"({existentes}) mas 0 arquivo C++ foi varrido no repositorio "
+            f"inteiro sob '{root}'. Isto NAO e o caminho \"projeto ainda "
+            "nao comecou\" (GODS_LAWS.md L-11): a pasta ja existe, entao "
+            "isto e sintoma de filtro de extensao errado ou arvore "
+            "quebrada. GODS_LAWS.md L-09 continua valendo: varrer zero, "
+            "com pasta existindo, e falha, nao sucesso.",
             file=sys.stderr,
         )
         return 1

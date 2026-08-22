@@ -16,10 +16,12 @@ name: CI
 # ausencia de CMakeLists.txt, DECLARAM ISSO EXPLICITAMENTE em vez de
 # fingir sucesso silencioso. Os jobs "leis" e "portoes-autoteste" existem
 # HOJE precisamente para o caso "portao que varre zero arquivos e diz
-# verde" (GODS_LAWS.md L-09) -- e o job "leis" ESTA VERMELHO agora, DE
-# PROPOSITO, porque 0 arquivos de camada e 0 arquivos C++ varridos e
-# FALHA, nunca sucesso. Isto e esperado e correto ate o primeiro codigo
-# de dominio/aplicacao/plataforma chegar; nao e um bug deste workflow.
+# verde" (GODS_LAWS.md L-09). Refinamento decidido pelo lider em
+# 22/08/2026: enquanto NENHUMA das pastas de camada existir, o portao sai
+# VERDE declarando "NADA A VERIFICAR" -- e proibido de imprimir OK ou
+# limpo, porque isso afirmaria verificacao que nao houve. No instante em
+# que qualquer uma das tres pastas aparecer, varrer zero volta a ser
+# FALHA. A trava fecha sozinha e e exercitada pelo job de autoteste.
 
 on:
   push:
@@ -164,9 +166,10 @@ jobs:
   # ---------------------------------------------------------------------
   # Portoes de arquitetura/dependencia (GODS_LAWS.md L-12 e L-01).
   # Estatico, sobre texto -- roda uma vez, nao precisa dos cinco alvos.
-  # ESTE JOB ESTA VERMELHO HOJE DE PROPOSITO (ver cabecalho do arquivo):
-  # 0 arquivos de camada / 0 arquivos C++ varridos e FALHA, nunca sucesso
-  # silencioso (GODS_LAWS.md L-09).
+  # HOJE ESTE JOB SAI VERDE declarando NADA A VERIFICAR, porque nenhuma
+  # das pastas domain/application/platform existe ainda. Assim que uma
+  # delas aparecer, varrer zero arquivos volta a ser FALHA (a trava da
+  # GODS_LAWS.md L-09, decidida pelo lider em 22/08/2026).
   # ---------------------------------------------------------------------
   leis:
     name: Portoes de camada e dependencia (L-12, L-01)
@@ -182,10 +185,12 @@ jobs:
 
   # ---------------------------------------------------------------------
   # Autoteste dos DOIS portoes acima, com os TRES controles exigidos
-  # (positivo, negativo, vazio -- GODS_LAWS.md L-09). Roda sobre fixtures
-  # sinteticas em diretorio temporario, nao sobre este repositorio: por
-  # isso PASSA hoje mesmo com o job "leis" vermelho -- um valida o
-  # PORTAO, o outro valida o ESTADO ATUAL DO REPO.
+  # (positivo, negativo, vazio e TRAVA -- GODS_LAWS.md L-09). Roda sobre
+  # fixtures sinteticas em diretorio temporario, nao sobre este
+  # repositorio: um valida o PORTAO, o outro valida o ESTADO ATUAL DO
+  # REPO. O quarto controle prova as duas direcoes da trava: sem pasta e
+  # zero arquivos sai 0; com pasta existindo (vazia, ou so com arquivo
+  # que nao casa a extensao) e zero arquivos sai 1.
   # ---------------------------------------------------------------------
   portoes-autoteste:
     name: Autoteste dos portoes (3 controles -- L-09)
