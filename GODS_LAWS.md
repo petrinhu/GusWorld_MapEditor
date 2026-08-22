@@ -29,6 +29,7 @@
 | [L-12](#l-12) | criar diretório, decidir onde um tipo mora, ou incluir header | Camadas horizontais finas; o GlintFx só na casca externa; regra fiscalizada por portão de CI |
 | [L-13](#l-13) | escrever qualquer operação de edição, ou mexer em histórico | Comando com pilha linear, transação por gesto, seleção fora, histórico persistido em arquivo próprio |
 | [L-14](#l-14) | decidir o que entra na primeira versão do editor | Seis tipos de volume, vários mapas em abas, uma camada de terreno mais objetos livres |
+| [L-15](#l-15) | escrever memória, nota ou documento sobre algo que deixou de valer | Apagar. Nunca registrar que está parado, aposentado ou inativo |
 
 ---
 
@@ -189,3 +190,17 @@ Quatro regras que vêm com a lei:
 **Aplicação:** propor camada de pintura sobreposta, tipo de volume fora dos seis, ou edição de conteúdo que não seja mapa é violação desta lei somada à L-04, e vira pergunta ao líder, nunca decisão de agente.
 
 **4. O desenho da tela (o WYSIWYG do item 4 do briefing) ESPERA o GlintFx ter janela.** Decisão do líder em 22/08/2026, contra a minha recomendação de desenhar agora. Consequência assumida e registrada para ninguém reabrir por engano: enquanto a tela não for desenhada, **nós não temos a lista de recursos de interface a pedir ao GlintFx**, então o pedido sob demanda que eles esperam de nós nessa frente fica parado até lá. Não é esquecimento; é ordem.
+
+## L-15
+
+**Data:** 22/08/2026. **Verbatim:** *"nao comente nada com parado/aposentado/inativo... apague! você vai se confundir depois"*.
+
+Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloqueio resolvido, arquivo purgado, frente abandonada), o registro dele **é apagado**. É proibido escrever memória, nota ou seção dizendo *"X está aposentado"*, *"Y está pausado"*, *"Z não vale mais"*.
+
+**A razão, e ela é mecânica, não estética:** nota de obituário continua **injetando o nome no contexto**. Semanas depois se lê "gusmap-core (aposentada)" e o que fica é `gusmap-core`, tratado como peça viva do projeto. **A negação evapora antes do substantivo.** Memória é contexto carregado a cada sessão, não arquivo histórico: o histórico é do **git** e dos documentos versionados, que registram o que mudou, quando e em qual commit, com data e autor.
+
+**Como aplicar sem perder o que importa:** se o que morreu deixou uma **lição que continua valendo**, a lição vira registro próprio, escrita como **regra no presente e sem citar o cadáver**. Exemplo real deste projeto: um formato antigo tinha selo criptográfico cuja chave estava escrita às claras no código-fonte, e não protegia ninguém. O que ficou foi a regra ("em projeto com fonte publicado, detectar alteração é alcançável, impedir não é"), não a memória do formato que morreu.
+
+**Vale também dentro de documento vivo:** em vez de manter um parágrafo dizendo *"o mecanismo descrito acima não existe mais"*, **apague o parágrafo**. Ressalva de obituário é obituário.
+
+**Fronteira, para a lei não ser lida como ordem de apagar história:** esta lei governa **memória e nota de contexto**, não o registro versionado. Uma lei revogada **permanece** neste arquivo com a revogação declarada (o líder é a única autoridade que revoga, e a rastreabilidade da ordem dele é o ponto do arquivo); o `BRIEFING.md` continua registrando o estado de cada item; e mensagem de commit continua narrando o que foi removido e por quê. O que se apaga é o que seria **recarregado como se fosse presente**.
