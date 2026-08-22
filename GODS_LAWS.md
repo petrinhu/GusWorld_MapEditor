@@ -30,6 +30,7 @@
 | [L-13](#l-13) | escrever qualquer operação de edição, ou mexer em histórico | Comando com pilha linear, transação por gesto, seleção fora, histórico persistido em arquivo próprio |
 | [L-14](#l-14) | decidir o que entra na primeira versão do editor | Seis tipos de volume, vários mapas em abas, uma camada de terreno mais objetos livres |
 | [L-15](#l-15) | escrever memória, nota ou documento sobre algo que deixou de valer | Apagar. Nunca registrar que está parado, aposentado ou inativo |
+| [L-16](#l-16) | pensar no papel do editor, ou desenhar qualquer capacidade dele | Implementador de referência do escritor, e utilizável headless |
 
 ---
 
@@ -58,6 +59,8 @@ Toda interação com janela, entrada, desenho, som e recurso passa **exclusivame
 **O `gusworld_mapeditor` deixa de definir o formato e passa a gravá-lo**, como qualquer consumidor no mundo. Necessidade nossa **não vira campo por decisão nossa**: vira pedido, descrito em palavras, julgado por eles.
 
 **Aplicação:** é proibido criar formato concorrente, camada de tradução, ou "formato do editor que depois converte". Se o editor precisa gravar algo que o formato deles não carrega (histórico, nota de autor, camada de trabalho), isso vai em **arquivo ao lado**, nunca dentro do formato de mapa — regra declarada por eles e aceita aqui.
+
+**Proteção contra edição, decidida em 22/08/2026 via `AskUserQuestion`, depois da discussão com o GlintFx que o líder mandou fazer: DETECTAR no mapa, PROTEGER no save.** O formato do GlintFx carrega selo **aberto** de integridade, que qualquer um verifica e o editor sabe gerar, cobrindo corrupção, truncamento e edição acidental. A proteção de verdade mora no **save do jogador**, que é arquivo do GusWorld e não do formato de mapa. A razão: **editar mapa num jogo que distribui editor é uso legítimo; trapaça é editar o save.** Fica registrado o fato que sustentou a decisão, porque ele vale além deste item: em projeto com o fonte publicado, **detectar** alteração é alcançável e **impedir** não é. É proibido desenhar mecanismo que prometa impedir.
 
 **Consequência de fronteira que caiu no nosso colo (22/08/2026):** o formato aceita só forma simples. **Repartir polígono côncavo em pedaços convexos na hora de salvar é trabalho do editor**, não da lib — decisão do líder, com a justificativa de que quem tem interface é quem tem como fazer isso direito. Repartição convexa é classe de código que produz defeito silencioso (vértice colinear, orientação invertida, polígono degenerado): nasce com teste de ida e volta e com verificação de que cada pedaço gerado é de fato convexo.
 
@@ -109,6 +112,8 @@ O rigor de teste, portão de CI e auditoria é **o mesmo do GlintFx**, adaptado 
 
 **Aplicação, com um defeito real já herdado deles:** um portão que **varre zero arquivos e imprime verde** passa nos dois autotestes de praxe (o positivo, que planta violação, e o negativo, que prova que entrada limpa sai zero), porque ambos rodam sobre arquivos que existem. "Olhei e está limpo" e "não olhei nada" produzem a mesma saída. **Todo portão nosso declara quantos arquivos varreu, e sair com zero varridos é falha, não sucesso.**
 
+**Framework de teste: HARNESS PRÓPRIO, decidido em 22/08/2026 via `AskUserQuestion`.** Nada de Catch2 nem de qualquer biblioteca de teste de terceiro. A lente de engenharia achou a colisão: o `TESTES.md` recomendava Catch2, e a **L-01 proíbe biblioteca de terceiro**; framework de teste é biblioteca de terceiro linkada no binário. O GlintFx resolveu o mesmo problema escrevendo harness próprio, e o deles é referência legítima de como fazer. O líder recusou tanto o Catch2 quanto a saída de abrir exceção declarada na lei, e a razão de recusar a exceção é a que importa: **"terceiro que não conta" é como dependência volta a entrar num projeto que a expulsou.**
+
 **Refinamento decidido pelo líder em 22/08/2026, com a tensão à vista.** A regra acima, aplicada ao pé da letra num projeto que ainda não tem código, deixaria o CI **vermelho por meses** — e vermelho crônico treina todo mundo a ignorar vermelho, que é a mesma doença por outro caminho. A distinção que resolve está entre duas frases: *"olhei e está limpo"* quando não se olhou nada é **mentira**, e foi ela que derrubou o portão do GlintFx; *"não há nada para olhar ainda, e eu declaro isso"* é **verdade**.
 
 Portanto: **enquanto NENHUMA das pastas de camada existir** (`domain`, `application`, `platform`), o portão **sai zero**, declarando que varreu zero e que não há alvo — e é **proibido** imprimir "OK", "limpo" ou "nenhuma violação" nesse caminho, porque isso seria afirmar verificação que não houve. **No instante em que QUALQUER uma das três pastas passar a existir, varrer zero volta a ser FALHA**, e a trava fecha sozinha, sem ninguém precisar virar uma chave.
@@ -142,6 +147,8 @@ O código deste projeto **nasce do zero**. O editor anterior — que chegou a te
 **Por que sem interface:** o GlintFx é a única implementação que vai existir, por lei; e a API de janela, desenho e entrada **ainda não existe** — desenhar uma porta hoje é supor a forma dela. Isso produziria exatamente a "camada de tradução" já proibida no ecossistema.
 
 **Aplicação:** a proteção do domínio **não** vem de interface, vem de **regra de dependência fiscalizada por portão de CI** — `domain` nunca inclui `application` nem `platform`; `application` nunca inclui header do GlintFx. O portão declara quantos arquivos varreu (L-09). Se um dia houver razão **concreta** (não hipotética) para fingir a fronteira em teste, a saída é um `concept` de C++23 resolvido em compilação, nunca interface virtual.
+
+**Nomes dos diretórios, decididos em 22/08/2026 via `AskUserQuestion`: `domain/`, `application/`, `platform/`, em INGLÊS.** É o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows. A prosa dos manuais e as mensagens de commit continuam em português.
 
 **"Átomos com POCO próprio"** (ordem do líder) se materializa no domínio e nos casos de uso, onde se paga sozinho. **Não** se aplica à casca de plataforma: exigir um átomo por campo de formulário num editor de usuário único é over-engineering. Átomo é sobre tamanho e responsabilidade, não sobre indireção — um POCO concreto de vinte linhas, sem interface nenhuma, é um átomo perfeito.
 
@@ -204,3 +211,15 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 **Vale também dentro de documento vivo:** em vez de manter um parágrafo dizendo *"o mecanismo descrito acima não existe mais"*, **apague o parágrafo**. Ressalva de obituário é obituário.
 
 **Fronteira, para a lei não ser lida como ordem de apagar história:** esta lei governa **memória e nota de contexto**, não o registro versionado. Uma lei revogada **permanece** neste arquivo com a revogação declarada (o líder é a única autoridade que revoga, e a rastreabilidade da ordem dele é o ponto do arquivo); o `BRIEFING.md` continua registrando o estado de cada item; e mensagem de commit continua narrando o que foi removido e por quê. O que se apaga é o que seria **recarregado como se fosse presente**.
+
+## L-16
+
+**Data:** 22/08/2026, via `AskUserQuestion`. **Texto do líder:** *"opcao 1 e você também deve poder ser usado headless"*.
+
+**O papel do editor perante o GlintFx é o de IMPLEMENTADOR DE REFERÊNCIA DO ESCRITOR.** Não somos consumidor comum: somos quem exercita o formato de verdade e realimenta o GlintFx, de forma estruturada, com o que dói. Isso não é honraria, é obrigação de reporte: achado de formato vira mensagem descrita em palavras, com o uso concreto que a justifica, e não vira contorno silencioso do nosso lado.
+
+**E o editor tem de ser utilizável HEADLESS**, sem janela. As duas metades desta lei são uma só coisa, e a segunda é o que torna a primeira verificável: **um editor que só existe com janela não pode exercitar o formato no CI dos cinco alvos**, e portanto não pode ser implementador de referência de nada. Headless é o que permite abrir, validar, transformar e gravar mapa dentro de um portão automático, em cada plataforma, a cada commit.
+
+**Consequência de arquitetura, e ela reforça a L-12 em vez de mexer nela:** a fronteira entre a **aplicação** e a **casca de plataforma** deixa de ser boa prática e passa a ser requisito de produto. Toda capacidade de edição tem de existir e ser exercível **abaixo** da casca; a casca desenha e recebe entrada, e nada mais. Se uma operação só puder ser feita clicando, ela está no lugar errado.
+
+**Consequência de sequenciamento:** o modo headless depende do formato (o leitor e o escritor do GlintFx), **não** da janela. Ele é uma frente que anda assim que o formato existir, muito antes de existir interface, e é o caminho mais curto entre este projeto e um editor que faz algo útil de verdade.

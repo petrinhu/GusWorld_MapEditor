@@ -27,13 +27,10 @@ Esta seção existe porque a ausência dela já custou caro nesta noite: um agen
 
 - **`EXT-1` Formato de mapa v1 publicado pelo GlintFx**, leitor E escritor públicos. Sem data. Trava o grupo `FMT-*`. **O que já foi conquistado:** UUID estável de objeto e de mapa, rotação livre, lista de volumes por objeto, bit separado para bloquear busca de caminho, canal de propriedades nomeadas, e preservação de bloco desconhecido ao regravar com bit "seguro de copiar".
 - **`EXT-2` GlintFx expõe janela, desenho e entrada.** Sem data. Trava **todo** o grupo `APP-*` e o `DES-1`. Hoje o `src` deles tem três arquivos.
-- **`EXT-3` Papel formal do editor** na visão do GlintFx (consumidor comum ou implementador de referência do escritor). **Na mesa do líder.**
-- **`EXT-4` Proteção contra edição de mapa e de save.** **Na mesa do líder.** A fronteira que pode resolver o item inteiro: isso é assunto do mapa ou do save do jogador? Fato apurado que precisa estar na mesa: em projeto com fonte publicado, **detectar** alteração é alcançável, **impedir** não é.
 - **`EXT-5` Herança de tipo com exceção por instância**, marcada como tal. Na mesa do CTO do GlintFx. Afeta `APP-5`.
 
 ## Achados das lentes que o líder precisa decidir (não decididos por agente)
 
-- **A recomendação de Catch2 colide com a `L-01`.** O `TESTES.md` recomenda Catch2 e RapidCheck, mas a `L-01` proíbe biblioteca de terceiro, e o GlintFx resolveu o mesmo problema escrevendo harness próprio. Isso quase decide a `DEC-2` por lei, e muda o tamanho de `COR-1` e da parte de propriedade de `COR-7`. **Vai ao líder.**
 - **Falta possivelmente uma decisão sobre teste baseado em propriedade** (ferramenta pronta ou geração própria com semente fixa), distinta da `DEC-2`. Apontado pela lente de engenharia. **Vai ao líder** decidir se vira item próprio.
 - **Duas escolhas técnicas de `COR-7` mudam o tamanho da bateria de teste** e não foram tomadas: a tolerância de ponto flutuante para comparar área, e se o teste soma as áreas das peças ou reconstrói a união geométrica. Decidir antes de escrever o teste, não depois.
 
@@ -54,8 +51,8 @@ Vazia.
 
 | WSJF | ID | Onda | Grupo | Descrição Técnica | Prioridade | Pré-requisito | Dificuldade | Status | Estado Auditado |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 11.5 | DEC-1 | W0 | Decisão | Nome real dos diretórios de camada: inglês (`domain`/`application`/`platform`) ou português sem acento. O portão de CI já entregue procura os nomes em inglês; a porta fecha no instante em que a primeira pasta existir com nome errado. | Alta | — | Baixa | 🎨 Pendente design | — |
-| 4.7 | DEC-2 | W0 | Decisão | Framework de teste unitário. A recomendação de Catch2 no `TESTES.md` colide com a `L-01` (zero biblioteca de terceiro); o GlintFx escreveu harness próprio. Decidir antes da primeira suíte, senão reescreve toda a asserção. | Alta | — | Média | 🎨 Pendente design | — |
+| 11.5 | DEC-1 | W0 | Decisão | Nome dos diretórios de camada. **Decidido em 22/08/2026: `domain/`, `application/`, `platform/`, em inglês** (`L-12`). Coerente com o portão de CI já entregue e sem acento em caminho no alvo Windows. | Alta | — | Baixa | 💡 Decisão tomada | — |
+| 4.7 | DEC-2 | W0 | Decisão | Framework de teste unitário. **Decidido em 22/08/2026: harness próprio, sem Catch2 e sem biblioteca de teste de terceiro** (`L-09`). O líder recusou também a saída de abrir exceção na `L-01`: "terceiro que não conta" é como dependência volta a entrar. | Alta | — | Média | 💡 Decisão tomada | — |
 | 12.0 | COR-1 | W1 | Núcleo | Scaffolding CMake C++23 e harness de teste rodando nos cinco alvos. Destrava literalmente todo o resto do núcleo. | Alta | DEC-1, DEC-2 | Média | ⏳ Pendente | — |
 | 5.8 | COR-2 | W2 | Núcleo | Modelo de documento de edição: mapa carregado mais estado de autoria. Domínio POCO puro, zero GlintFx, zero sistema operacional (`L-12`). | Alta | COR-1 | Média | ⏳ Pendente | — |
 | 1.6 | COR-7 | W2 | Núcleo | Repartir polígono côncavo em pedaços convexos ao salvar. Caiu no nosso colo por decisão de fronteira do GlintFx. Classe de código que falha em silêncio: nasce com ida e volta, conservação de área e verificação de convexidade de cada peça. | Média | COR-1 | Alta | ⏳ Pendente | — |
@@ -69,7 +66,8 @@ Vazia.
 | 8.0 | FMT-1 | W7 | Formato | Abrir mapa pelo leitor público do GlintFx. Primeira vez que o editor toca um mapa real: valida ou derruba tudo que COR-2 supôs. Dispara a `L-02`. | Alta | EXT-1, COR-2 | Média | ⏳ Pendente | — |
 | 9.0 | FMT-6 | W8 | Formato | Validação de teleporte entre mapas: o destino aponta para um mapa que existe. Viável porque o destino é endereço direto por UUID de mapa. | Média | FMT-1 | Baixa | ⏳ Pendente | — |
 | 5.2 | FMT-2 | W8 | Formato | Gravar pelo escritor público do GlintFx. Fecha o ciclo abrir, editar, salvar. Sai errado em silêncio se COR-7 não estiver pronto e testado antes. | Alta | FMT-1, COR-7 | Média | ⏳ Pendente | — |
-| 8.0 | FMT-4 | W9 | Formato | Portão de ida e volta byte a byte: abrir, salvar sem mudar nada, comparar. A `L-09` exige que nasça junto com a leitura e a escrita, não depois. | Alta | FMT-1, FMT-2 | Média | ⏳ Pendente | — |
+| 7.0 | HL-1 | W9 | Headless | **Modo headless**: abrir, validar, transformar e gravar mapa por linha de comando, sem janela (`L-16`). Depende do formato, **não** da janela. É o que torna o papel de implementador de referência verificável, porque permite exercitar o formato no CI dos cinco alvos a cada commit. | Alta | FMT-2, COR-9 | Média | ⏳ Pendente | — |
+| 8.0 | FMT-4 | W10 | Formato | Portão de ida e volta byte a byte: abrir, salvar sem mudar nada, comparar. A `L-09` exige que nasça junto com a leitura e a escrita, não depois. Roda **por dentro do modo headless**, nos cinco alvos. | Alta | FMT-1, FMT-2, HL-1 | Média | ⏳ Pendente | — |
 | 4.2 | FMT-3 | W9 | Formato | Preservar bloco desconhecido ao regravar, honrando o bit "seguro de copiar". Exigência normativa do formato, conquistada por pedido nosso. Sem ela, salvar num editor desatualizado destrói dado alheio sem aviso. | Alta | FMT-2 | Média | ⏳ Pendente | — |
 | 9.7 | APP-1 | W10 | Aplicação | Janela e laço principal sobre a API do GlintFx. Primeira vez que o editor existe como programa visível. | Alta | EXT-2 | Média | ⏳ Pendente | — |
 | 0.8 | DES-1 | W10 | Design | Desenho da tela em alta fidelidade (o WYSIWYG). Espera o GlintFx ter janela, por ordem do líder e contra a recomendação registrada. Enquanto não for feito, não temos a lista de recursos de interface a pedir a eles. | Média | EXT-2 | Alta | 🎨 Pendente design | — |
