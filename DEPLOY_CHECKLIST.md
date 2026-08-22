@@ -1,6 +1,6 @@
 # CHECKLIST DE RELEASE (gusworld_mapeditor)
 
-> Este editor e uma aplicação desktop local, de usuário único, distribuída como binário via
+> Este editor é uma aplicação desktop local, de usuário único, distribuída como binário via
 > GitHub Releases (L-07: AGPL-3.0-or-later, junto com o GlintFx). Não há servidor, banco de
 > dados, migração de schema, autenticação nem tráfego em produção: o checklist genérico de
 > deploy irreversível (blue-green, shadow traffic, dual write, 2FA, HSTS) não se aplica e foi
@@ -11,9 +11,9 @@
 
 ## O que torna uma release irreversível aqui
 
-Não existe "produção" para fazer rollback. O ponto de não-retorno é outro: **assim que a tag e
-publicada e o artefato anexado ao GitHub Release, usuários podem baixar** -- não da para
-"desfazer" um download que já aconteceu. Qualquer correção pos-publicação sai como release nova,
+Não existe "produção" para fazer rollback. O ponto de não-retorno é outro: **assim que a tag é
+publicada e o artefato anexado ao GitHub Release, usuários podem baixar** -- não dá para
+"desfazer" um download que já aconteceu. Qualquer correção pós-publicação sai como release nova,
 nunca como reescrita da tag.
 
 ---
@@ -53,7 +53,7 @@ nunca como reescrita da tag.
 - [ ] Artefatos dos cinco alvos anexados ao GitHub Release.
 - [ ] Licença AGPL-3.0-or-later presente em cada artefato distribuído (LICENSE + cabeçalho SPDX,
       L-07).
-- [ ] Push, tag e publicação autorizados explicitamente pelo lider nesta sessão (autorização
+- [ ] Push, tag e publicação autorizados explicitamente pelo líder nesta sessão (autorização
       anterior não vale para sempre).
 
 ---

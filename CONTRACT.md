@@ -228,8 +228,8 @@ Apply patterns when they solve a real problem. MUST NOT apply patterns speculati
 |---------|----------|----------|
 | **Singleton** | Exactly one instance needed (ex.: registro de UUIDs em uso) | MUST be thread-safe se acessado de mais de uma thread. AVOID quando dificultar teste  -  prefer DI. |
 | **Factory Method** | Subclasses decidem qual comando/volume criar | Define abstract `criar()`, override in subclasses. |
-| **Abstract Factory** | Familias de objetos relacionados (ex.: os seis tipos de volume de colisao da L-14) | One factory interface, multiple concrete factories. |
-| **Builder** | Construcao de objeto complexo com muitos parâmetros opcionais | Separate construction from representation. |
+| **Abstract Factory** | Famílias de objetos relacionados (ex.: os seis tipos de volume de colisão da L-14) | One factory interface, multiple concrete factories. |
+| **Builder** | Construção de objeto complexo com muitos parâmetros opcionais | Separate construction from representation. |
 | **Prototype** | Clonar objetos caros (ex.: duplicar um objeto posicionado) | Implement deep copy. Avoid shared mutable state. |
 
 ```cpp
@@ -247,9 +247,9 @@ public:
 
 | Pattern | Use When | Key Rule |
 |---------|----------|----------|
-| **Adapter** | Interface incompativel precisa funcionar com a nossa | Wrap external API to match internal interface. |
-| **Bridge** | Separar abstracao de implementação | Decouple só both can vary independently. |
-| **Composite** | Estruturas em árvore (ex.: selecao múltipla de objetos) | Leaf and composite share same interface. |
+| **Adapter** | Interface incompatível precisa funcionar com a nossa | Wrap external API to match internal interface. |
+| **Bridge** | Separar abstração de implementação | Decouple só both can vary independently. |
+| **Composite** | Estruturas em árvore (ex.: seleção múltipla de objetos) | Leaf and composite share same interface. |
 | **Decorator** | Adicionar comportamento dinamicamente | Wrap object, delegate, then extend. |
 | **Facade** | Simplificar acesso a um subsistema complexo | One simple interface over many complex classes. |
 | **Flyweight** | Muitos objetos compartilhando estado comum (ex.: definição do tipo de volume, reaproveitada por muitas instâncias posicionadas) | Separate intrinsic (shared) from extrinsic (unique) state. |
@@ -269,14 +269,14 @@ public:
 
 | Pattern | Use When | Key Rule |
 |---------|----------|----------|
-| **Chain of Responsibility** | Multiplos handlers podem processar um evento de entrada | Each handler decides to handle or pass forward. |
+| **Chain of Responsibility** | Múltiplos handlers podem processar um evento de entrada | Each handler decides to handle or pass forward. |
 | **Command** | Encapsular ação como objeto: é a espinha dorsal do undo/redo exigido pela L-13 | Separate invoker from receiver; MUST ser serializável (L-13). |
 | **Iterator** | Percorrer coleção sem expor internals | Use standard iteration protocol. |
 | **Mediator** | Reduzir acoplamento entre muitos objetos | Central hub coordinates communication. |
-| **Memento** | Salvar/restaurar estado de objeto | Snapshot without violating encapsulation; NÃO e a estratégia de undo/redo aqui (L-13 exige comando, não snapshot do mapa inteiro). |
-| **Observer** | Notificar dependentes de mudança de estado: e como as vistas assinam o histórico (L-13, regra 4) | Se a API do GlintFx expuser um mecanismo de evento/callback próprio, usa-lo (L-01); nunca inventar um paralelo. |
+| **Memento** | Salvar/restaurar estado de objeto | Snapshot without violating encapsulation; NÃO é a estratégia de undo/redo aqui (L-13 exige comando, não snapshot do mapa inteiro). |
+| **Observer** | Notificar dependentes de mudança de estado: é como as vistas assinam o histórico (L-13, regra 4) | Se a API do GlintFx expuser um mecanismo de evento/callback próprio, usá-lo (L-01); nunca inventar um paralelo. |
 | **State** | Objeto muda de comportamento conforme estado interno | Replace conditionals with state objects. |
-| **Strategy** | Trocar algoritmo em tempo de execucao | Extract algorithm family into interchangeable objects. |
+| **Strategy** | Trocar algoritmo em tempo de execução | Extract algorithm family into interchangeable objects. |
 | **Template Method** | Definir esqueleto, subclasses preenchem passos | Base class controls flow, subclasses override steps. |
 | **Visitor** | Adicionar operações a uma estrutura de objetos sem modificá-la | Separate algorithm from object structure. |
 
@@ -285,18 +285,18 @@ public:
 | Pattern | Use When |
 |---------|----------|
 | **Repository** | Abstrair a origem de um dado (ex.: leitura/escrita do arquivo de histórico) da lógica de aplicação. |
-| **Event Sourcing** | Aplica-se diretamente a L-13: a pilha de comandos serializados e a fonte de verdade do histórico, não um snapshot do mapa. |
+| **Event Sourcing** | Aplica-se diretamente a L-13: a pilha de comandos serializados é a fonte de verdade do histórico, não um snapshot do mapa. |
 | **Dependency Injection** | Fornecer dependências de fora da classe (via construtor). |
 | **Service Locator** | AVOID  -  dependência escondida, difícil de testar. Use DI instead. |
-| **MVC / MVP / MVVM** | Separar estado do domínio (Model) da apresentação. Na casca de plataforma, o "View" e a chamada a API de desenho do GlintFx; MUST NOT reconstruir o estado do domínio a partir do que foi desenhado. |
-| **Null Object** | Evitar checagens de null: fornecer implementação padrao que não faz nada, documentada. |
-| **Specification** | Encapsular regras de negócio como predicados compostos (ex.: validar se um polígono e convexo, ver TESTES.md T17). |
+| **MVC / MVP / MVVM** | Separar estado do domínio (Model) da apresentação. Na casca de plataforma, o "View" é a chamada a API de desenho do GlintFx; MUST NOT reconstruir o estado do domínio a partir do que foi desenhado. |
+| **Null Object** | Evitar checagens de null: fornecer implementação padrão que não faz nada, documentada. |
+| **Specification** | Encapsular regras de negócio como predicados compostos (ex.: validar se um polígono é convexo, ver TESTES.md T17). |
 
 ---
 
 ## 5. Camadas de Arquitetura (L-12)
 
-Este projeto usa camadas horizontais finas, com a dependência apontando só para dentro. Este modelo substitui integralmente o modelo genérico Frontend/Middleware/Backend/Infraestrutura das versoes anteriores deste contrato, que pressupunha HTTP, SQL e UI framework: nada disso existe aqui.
+Este projeto usa camadas horizontais finas, com a dependência apontando só para dentro. Este modelo substitui integralmente o modelo genérico Frontend/Middleware/Backend/Infraestrutura das versões anteriores deste contrato, que pressupunha HTTP, SQL e UI framework: nada disso existe aqui.
 
 ```
 +-------------------------------------------------------------+
@@ -329,7 +329,7 @@ Este projeto usa camadas horizontais finas, com a dependência apontando só par
 - `domínio` nunca inclui header de `aplicação` nem de `casca de plataforma`, nem de GlintFx, nem do SO.
 - `aplicação` nunca inclui header de GlintFx nem do SO.
 - Só `casca de plataforma` inclui GlintFx.
-- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (L-09)**: procedimento e exemplo concreto em [TESTES.md secao A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
+- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (L-09)**: procedimento e exemplo concreto em [TESTES.md seção A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
 
 **Nomenclatura de diretório real (quando o código nascer):** os nomes acima (domínio, aplicação, casca) são conceituais. Nos diretórios de verdade em `src/`, usar ASCII sem acento (ex.: `dominio/`, `aplicacao/`, `casca/`) por serem caminho de arquivo num projeto que builda em Windows como um dos cinco alvos de CI (L-10); acento em nome de diretório é fonte evitável de dor cross-platform.
 
@@ -405,7 +405,7 @@ camada_gmap = camada_dominio + 1;
 - MUST handle all error cases. MUST NOT silently swallow exceptions.
 - MUST propagate errors to the caller: do not hide failures.
 - MUST NOT use exceptions for control flow.
-- Use `std::optional` ou `std::expected` (padrao desde C++23) para falhas esperadas (ex.: arquivo de histórico ausente, mapa corrompido).
+- Use `std::optional` ou `std::expected` (padrão desde C++23) para falhas esperadas (ex.: arquivo de histórico ausente, mapa corrompido).
 
 ### 6.5 Constants vs Magic Numbers
 
@@ -428,7 +428,7 @@ if (vertices.size() < MIN_VERTICES_POLIGONO) return;
 
 ### 6.7 DRY  -  Don't Repeat Yourself
 
-**Regra de Tres:** Na **primeira** ocorrencia, escreva. Na **segunda**, registre a repeticao. Na **terceira**, extraia.
+**Regra de Três:** Na **primeira** ocorrência, escreva. Na **segunda**, registre a repetição. Na **terceira**, extraia.
 
 ```cpp
 // 1a e 2a ocorrencias: duplicação aceitavel (WET: Write Everything Twice)
@@ -442,17 +442,17 @@ bool validarDimensaoCelula(int valor, int minimo, int maximo) {
 }
 ```
 
-**Duplicacao real vs. coincidência:**
+**Duplicação real vs. coincidência:**
 
-| Tipo | Definicao | Regra |
+| Tipo | Definição | Regra |
 |------|-----------|-------|
-| **Duplicacao real** | Mesmo conceito, mesma razão de mudar | MUST extrair |
-| **Coincidencia** | Parece similar hoje; divergira amanha | MUST NOT unificar |
+| **Duplicação real** | Mesmo conceito, mesma razão de mudar | MUST extrair |
+| **Coincidência** | Parece similar hoje; divergirá amanha | MUST NOT unificar |
 
 **Rules (RFC 2119):**
 
 - MUST name the *common reason to change* when extracting: similarity in code alone is insufficient justification.
-- MUST NOT unify logic with distinct meanings even if syntactically identical (ex.: validar largura de celula e validar numero de abas abertas são coincidência, não duplicação, ainda que ambos sejam "int dentro de faixa").
+- MUST NOT unify logic with distinct meanings even if syntactically identical (ex.: validar largura de célula e validar número de abas abertas são coincidência, não duplicação, ainda que ambos sejam "int dentro de faixa").
 - SHOULD prefer WET over a premature abstraction that fits neither caller.
 - MUST NOT create generic helpers to avoid two similar lines; three real occurrences are required.
 - MAY tolerate duplication in tests when each test independently documents a distinct behavior.
@@ -465,49 +465,49 @@ Este editor não desenha nada diretamente (L-01, L-12): toda apresentação pass
 
 ### 7.1 Responsiveness
 
-- MUST NEVER bloquear a thread principal com I/O ou computacao pesada (ex.: repartição de polígono em lote, leitura de arquivo grande).
-- Operacoes que passem de 100ms MUST mostrar indicacao de progresso (se o GlintFx expuser o recurso; senao, registrar a necessidade no bus: L-01).
+- MUST NEVER bloquear a thread principal com I/O ou computação pesada (ex.: repartição de polígono em lote, leitura de arquivo grande).
+- Operações que passem de 100ms MUST mostrar indicação de progresso (se o GlintFx expuser o recurso; senão, registrar a necessidade no bus: L-01).
 
 ### 7.2 Feedback
 
 - Every user action MUST produce visible feedback within 200ms.
 - Error messages MUST be human-readable, not stack traces or error codes.
-- Estados de sucesso/falha MUST ser distinguiveis por mais de uma cor (icone ou texto também).
+- Estados de sucesso/falha MUST ser distinguíveis por mais de uma cor (ícone ou texto também).
 
 ### 7.3 Acessibilidade
 
-- Elementos interativos MUST ser alcancaveis via teclado, quando a API do GlintFx expuser foco/navegacao por teclado.
+- Elementos interativos MUST ser alcançáveis via teclado, quando a API do GlintFx expuser foco/navegação por teclado.
 - Contraste de texto SHOULD seguir WCAG AA (>= 4.5:1 texto normal, >= 3:1 texto grande) como referência de design, ainda que o tema seja o do GlintFx, não nosso.
-- **Se o GlintFx não expuser um destes recursos hoje, a saida e registrar a necessidade pelo bus (L-01), nunca implementar um substituto paralelo.**
+- **Se o GlintFx não expuser um destes recursos hoje, a saída é registrar a necessidade pelo bus (L-01), nunca implementar um substituto paralelo.**
 
 ### 7.4 Consistency
 
-- MUST usar o sistema de tema do GlintFx para cor, espacamento e tipografia.
+- MUST usar o sistema de tema do GlintFx para cor, espaçamento e tipografia.
 - MUST NOT hardcode valor de cor na casca de plataforma: usar o token de tema exposto pela API deles.
 
 ### 7.5 Edição de Campos (painel de inspeção)
 
-- MUST validar entrada no momento da submissao, não silenciosamente ao perder o foco.
-- MUST mostrar erro de validação junto ao campo problematico.
+- MUST validar entrada no momento da submissão, não silenciosamente ao perder o foco.
+- MUST mostrar erro de validação junto ao campo problemático.
 - MUST NOT limpar o campo em caso de erro: preservar o que o autor digitou.
 
 ---
 
 ## 8. Segurança e Validação de Entrada
 
-Este projeto não tem rede, servidor, autenticacao, banco de dados nem múltiplos usuários: a superficie de ataque tradicional (OWASP Top 10, SQL injection, SSRF, CSRF) não existe aqui e foi removida desta secao (ver §14). O que resta e hygiene geral e validação de entrada de arquivo/usuario.
+Este projeto não tem rede, servidor, autenticação, banco de dados nem múltiplos usuários: a superfície de ataque tradicional (OWASP Top 10, SQL injection, SSRF, CSRF) não existe aqui e foi removida desta seção (ver §14). O que resta é higiene geral e validação de entrada de arquivo/usuário.
 
 ### 8.1 Ameaças relevantes para um editor local
 
-| Ameaca | Regra |
+| Ameaça | Regra |
 |---|---|
 | Arquivo de mapa corrompido ou malicioso (lido via API do GlintFx) | MUST tratar toda falha de leitura explicitamente; MUST NOT crashar; ver TESTES.md T14. |
-| Arquivo de histórico corrompido ou desatualizado (arquivo próprio, L-13) | MUST recusar reaplicar se a impressao digital do mapa não bater; MUST NOT tentar "adivinhar" o estado. |
-| Entrada de usuario em campo numerico/texto do inspetor | MUST validar faixa e tipo antes de aplicar ao domínio. |
+| Arquivo de histórico corrompido ou desatualizado (arquivo próprio, L-13) | MUST recusar reaplicar se a impressão digital do mapa não bater; MUST NOT tentar "adivinhar" o estado. |
+| Entrada de usuário em campo numérico/texto do inspetor | MUST validar faixa e tipo antes de aplicar ao domínio. |
 
 ### 8.2 Hardcoded Secrets  -  Zero Tolerance
 
-Este editor não fala com nenhuma API externa, mas a regra permanece por hygiene geral:
+Este editor não fala com nenhuma API externa, mas a regra permanece por higiene geral:
 
 ```cpp
 // INCORRECT: NEVER commit this
@@ -518,7 +518,7 @@ const std::string TOKEN = "sk-live-abc123xyz789";
 
 ### 8.3 Input Validation
 
-- MUST validate all data arriving from: leitura de arquivo (mapa via GlintFx, histórico próprio), entrada do usuario via UI.
+- MUST validate all data arriving from: leitura de arquivo (mapa via GlintFx, histórico próprio), entrada do usuário via UI.
 - MUST NOT trust data from any external source, incluindo arquivos gravados pelo próprio editor em versão anterior.
 - MUST constrain string lengths, numeric ranges, and allowed characters at entry points.
 
@@ -536,12 +536,12 @@ const std::string TOKEN = "sk-live-abc123xyz789";
 ### 9.2 Memória
 
 - MUST release resources when they go out of scope (RAII).
-- MUST NOT hold large objects in memory indefinitely: histórico ilimitado em memória e aceitavel apenas porque e persistido (L-13); vazamento de objeto de domínio não e.
+- MUST NOT hold large objects in memory indefinitely: histórico ilimitado em memória é aceitável apenas porque é persistido (L-13); vazamento de objeto de domínio não é.
 - Recursos do GlintFx MUST ser liberados conforme o contrato de vida da API deles, nunca gerenciados por conta própria (L-01).
 
 ### 9.3 Desenho
 
-- A casca de plataforma MUST NOT fazer calculo geométrico pesado dentro do laco de desenho por quadro: repartição de polígono côncavo (L-03) e operações similares MUST ser calculadas uma vez, no momento da edição/gravacao, e cacheadas.
+- A casca de plataforma MUST NOT fazer calculo geométrico pesado dentro do laco de desenho por quadro: repartição de polígono côncavo (L-03) e operações similares MUST ser calculadas uma vez, no momento da edição/gravação, e cacheadas.
 - Toda chamada a API de desenho do GlintFx acontece na casca; domínio e aplicação nunca desenham (§5).
 
 ---
@@ -583,7 +583,7 @@ git commit -m "fix stuff"
 git commit -m "WIP"
 ```
 
-**Convencao deste projeto:** ao fechar ou avancar um item do `TODO.md`, citar o ID (ex.: `M1.3`) no corpo/footer do commit e tocar a coluna `Status` no mesmo commit (implementação entregue -> `Pendente verificação`, nunca aprovado direto).
+**Convenção deste projeto:** ao fechar ou avançar um item do `TODO.md`, citar o ID (ex.: `M1.3`) no corpo/footer do commit e tocar a coluna `Status` no mesmo commit (implementação entregue -> `Pendente verificação`, nunca aprovado direto).
 
 ### 10.3 Branch Naming
 
@@ -614,8 +614,8 @@ test/módulo-testado
 - MUST NOT amend published commits (use a new commit instead).
 - MUST NOT use `--no-verify` to skip hooks unless explicitly instructed.
 - MUST NOT batch unrelated changes into one commit.
-- MUST NOT commit generated build artifacts (`build/`, `CMakeFiles/`, binarios).
-- MUST NOT push or merge em `main` sem autorizacao explícita do lider (L-05/L-06).
+- MUST NOT commit generated build artifacts (`build/`, `CMakeFiles/`, binários).
+- MUST NOT push or merge em `main` sem autorização explícita do líder (L-05/L-06).
 
 ### 10.6 Pull Request Description Template
 
@@ -627,8 +627,8 @@ test/módulo-testado
 [One sentence: why it was needed]
 
 ## Checklist
-- [ ] Build passes nos alvos aplicaveis (ver TESTES.md T15)
-- [ ] Tests pass (referenciar secoes de TESTES.md rodadas)
+- [ ] Build passes nos alvos aplicáveis (ver TESTES.md T15)
+- [ ] Tests pass (referenciar seções de TESTES.md rodadas)
 - [ ] No new warnings
 - [ ] No secrets committed
 ```
@@ -639,9 +639,9 @@ test/módulo-testado
 
 > Full procedures, commands, and tools: **[TESTES.md](TESTES.md)**. Checklists de auditoria: **[AUDITORIAS.md](AUDITORIAS.md)**.
 
-**Lembrete permanente (L-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos e falha, não sucesso.
+**Lembrete permanente (L-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso.
 
-**Lembrete permanente (L-06):** implementador, revisor e orquestrador são três agentes diferentes; auditoria e feita por C-level em modelo fable, execucao por agents operacionais em modelo sonnet; implementador nunca audita o próprio trabalho.
+**Lembrete permanente (L-06):** implementador, revisor e orquestrador são três agentes diferentes; auditoria e feita por C-level em modelo fable, execução por agents operacionais em modelo sonnet; implementador nunca audita o próprio trabalho.
 
 ### When to Run Tests
 
@@ -671,15 +671,15 @@ test/módulo-testado
 
 ### Post-Release Cleanup Prompt (MANDATORY)
 
-Apos uma release ser efetivamente lancada (tag publicada + artefatos anexados + CI verde no remoto), o agente DEVE perguntar ao usuario se deseja apagar pastas desnecessarias geradas durante o ciclo de build/test (`build/`, `build-*/`, `CMakeFiles/`, `_deps/`, `Testing/`).
+Após uma release ser efetivamente lançada (tag publicada + artefatos anexados + CI verde no remoto), o agente DEVE perguntar ao usuário se deseja apagar pastas desnecessárias geradas durante o ciclo de build/test (`build/`, `build-*/`, `CMakeFiles/`, `_deps/`, `Testing/`).
 
-**Regras invioláveis:** nunca apagar pasta versionada; sempre listar (`du -sh`) antes, confirmar depois; excluir caminhos rastreados pelo git ou com mudanças não commitadas antes de propor a remocao.
+**Regras invioláveis:** nunca apagar pasta versionada; sempre listar (`du -sh`) antes, confirmar depois; excluir caminhos rastreados pelo git ou com mudanças não commitadas antes de propor a remoção.
 
 ---
 
 ## 12. C++23 e a Fronteira com o GlintFx
 
-**Versão:** C++23. **Exceção deliberada ao padrao global do vault** (que e C++/Qt23): este projeto usa C++23 sem Qt, por ordem direta do lider (L-01). Nenhum arquivo deste repositorio inclui header de Qt, RmlUi, SDL ou GLFW.
+**Versão:** C++23. **Exceção deliberada ao padrão global do vault** (que é C++/Qt23): este projeto usa C++23 sem Qt, por ordem direta do líder (L-01). Nenhum arquivo deste repositório inclui header de Qt, RmlUi, SDL ou GLFW.
 
 **Única dependência externa:** GlintFx, incluído apenas na casca de plataforma (§5, L-12). Se uma funcionalidade precisar de algo que a API pública do GlintFx não oferece, a resposta e registrar a necessidade pelo bus e esperar: nunca inventar um contorno (L-01).
 
@@ -712,7 +712,7 @@ gets()         // buffer overflow risk
 strcpy/strcat  // use std::string
 ```
 
-**Concorrencia:** se uma tarefa exigir thread própria (ex.: I/O de arquivo grande sem travar a UI), usar `std::jthread`/`std::stop_token` (C++23). MUST NOT introduzir concorrencia especulativa: só onde há necessidade concreta e presente (YAGNI, §13.2).
+**Concorrência:** se uma tarefa exigir thread própria (ex.: I/O de arquivo grande sem travar a UI), usar `std::jthread`/`std::stop_token` (C++23). MUST NOT introduzir concorrência especulativa: só onde há necessidade concreta e presente (YAGNI, §13.2).
 
 ---
 
@@ -734,7 +734,7 @@ strcpy/strcat  // use std::string
 
 ### 13.3 Fail Fast
 
-- MUST validate all external input at the entry point (arquivo, entrada de usuario).
+- MUST validate all external input at the entry point (arquivo, entrada de usuário).
 - MUST NOT silently coerce invalid input into a valid-looking value.
 - MUST crash or return error immediately when an invariant is violated: never defer.
 - MUST include the violated condition and the actual value in the error message.
@@ -796,7 +796,7 @@ strcpy/strcat  // use std::string
 
 ## 14. Fora de Escopo  -  o que foi removido e por que
 
-Este contrato e uma poda da versão genérica do vault para um editor de mapa desktop, local, de usuario único, sem rede, sem banco de dados, escrito em C++23 sem Qt sobre o GlintFx. Foram removidas por completo, por não se aplicarem: regras especificas de Qt/widgets, acessibilidade de navegador, OWASP Top 10 e SQL injection, API Design REST, Logging estruturado/observability de servidor, e LGPD (não há dado pessoal processado). O detalhe do que saiu de cada secao, e por que, está no relatório de poda do tech-lead (histórico de sessão/commit desta mudança), não duplicado aqui para não desatualizar em silencio.
+Este contrato é uma poda da versão genérica do vault para um editor de mapa desktop, local, de usuário único, sem rede, sem banco de dados, escrito em C++23 sem Qt sobre o GlintFx. Foram removidas por completo, por não se aplicarem: regras específicas de Qt/widgets, acessibilidade de navegador, OWASP Top 10 e SQL injection, API Design REST, Logging estruturado/observability de servidor, e LGPD (não há dado pessoal processado). O detalhe do que saiu de cada seção, e por que, está no relatório de poda do tech-lead (histórico de sessão/commit desta mudança), não duplicado aqui para não desatualizar em silêncio.
 
 ---
 *This contract is the authoritative reference for all code written in this project, subordinado a [`GODS_LAWS.md`](GODS_LAWS.md).*

@@ -2,7 +2,7 @@
 
 > Checklists operacionais de auditoria para este editor de mapa desktop, local, C++23 sem Qt,
 > sobre o GlintFx. Cada item tem prioridade **CRÍTICO / IMPORTANTE / COSMÉTICO** (ver
-> [TESTES.md, Classificacao de Problemas](TESTES.md#classificacao-de-problemas)).
+> [TESTES.md, Classificação de Problemas](TESTES.md#classificação-de-problemas)).
 > **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este guia em qualquer conflito.
 
 **Lembrete permanente (L-06, verbatim do líder):** "main apenas orquestra, interage comigo e
@@ -34,7 +34,7 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 - [ ] Nenhum arquivo de domínio inclui header de aplicação, casca de plataforma, GlintFx ou do SO.
 - [ ] Nenhum arquivo de aplicação inclui header de GlintFx ou do SO.
 - [ ] Só a casca de plataforma inclui header de GlintFx, e o chama direto, sem interface própria.
-- [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (L-09; ver TESTES.md secao 0).
+- [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (L-09; ver TESTES.md seção 0).
 - [ ] Nenhuma dependência circular entre módulos.
 - [ ] Nenhum "serviço-deus" na aplicação com dezenas de casos de uso; um caso de uso por operação de edição.
 
@@ -69,7 +69,7 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 - [ ] Seleção e câmera ficam fora do histórico (são estado de sessão, não de conteúdo).
 - [ ] O arquivo de histórico grava uma impressão digital do mapa e recusa reaplicar se o mapa mudou por fora.
 - [ ] Vistas assinam os sinais do histórico e não guardam cópia própria do estado (nenhum caminho de atualização paralelo).
-- [ ] Com várias abas abertas (L-14): quando um passo de desfazer/refazer afeta um mapa que não e o da aba ativa, o editor troca a aba automaticamente para o mapa afetado.
+- [ ] Com várias abas abertas (L-14): quando um passo de desfazer/refazer afeta um mapa que não é o da aba ativa, o editor troca a aba automaticamente para o mapa afetado.
 
 ---
 
@@ -113,7 +113,7 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 - [ ] Arquivo de mapa corrompido não crasha o editor: falha explícita, tratada, reportada.
 - [ ] Arquivo de histórico corrompido ou desatualizado não crasha o editor: recusa reaplicar, não adivinha.
 - [ ] Entrada de usuário em campo do inspetor é validada antes de chegar ao domínio.
-- [ ] Nenhuma credencial ou token hardcoded (baixa probabilidade neste projeto, mantido por hygiene, ver CONTRACT.md §8.2).
+- [ ] Nenhuma credencial ou token hardcoded (baixa probabilidade neste projeto, mantido por higiene, ver CONTRACT.md §8.2).
 
 ---
 
