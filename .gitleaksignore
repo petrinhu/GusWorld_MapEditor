@@ -14,6 +14,12 @@
 # SHA do commit que introduziu a linha pela primeira vez no historico:
 #
 #   b205d01b490fbea0366f2c9ba3d9e46263a316e4:CONTRACT.md:generic-api-key:570
+#   52220da53f14675baf7f1d89bc6ef8f12d525cca:CONTRACT.md:generic-api-key:514
+#
+# Sao DOIS porque a mesma linha aparece em dois commits do historico: o
+# que criou o manual generico, e o que o podou e moveu a linha de 570
+# para 514. A fragilidade prevista abaixo se materializou na mesma noite,
+# horas depois de ser escrita, e a mitigacao documentada funcionou.
 #
 # ATENCAO -- fragilidade conhecida e assumida: se o historico for
 # reescrito (rebase, squash, amend) ANTES do push, esse SHA muda e o CI
@@ -26,3 +32,4 @@
 # e substituir a linha abaixo pelo valor impresso. Nao e um segredo novo:
 # e sempre a mesma linha do CONTRACT.md, so o commit-de-origem muda.
 b205d01b490fbea0366f2c9ba3d9e46263a316e4:CONTRACT.md:generic-api-key:570
+52220da53f14675baf7f1d89bc6ef8f12d525cca:CONTRACT.md:generic-api-key:514
