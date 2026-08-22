@@ -57,6 +57,8 @@ Toda interação com janela, entrada, desenho, som e recurso passa **exclusivame
 
 **Aplicação:** é proibido criar formato concorrente, camada de tradução, ou "formato do editor que depois converte". Se o editor precisa gravar algo que o formato deles não carrega (histórico, nota de autor, camada de trabalho), isso vai em **arquivo ao lado**, nunca dentro do formato de mapa — regra declarada por eles e aceita aqui.
 
+**Consequência de fronteira que caiu no nosso colo (22/08/2026):** o formato aceita só forma simples. **Repartir polígono côncavo em pedaços convexos na hora de salvar é trabalho do editor**, não da lib — decisão do líder, com a justificativa de que quem tem interface é quem tem como fazer isso direito. Repartição convexa é classe de código que produz defeito silencioso (vértice colinear, orientação invertida, polígono degenerado): nasce com teste de ida e volta e com verificação de que cada pedaço gerado é de fato convexo.
+
 ## L-04
 
 **Data:** 21/08/2026, via `AskUserQuestion`.
@@ -145,5 +147,5 @@ Quatro regras que vêm com a lei:
 
 1. **Uma intenção é um passo de desfazer.** Arrastar o pincel por quarenta células é **um** passo, agrupado por **transação explícita** que abre no início do gesto e fecha no fim — não por heurística de "parece a mesma ação".
 2. **A seleção fica FORA do histórico.** Desfazer só volta mudança de conteúdo do mapa; seleção e câmera são estado de sessão. Decisão do líder, apoiada na reclamação pública contra o comportamento oposto no Figma.
-3. **O histórico PERSISTE entre sessões**, decisão do líder contra o padrão universal da indústria (Krita, Photoshop e Qt não persistem). Ele mora em **arquivo do editor ao lado do mapa** (L-03), nunca dentro do formato do GlintFx. **Três consequências assumidas:** cada comando precisa de serialização versionada; o arquivo de histórico grava uma impressão digital do mapa e **recusa reaplicar** se o mapa mudou por fora; e tudo isso **depende do identificador estável de objeto**, que é decisão do GlintFx — sem ele, histórico persistente é impossível, não difícil.
+3. **O histórico PERSISTE entre sessões**, decisão do líder contra o padrão universal da indústria (Krita, Photoshop e Qt não persistem). Ele mora em **arquivo do editor ao lado do mapa** (L-03), nunca dentro do formato do GlintFx. **Três consequências assumidas:** cada comando precisa de serialização versionada; o arquivo de histórico grava uma impressão digital do mapa e **recusa reaplicar** se o mapa mudou por fora; e tudo isso depende do identificador estável de objeto. **Dependência RESOLVIDA em 22/08/2026:** o líder decidiu, do lado do GlintFx, que cada objeto do mapa carrega um **UUID gravado no arquivo, que não é a posição na lista serializada e nunca é reutilizado depois que o objeto é apagado**. O histórico persistente sobrevive e é seguro desenhar em cima dele.
 4. **As vistas assinam os sinais do histórico e nunca guardam cópia própria do estado.** Painel com caminho de atualização paralelo diverge do histórico exatamente no caso de seleção múltipla — defeito documentado por quem já construiu editor de nível.
