@@ -108,6 +108,12 @@ O rigor de teste, portão de CI e auditoria é **o mesmo do GlintFx**, adaptado 
 
 **Aplicação, com um defeito real já herdado deles:** um portão que **varre zero arquivos e imprime verde** passa nos dois autotestes de praxe (o positivo, que planta violação, e o negativo, que prova que entrada limpa sai zero), porque ambos rodam sobre arquivos que existem. "Olhei e está limpo" e "não olhei nada" produzem a mesma saída. **Todo portão nosso declara quantos arquivos varreu, e sair com zero varridos é falha, não sucesso.**
 
+**Refinamento decidido pelo líder em 22/08/2026, com a tensão à vista.** A regra acima, aplicada ao pé da letra num projeto que ainda não tem código, deixaria o CI **vermelho por meses** — e vermelho crônico treina todo mundo a ignorar vermelho, que é a mesma doença por outro caminho. A distinção que resolve está entre duas frases: *"olhei e está limpo"* quando não se olhou nada é **mentira**, e foi ela que derrubou o portão do GlintFx; *"não há nada para olhar ainda, e eu declaro isso"* é **verdade**.
+
+Portanto: **enquanto NENHUMA das pastas de camada existir** (`domain`, `application`, `platform`), o portão **sai zero**, declarando que varreu zero e que não há alvo — e é **proibido** imprimir "OK", "limpo" ou "nenhuma violação" nesse caminho, porque isso seria afirmar verificação que não houve. **No instante em que QUALQUER uma das três pastas passar a existir, varrer zero volta a ser FALHA**, e a trava fecha sozinha, sem ninguém precisar virar uma chave.
+
+**A trava não vale sem prova:** o autoteste de cada portão exercita as **duas** direções (sem pasta e zero arquivos sai zero; com pasta existindo, ainda que vazia, e zero arquivos sai falha). Guarda não exercitada é onde mora o defeito silencioso, e este guarda nasceu justamente para cobrir um buraco que dois controles não pegavam.
+
 ## L-10
 
 **Data:** 21/08/2026. **Verbatim:** *"CI com runners Fedora 44 (principal), Ubuntu, Arch, CachyOs (original, não arch renomeado), windows"*.
