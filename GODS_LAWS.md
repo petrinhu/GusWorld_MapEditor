@@ -28,6 +28,7 @@
 | [L-11](#l-11) | procurar como o editor anterior fazia alguma coisa | O projeto é do zero. O editor anterior não é base nem referência |
 | [L-12](#l-12) | criar diretório, decidir onde um tipo mora, ou incluir header | Camadas horizontais finas; o GlintFx só na casca externa; regra fiscalizada por portão de CI |
 | [L-13](#l-13) | escrever qualquer operação de edição, ou mexer em histórico | Comando com pilha linear, transação por gesto, seleção fora, histórico persistido em arquivo próprio |
+| [L-14](#l-14) | decidir o que entra na primeira versão do editor | Seis tipos de volume, vários mapas em abas, uma camada de terreno mais objetos livres |
 
 ---
 
@@ -149,3 +150,30 @@ Quatro regras que vêm com a lei:
 2. **A seleção fica FORA do histórico.** Desfazer só volta mudança de conteúdo do mapa; seleção e câmera são estado de sessão. Decisão do líder, apoiada na reclamação pública contra o comportamento oposto no Figma.
 3. **O histórico PERSISTE entre sessões**, decisão do líder contra o padrão universal da indústria (Krita, Photoshop e Qt não persistem). Ele mora em **arquivo do editor ao lado do mapa** (L-03), nunca dentro do formato do GlintFx. **Três consequências assumidas:** cada comando precisa de serialização versionada; o arquivo de histórico grava uma impressão digital do mapa e **recusa reaplicar** se o mapa mudou por fora; e tudo isso depende do identificador estável de objeto. **Dependência RESOLVIDA em 22/08/2026:** o líder decidiu, do lado do GlintFx, que cada objeto do mapa carrega um **UUID gravado no arquivo, que não é a posição na lista serializada e nunca é reutilizado depois que o objeto é apagado**. O histórico persistente sobrevive e é seguro desenhar em cima dele.
 4. **As vistas assinam os sinais do histórico e nunca guardam cópia própria do estado.** Painel com caminho de atualização paralelo diverge do histórico exatamente no caso de seleção múltipla — defeito documentado por quem já construiu editor de nível.
+
+## L-14
+
+**Data:** 22/08/2026, via `AskUserQuestion`. Fecha o escopo funcional da primeira versão, dentro do escopo geral da L-04 (só mapa).
+
+**1. Seis tipos de volume de colisão**, e só estes, escolhidos por serem os que um mapa em grade visto de cima realmente usa:
+
+| Tipo | O que faz |
+|---|---|
+| Sólido | Bloqueia movimento |
+| Gatilho de ação | Avisa sem bloquear |
+| Zona de dano | Aplica dano por permanência ou contato |
+| Zona de terreno modificador | Altera movimento ou estado (água, lama, gelo) |
+| Área de interação | Habilita ação contextual, tipicamente maior que o desenho |
+| Obstáculo de navegação | Bloqueia a busca de caminho da IA, independente de bloquear movimento |
+
+**Ficaram de fora, e o motivo importa:** hitbox e hurtbox de combate (só fazem sentido em jogo de luta), zona de câmera e zona de áudio. Não são proibidos para sempre; estão fora **desta** versão.
+
+**Dois dos seis dependem de decisão pendente do CTO do GlintFx** — o bit de "bloqueia ou só notifica", que sustenta o gatilho de ação, e a separação entre bloquear movimento e bloquear busca de caminho, que sustenta o obstáculo de navegação. Fato registrado, não cobrança: quem classifica fila é quem recebe.
+
+**2. Vários mapas abertos ao mesmo tempo, em abas**, cada um com câmera própria. A razão é concreta: o mundo do GusWorld tem treze áreas mais interiores e dungeons ligadas por teleporte, e ligar um portão ao destino em outro mapa exige ver os dois lados. Com um mapa por vez, o autor edita de memória.
+
+> **Consequência ainda em aberto, registrada para não ser decidida por acidente:** com vários documentos abertos e uma operação que pode tocar dois mapas ao mesmo tempo (ligar um teleporte ao destino no outro), falta decidir se o histórico é **um por aba** ou **um só, compartilhado**. Nenhum agente decide isso; vai ao líder por `AskUserQuestion` (L-05).
+
+**3. Uma camada de terreno pintada na grade, mais objetos posicionados livremente por cima** em coordenada contínua. **Não** há camadas de pintura sobrepostas nesta versão. Escolhido também por ser exatamente o modelo que a L-30 do GlintFx já descreve, sem depender de decisão nova deles.
+
+**Aplicação:** propor camada de pintura sobreposta, tipo de volume fora dos seis, ou edição de conteúdo que não seja mapa é violação desta lei somada à L-04, e vira pergunta ao líder, nunca decisão de agente.
