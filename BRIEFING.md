@@ -72,9 +72,9 @@ Camadas, átomos com POCO próprio, proibido monolito.
 
 | Item original | O que foi pedido | Estado | Onde vive a decisão |
 |---|---|---|---|
-| 3 | "vamos discutir as camadas: hexagonal? espinha? Sugira. PROIBIDO monolitos. OS itens/cartas e demais elementos do jogo devem ser atomos com POCO proprio!" | Lei (L-12), com uma ambiguidade não resolvida por mim | `GODS_LAWS.md` L-12 |
+| 3 | "vamos discutir as camadas: hexagonal? espinha? Sugira. PROIBIDO monolitos. OS itens/cartas e demais elementos do jogo devem ser atomos com POCO proprio!" | Lei (L-12), ambiguidade resolvida pelo líder em 22/08/2026 | `GODS_LAWS.md` L-12 |
 
-**Ambiguidade registrada, não resolvida:** o item original cita "itens/cartas e demais elementos do jogo" como exemplo do que deveria ser átomo com POCO próprio. A lei L-04, decidida depois, tirou carta, item e NPC do escopo deste editor (só mapa é editado aqui). O princípio arquitetural de átomos com POCO próprio permanece de pé e virou lei (L-12), mas o exemplo original (itens/cartas) não é mais um objeto que este editor edita. Não decidi por conta própria se isso invalida a frase ou se ela só deixou de se aplicar a este repositório; registro a divergência para o líder resolver se quiser.
+**Ambiguidade RESOLVIDA pelo líder em 22/08/2026.** Verbatim: *"a regra de atomicidade aqui vale para o que o editor de fato modela: célula, objeto, volume, comando"*. O item original citava "itens/cartas e demais elementos do jogo" como exemplo, e a L-04, decidida depois, tirou carta, item e NPC do escopo deste editor. Não havia contradição: o princípio não mudou, mudou a lista de coisas a que ele se aplica neste repositório. Carta e item seguem sendo átomos com POCO próprio onde são modelados, que é o GusWorld.
 
 ## 5. Distribuição
 

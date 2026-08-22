@@ -138,6 +138,10 @@ O código deste projeto **nasce do zero**. O editor anterior — que chegou a te
 
 **"Átomos com POCO próprio"** (ordem do líder) se materializa no domínio e nos casos de uso, onde se paga sozinho. **Não** se aplica à casca de plataforma: exigir um átomo por campo de formulário num editor de usuário único é over-engineering. Átomo é sobre tamanho e responsabilidade, não sobre indireção — um POCO concreto de vinte linhas, sem interface nenhuma, é um átomo perfeito.
 
+**Ambiguidade RESOLVIDA em 22/08/2026 pelo líder. Verbatim:** *"a regra de atomicidade aqui vale para o que o editor de fato modela: célula, objeto, volume, comando"*.
+
+O briefing original citava *"os itens/cartas e demais elementos do jogo"* como exemplo do que deveria ser átomo com POCO próprio, e a L-04 depois tirou carta, item e NPC do escopo. Não há contradição: **o princípio não mudou, mudou a lista de coisas a que ele se aplica.** Neste repositório os átomos são **célula, objeto, volume e comando**. Carta e item continuam sendo átomos com POCO próprio onde são modelados, que é o GusWorld, não aqui.
+
 ## L-13
 
 **Data:** 22/08/2026, via `AskUserQuestion`, sobre a ordem original *"quero undo e redo, com varios passos, veja na web como fazer essa sincronia"*.
