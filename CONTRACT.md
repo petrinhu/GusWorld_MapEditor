@@ -1,22 +1,11 @@
-# AI Coder Contract  -  Best Practices, Architecture & Standards
-
-> **Cópia canônica** na raiz do vault. Versão estável espelhada em [[Resources/Standards/CONTRACT]].
-
-## Referências cruzadas
-
-- Manuais irmãos: [[AGILE]] · [[TESTES]] · [[AUDITORIAS]] · [[DEPLOY_CHECKLIST]]
-- Hub: [[Standards]] · [[CLAUDE]]
-- Exemplos C++23/Qt: [[Projects/astrometrica]] · [[Projects/PokemonTCGViewer]] · [[Projects/transcritor]]
-- Exemplos Python: [[Projects/rag_maker]] · [[Projects/orcamento-pessoal]] · [[Projects/transcritor]]
-- Exemplos Web/PHP: [[Projects/site_consultorio]] · [[Projects/my_comp]]
-- Embedded/driver: [[Projects/ESP32]] · [[Projects/driver_brother_hl_l1222]]
-
----
+# AI Coder Contract  -  Best Practices, Architecture & Standards (gusworld_mapeditor)
 
 > **Audience:** AI coding agents (Claude, GPT, Gemini, Copilot, etc.)
-> **Purpose:** Mandatory reference before writing, modifying, or reviewing any code.
+> **Purpose:** Mandatory reference before writing, modifying, or reviewing any code neste projeto.
 > **Authority:** Rules use RFC 2119 keywords  -  MUST, MUST NOT, SHOULD, SHOULD NOT, MAY.
-> **Testing & Audit:** All testing, quality and audit procedures are defined in [TESTES.md](TESTES.md).
+> **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este contrato em qualquer conflito. Leia-o antes de agir; os gatilhos relevantes (L-01, L-04, L-05, L-06, L-09, L-10, L-12, L-13, L-14) estão citados abaixo nos pontos onde se aplicam.
+> **Testing & Audit:** All testing, quality and audit procedures are defined in [TESTES.md](TESTES.md). Checklists de auditoria em [AUDITORIAS.md](AUDITORIAS.md).
+> **Escopo:** este é um editor de mapa desktop, local, de usuário único, construído em C++23 sobre o framework GlintFx (`../GlintFx` / `github.com/petrinhu/GlintFx`), sem rede, sem banco de dados, sem servidor. Seções da versão genérica deste contrato que pressupunham Qt, SQL, REST/HTTP ou frontend web foram removidas ou reescritas; ver seção 14 para o detalhe.
 
 ---
 
@@ -25,20 +14,17 @@
 1. [How to Use This Document](#1-how-to-use-this-document)
 2. [OOP Fundamentals](#2-oop-fundamentals)
 3. [SOLID Principles](#3-solid-principles)
-4. [Design Patterns  -  Complete Reference](#4-design-patterns--complete-reference)
-5. [Architecture Layers](#5-architecture-layers)
+4. [Design Patterns  -  Reference](#4-design-patterns--reference)
+5. [Camadas de Arquitetura (L-12)](#5-camadas-de-arquitetura-l-12)
 6. [Clean Code Rules](#6-clean-code-rules)
-7. [UI/UX Guidelines](#7-uiux-guidelines)
-8. [Security](#8-security)
+7. [UI/UX Guidelines (via GlintFx)](#7-uiux-guidelines-via-glintfx)
+8. [Segurança e Validação de Entrada](#8-segurança-e-validação-de-entrada)
 9. [Performance](#9-performance)
 10. [Git Process for AI Coders](#10-git-process-for-ai-coders)
 11. [Testing & Audit Mandate](#11-testing--audit-mandate)
-12. [Language-Specific Rules](#12-language-specific-rules)
-13. [Framework-Specific Rules](#13-framework-specific-rules)
-14. [Universal Engineering Principles](#14-universal-engineering-principles)
-15. [API Design  -  REST](#15-api-design--rest)
-16. [Logging & Observability](#16-logging--observability)
-17. [LGPD Compliance Baseline](#17-lgpd-compliance-baseline)
+12. [C++23 e a Fronteira com o GlintFx](#12-c23-e-a-fronteira-com-o-glintfx)
+13. [Universal Engineering Principles](#13-universal-engineering-principles)
+14. [Fora de Escopo  -  o que foi removido e por quê](#14-fora-de-escopo--o-que-foi-removido-e-por-quê)
 
 ---
 
@@ -46,10 +32,11 @@
 
 **Before writing any code, the AI coder MUST:**
 
-1. Read this document fully for the first task in a project.
-2. Identify the target language and framework  -  apply sections 12 and 13 accordingly.
-3. Identify the architecture layer being modified  -  apply section 5 rules.
-4. After completing any task: run the checklist in section 11.
+1. Read [`GODS_LAWS.md`](GODS_LAWS.md) e conferir se algum gatilho casa com a tarefa (protocolo descrito lá).
+2. Read this document fully for the first task in a project.
+3. Identify the architecture layer being modified  -  Domínio, Aplicação ou Casca de Plataforma (seção 5).
+4. Apply section 12 (C++23 sem Qt, fronteira com o GlintFx).
+5. After completing any task: run the checklist in section 11.
 
 **Decision flow:**
 
@@ -57,22 +44,22 @@
 New task received
       │
       ▼
-Read existing code before modifying ──► Understand context fully
+Ler GODS_LAWS.md (gatilhos) ──► Ler código existente ──► Entender o contexto
       │
       ▼
-Identify layer (Frontend / Middleware / Backend)
+Identificar camada (Domínio / Aplicação / Casca de Plataforma)
       │
       ▼
-Apply SOLID + Design Pattern rules
+Aplicar SOLID + Design Patterns + regra de dependência (§5)
       │
       ▼
-Write code → Build → No errors/warnings?
+Escrever código → Build → Sem erros/warnings?
       │
       ▼
-Run applicable tests from TESTES.md
+Rodar os testes aplicáveis de TESTES.md
       │
       ▼
-Commit with Conventional Commits format
+Commit em Conventional Commits, citando o ID do TODO.md
       │
       ▼
 Done
@@ -85,6 +72,7 @@ Done
 - Skip the build step before committing.
 - Use deprecated APIs, unsafe functions, or patterns marked ANTI-PATTERN below.
 - Ignore compiler warnings.
+- Incluir header de RmlUi, SDL, GLFW, Qt ou qualquer outro terceiro, ou chamar o sistema operacional diretamente (L-01).
 
 ---
 
@@ -98,24 +86,24 @@ Done
 
 ```cpp
 // CORRECT
-class GerenciadorCache {
+class GerenciadorHistorico {
 public:
-    bool salvar(const QString& chave, const QByteArray& dados);
-    std::optional<QByteArray> recuperar(const QString& chave) const;
+    bool registrar(const std::string& id_comando, std::vector<std::byte> dados);
+    std::optional<std::vector<std::byte>> recuperar(const std::string& id_comando) const;
 private:
-    QHash<QString, QByteArray> m_cache;  // hidden
-    int m_tamanho_max{1000};             // hidden
+    std::unordered_map<std::string, std::vector<std::byte>> m_registro;  // hidden
+    std::size_t m_tamanho_max{1000};                                     // hidden
 };
 
 // INCORRECT  -  exposes internals
-class GerenciadorCache {
+class GerenciadorHistorico {
 public:
-    QHash<QString, QByteArray> cache;   // direct access = violation
+    std::unordered_map<std::string, std::vector<std::byte>> registro;   // direct access = violation
 };
 ```
 
 **Abstraction**
-- MUST define interfaces (pure abstract classes) for every cross-layer boundary.
+- MUST define interfaces (pure abstract classes) apenas onde há polimorfismo real e presente (não especulativo  -  ver YAGNI §13.2). Ver §5 para a exceção deliberada da fronteira com o GlintFx, que **não** usa interface.
 - MUST NOT let callers depend on implementation details.
 
 **Inheritance**
@@ -125,14 +113,14 @@ public:
 
 **Polymorphism**
 - MUST use virtual dispatch via interfaces, not type-checking (no `dynamic_cast` chains).
-- MUST mark overrides with `override` keyword (C++) or `@Override` (Java/Kotlin).
+- MUST mark overrides with `override`.
 
 ### 2.2 Class Design Rules
 
 - One class = one clearly stated responsibility.
 - Class size: SHOULD NOT exceed 300 lines. If it does, decompose.
-- Constructor MUST NOT perform heavy work (I/O, network, database). Use an `initialize()` method.
-- MUST implement the Rule of Five/Zero (C++) or equivalent resource management.
+- Constructor MUST NOT perform heavy work (I/O, cálculo pesado). Use an `inicializar()` method.
+- MUST implement the Rule of Five/Zero or equivalent resource management.
 
 ---
 
@@ -141,13 +129,13 @@ public:
 ### S  -  Single Responsibility Principle
 > A class should have only one reason to change.
 
-- Each class owns one concept: parsing, rendering, fetching, caching, validating  -  never all at once.
+- Each class owns one concept: parsear, desenhar (via GlintFx), aplicar um comando, validar  -  never all at once.
 - Test: if you describe the class and use the word "and", split it.
 
 ```
-CORRECT:  RepositorioProdutos  →  only fetches items
-CORRECT:  CacheProdutos        →  only caches items
-INCORRECT: RepositorioProdutos →  fetches AND caches AND validates
+CORRECT:  ComandoMoverObjeto      ->  só aplica/desfaz um movimento
+CORRECT:  RepositorioHistorico    ->  só persiste/le a pilha de comandos
+INCORRECT: ComandoMoverObjeto     ->  aplica movimento E persiste E valida geometria
 ```
 
 ### O  -  Open/Closed Principle
@@ -157,14 +145,15 @@ INCORRECT: RepositorioProdutos →  fetches AND caches AND validates
 - Use Strategy, Decorator, or plugin patterns to extend without modifying.
 
 ```cpp
-// CORRECT  -  add new API source without touching existing code
-class IRepositorioProdutos {
+// CORRECT  -  novo tipo de comando sem tocar no código existente
+class IComando {
 public:
-    virtual QVector<Produto> buscar(const QString& nome) = 0;
-    virtual ~IRepositorioProdutos() = default;
+    virtual void aplicar() = 0;
+    virtual void desfazer() = 0;
+    virtual ~IComando() = default;
 };
-class RepositorioApiA  : public IRepositorioProdutos { ... };
-class RepositorioApiB : public IRepositorioProdutos { ... };  // extension, not modification
+class ComandoMoverObjeto : public IComando { /* ... */ };
+class ComandoPintarCelula : public IComando { /* ... */ };  // extension, not modification
 ```
 
 ### L  -  Liskov Substitution Principle
@@ -172,19 +161,19 @@ class RepositorioApiB : public IRepositorioProdutos { ... };  // extension, not 
 
 - An override MUST NOT weaken preconditions or strengthen postconditions.
 - An override MUST NOT throw exceptions the base does not declare.
-- MUST NOT override to do nothing or throw `NotImplementedException`.
+- MUST NOT override to do nothing or throw silently.
 
 ```cpp
-// INCORRECT  -  LSP violation: override does nothing
-class RepositorioNulo : public IRepositorioProdutos {
-    QVector<Produto> buscar(const QString&) override { return {}; } // silent failure
+// INCORRECT  -  viola LSP: override não faz nada, falha em silencio
+class ComandoNulo : public IComando {
+    void aplicar() override {}  // silent failure
 };
 
-// CORRECT  -  explicit null object that documents intent
-class RepositorioNulo : public IRepositorioProdutos {
-    QVector<Produto> buscar(const QString&) override {
-        qWarning() << "RepositorioNulo: operação não suportada";
-        return {};
+// CORRECT  -  objeto nulo explícito que documenta a intencao
+class ComandoNulo : public IComando {
+    void aplicar() override {
+        // usado apenas em teste; nunca deve chegar a pilha de histórico real
+        assert(false && "ComandoNulo não deve ser aplicado em produção");
     }
 };
 ```
@@ -193,100 +182,86 @@ class RepositorioNulo : public IRepositorioProdutos {
 > Clients should not depend on interfaces they do not use.
 
 - Split fat interfaces into role-specific ones.
-- Each interface SHOULD have ≤ 5 methods.
+- Each interface SHOULD have <= 5 methods.
 
 ```cpp
-// INCORRECT  -  one fat interface
-class IRepositorio {
-    virtual void salvar(Produto) = 0;
-    virtual Produto buscar(QString) = 0;
-    virtual void deletar(QString) = 0;
-    virtual QVector<Produto> listar() = 0;
-    virtual void exportarCSV() = 0;   // unrelated to repo
-    virtual void enviarEmail() = 0;   // completely unrelated
+// INCORRECT  -  uma interface gorda
+class IArmazenamento {
+    virtual void salvarMapa() = 0;
+    virtual void lerMapa() = 0;
+    virtual void salvarHistorico() = 0;
+    virtual void lerHistorico() = 0;
+    virtual void exportarRelatorio() = 0;   // não relacionado
 };
 
-// CORRECT  -  segregated
-class IRepositorioLeitura  { virtual Produto buscar(QString) = 0; ... };
-class IRepositorioEscrita  { virtual void salvar(Produto) = 0; ... };
-class IExportador          { virtual void exportarCSV() = 0; ... };
+// CORRECT  -  segregado
+class ILeitorHistorico  { virtual std::vector<ComandoSerializado> ler() = 0; };
+class IEscritorHistorico { virtual void escrever(const std::vector<ComandoSerializado>&) = 0; };
 ```
 
 ### D  -  Dependency Inversion Principle
 > Depend on abstractions, not concretions.
 
 - High-level modules MUST NOT import low-level modules directly.
-- Both MUST depend on interfaces.
 - Inject dependencies via constructor (preferred), setter, or factory.
+- **Exceção deliberada:** a casca de plataforma (§5) depende **direto** da API concreta do GlintFx, sem interface própria  -  ver §5 para a justificativa (L-12).
 
 ```cpp
-// INCORRECT  -  high-level depends on concrete low-level
-class ServicoProdutos {
-    RepositorioApiA m_repo;  // concrete dependency
-};
-
-// CORRECT  -  depends on abstraction, injected via constructor
-class ServicoProdutos {
-    std::shared_ptr<IRepositorioProdutos> m_repo;
+// CORRECT  -  aplicação depende de abstracao, injetada via construtor
+class ServicoDesfazer {
+    std::shared_ptr<IEscritorHistorico> m_escritor;
 public:
-    explicit ServicoProdutos(std::shared_ptr<IRepositorioProdutos> repo)
-        : m_repo(std::move(repo)) {}
+    explicit ServicoDesfazer(std::shared_ptr<IEscritorHistorico> escritor)
+        : m_escritor(std::move(escritor)) {}
 };
 ```
 
 ---
 
-## 4. Design Patterns  -  Complete Reference
+## 4. Design Patterns  -  Reference
 
-Apply patterns when they solve a real problem. MUST NOT apply patterns speculatively.
+Apply patterns when they solve a real problem. MUST NOT apply patterns speculatively (YAGNI, §13.2).
 
 ### 4.1 Creational Patterns
 
 | Pattern | Use When | Key Rule |
 |---------|----------|----------|
-| **Singleton** | Exactly one instance needed (logger, config) | MUST be thread-safe. AVOID in testable code  -  prefer DI. |
-| **Factory Method** | Subclasses decide which object to create | Define abstract `criar()`, override in subclasses. |
-| **Abstract Factory** | Families of related objects (theme, platform) | One factory interface, multiple concrete factories. |
-| **Builder** | Complex object construction with many optional params | Separate construction from representation. Fluent API. |
-| **Prototype** | Clone expensive objects | Implement deep copy. Avoid shared mutable state. |
+| **Singleton** | Exactly one instance needed (ex.: registro de UUIDs em uso) | MUST be thread-safe se acessado de mais de uma thread. AVOID quando dificultar teste  -  prefer DI. |
+| **Factory Method** | Subclasses decidem qual comando/volume criar | Define abstract `criar()`, override in subclasses. |
+| **Abstract Factory** | Familias de objetos relacionados (ex.: os seis tipos de volume de colisao da L-14) | One factory interface, multiple concrete factories. |
+| **Builder** | Construcao de objeto complexo com muitos parâmetros opcionais | Separate construction from representation. |
+| **Prototype** | Clonar objetos caros (ex.: duplicar um objeto posicionado) | Implement deep copy. Avoid shared mutable state. |
 
 ```cpp
 // Builder example
-class QtaqueBuilder {
-    Ataque m_ataque;
+class ComandoBuilder {
+    DescricaoComando m_desc;
 public:
-    QtaqueBuilder& nome(const QString& n)   { m_ataque.nome = n; return *this; }
-    QtaqueBuilder& dano(const QString& d)   { m_ataque.dano = d; return *this; }
-    QtaqueBuilder& custo(QStringList c)     { m_ataque.custo = std::move(c); return *this; }
-    Ataque build() { return std::move(m_ataque); }
+    ComandoBuilder& tipo(std::string t)      { m_desc.tipo = std::move(t); return *this; }
+    ComandoBuilder& alvo(std::string id)     { m_desc.alvo_id = std::move(id); return *this; }
+    DescricaoComando build() { return std::move(m_desc); }
 };
-// Usage:
-auto ataque = QtaqueBuilder{}.nome("Tackle").dano("10").custo({"Colorless"}).build();
 ```
 
 ### 4.2 Structural Patterns
 
 | Pattern | Use When | Key Rule |
 |---------|----------|----------|
-| **Adapter** | Incompatible interfaces must work together | Wrap external API to match internal interface. |
-| **Bridge** | Separate abstraction from implementation | Decouple so both can vary independently. |
-| **Composite** | Tree structures (UI hierarchy, file system) | Leaf and composite share same interface. |
-| **Decorator** | Add behavior dynamically without subclassing | Wrap object, delegate, then extend. |
-| **Facade** | Simplify complex subsystem access | One simple interface over many complex classes. |
-| **Flyweight** | Many objects sharing common state (icons, fonts) | Separate intrinsic (shared) from extrinsic (unique) state. |
-| **Proxy** | Control access, add lazy init, logging, caching | Same interface as real object. |
+| **Adapter** | Interface incompativel precisa funcionar com a nossa | Wrap external API to match internal interface. |
+| **Bridge** | Separar abstracao de implementação | Decouple só both can vary independently. |
+| **Composite** | Estruturas em árvore (ex.: selecao múltipla de objetos) | Leaf and composite share same interface. |
+| **Decorator** | Adicionar comportamento dinamicamente | Wrap object, delegate, then extend. |
+| **Facade** | Simplificar acesso a um subsistema complexo | One simple interface over many complex classes. |
+| **Flyweight** | Muitos objetos compartilhando estado comum (ex.: definição do tipo de volume, reaproveitada por muitas instâncias posicionadas) | Separate intrinsic (shared) from extrinsic (unique) state. |
+| **Proxy** | Controlar acesso, lazy init | Same interface as real object. |
 
 ```cpp
-// Composite: repository that tries primary then fallback
-class RepositorioComposto : public IRepositorioProdutos {
-    std::unique_ptr<IRepositorioProdutos> m_primario;
-    std::unique_ptr<IRepositorioProdutos> m_fallback;
+// Composite: aplicar um comando a um grupo de objetos selecionados
+class ComandoComposto : public IComando {
+    std::vector<std::unique_ptr<IComando>> m_filhos;
 public:
-    Produto buscar(const QString& id) override {
-        auto resultado = m_primario->buscar(id);
-        if (resultado.id.isEmpty()) resultado = m_fallback->buscar(id);
-        return resultado;
-    }
+    void aplicar() override { for (auto& c : m_filhos) c->aplicar(); }
+    void desfazer() override { for (auto& c : m_filhos | std::views::reverse) c->desfazer(); }
 };
 ```
 
@@ -294,75 +269,79 @@ public:
 
 | Pattern | Use When | Key Rule |
 |---------|----------|----------|
-| **Chain of Responsibility** | Multiple handlers may process a request | Each handler decides to handle or pass forward. |
-| **Command** | Encapsulate action as object (undo/redo, queue) | Separate invoker from receiver. |
-| **Iterator** | Traverse collection without exposing internals | Use standard iteration protocol. |
-| **Mediator** | Reduce coupling between many objects | Central hub coordinates communication. |
-| **Memento** | Save/restore object state | Snapshot without violating encapsulation. |
-| **Observer** | Notify dependents of state changes | Qt signals/slots ARE the Observer pattern  -  use them. |
-| **State** | Object changes behavior based on internal state | Replace conditionals with state objects. |
-| **Strategy** | Switch algorithm at runtime | Extract algorithm family into interchangeable objects. |
-| **Template Method** | Define skeleton, let subclasses fill steps | Base class controls flow, subclasses override steps. |
-| **Visitor** | Add operations to object structure without modifying it | Separate algorithm from object structure. |
-| **Interpreter** | Parse and evaluate a language/grammar | Define grammar as class hierarchy. |
+| **Chain of Responsibility** | Multiplos handlers podem processar um evento de entrada | Each handler decides to handle or pass forward. |
+| **Command** | Encapsular ação como objeto: é a espinha dorsal do undo/redo exigido pela L-13 | Separate invoker from receiver; MUST ser serializável (L-13). |
+| **Iterator** | Percorrer coleção sem expor internals | Use standard iteration protocol. |
+| **Mediator** | Reduzir acoplamento entre muitos objetos | Central hub coordinates communication. |
+| **Memento** | Salvar/restaurar estado de objeto | Snapshot without violating encapsulation; NÃO e a estratégia de undo/redo aqui (L-13 exige comando, não snapshot do mapa inteiro). |
+| **Observer** | Notificar dependentes de mudança de estado: e como as vistas assinam o histórico (L-13, regra 4) | Se a API do GlintFx expuser um mecanismo de evento/callback próprio, usa-lo (L-01); nunca inventar um paralelo. |
+| **State** | Objeto muda de comportamento conforme estado interno | Replace conditionals with state objects. |
+| **Strategy** | Trocar algoritmo em tempo de execucao | Extract algorithm family into interchangeable objects. |
+| **Template Method** | Definir esqueleto, subclasses preenchem passos | Base class controls flow, subclasses override steps. |
+| **Visitor** | Adicionar operações a uma estrutura de objetos sem modificá-la | Separate algorithm from object structure. |
 
 ### 4.4 Modern / Architectural Patterns
 
 | Pattern | Use When |
 |---------|----------|
-| **Repository** | Abstract data source from business logic. |
-| **Unit of Work** | Group related database operations into a transaction. |
-| **CQRS** | Separate read (Query) from write (Command) operations. |
-| **Event Sourcing** | Store state as sequence of events, not current state. |
-| **Dependency Injection** | Provide dependencies from outside the class. |
-| **Service Locator** | AVOID  -  hidden dependency, hard to test. Use DI instead. |
-| **MVC** | Separate Model (data), View (UI), Controller (logic). |
-| **MVP** | Like MVC but Presenter holds all UI logic, View is passive. |
-| **MVVM** | ViewModel exposes state; View binds reactively. Qt supports this. |
-| **Null Object** | Avoid null checks  -  provide do-nothing default implementation. |
-| **Specification** | Encapsulate business rules as composable predicates. |
+| **Repository** | Abstrair a origem de um dado (ex.: leitura/escrita do arquivo de histórico) da lógica de aplicação. |
+| **Event Sourcing** | Aplica-se diretamente a L-13: a pilha de comandos serializados e a fonte de verdade do histórico, não um snapshot do mapa. |
+| **Dependency Injection** | Fornecer dependências de fora da classe (via construtor). |
+| **Service Locator** | AVOID  -  dependência escondida, difícil de testar. Use DI instead. |
+| **MVC / MVP / MVVM** | Separar estado do domínio (Model) da apresentação. Na casca de plataforma, o "View" e a chamada a API de desenho do GlintFx; MUST NOT reconstruir o estado do domínio a partir do que foi desenhado. |
+| **Null Object** | Evitar checagens de null: fornecer implementação padrao que não faz nada, documentada. |
+| **Specification** | Encapsular regras de negócio como predicados compostos (ex.: validar se um polígono e convexo, ver TESTES.md T17). |
 
 ---
 
-## 5. Architecture Layers
+## 5. Camadas de Arquitetura (L-12)
 
-### 5.1 Layer Rules
-
-```
-┌─────────────────────────────────────────┐
-│  FRONTEND / PRESENTATION                │  UI components, widgets, views
-│  CAN: render, handle user events        │
-│  CANNOT: call APIs, access DB, business │
-├─────────────────────────────────────────┤
-│  MIDDLEWARE / APPLICATION / SERVICE     │  Use cases, orchestration
-│  CAN: call domain & infrastructure      │
-│  CANNOT: render UI, know HTTP/SQL       │
-├─────────────────────────────────────────┤
-│  BACKEND / DOMAIN                       │  Entities, interfaces, rules
-│  CAN: pure business logic only          │
-│  CANNOT: import UI, network, DB libs    │
-├─────────────────────────────────────────┤
-│  INFRASTRUCTURE / DATA                  │  HTTP, SQL, file system, APIs
-│  CAN: implement domain interfaces       │
-│  CANNOT: contain business logic         │
-└─────────────────────────────────────────┘
-```
-
-**Dependency direction:** Frontend → Middleware → Backend ← Infrastructure
-
-**Violations the AI MUST detect and refuse to introduce:**
-- HTTP client import in a widget/view file.
-- SQL query inside a domain entity.
-- Business rule calculation inside a repository.
-- UI framework import inside a service or domain class.
-
-### 5.2 Layer Checklist Before Committing
+Este projeto usa camadas horizontais finas, com a dependência apontando só para dentro. Este modelo substitui integralmente o modelo genérico Frontend/Middleware/Backend/Infraestrutura das versoes anteriores deste contrato, que pressupunha HTTP, SQL e UI framework: nada disso existe aqui.
 
 ```
-[ ] Class belongs to exactly one layer?
-[ ] No upward dependency (lower layer importing upper layer)?
-[ ] Cross-layer calls go through interfaces only?
-[ ] No domain entity imports Qt network/SQL/widget modules?
++-------------------------------------------------------------+
+|  DOMÍNIO                                                     |
+|  Documento de mapa, celula, objeto posicionado, hitbox,      |
+|  porta, teleporte, selecao, comando, pilha de histórico.     |
+|  POCO puro.                                                  |
+|  CAN: regra de negócio pura, estruturas de dados             |
+|  CANNOT: incluir header do GlintFx, do SO, ou de terceiro    |
++-------------------------------------------------------------+
+|  APLICAÇÃO                                                   |
+|  Um caso de uso por operação de edição, pequeno e            |
+|  testavel sozinho. Nunca um serviço-deus com dezenas de      |
+|  métodos.                                                    |
+|  CAN: orquestrar o domínio                                   |
+|  CANNOT: incluir header do GlintFx, do SO, ou de terceiro    |
++-------------------------------------------------------------+
+|  CASCA DE PLATAFORMA                                         |
+|  Fina. ÚNICA camada autorizada a incluir header do           |
+|  GlintFx, chamado DIRETO, sem interface própria.             |
+|  CAN: chamar a API pública do GlintFx                        |
+|  CANNOT: conter regra de negócio do mapa                     |
++-------------------------------------------------------------+
+```
+
+**Por que a casca não tem interface própria (L-12):** o GlintFx é a única implementação que vai existir, por lei (L-01); e a API de janela, desenho e entrada ainda está em construção: desenhar uma porta hoje é supor uma forma que pode não existir amanhã. Uma interface aqui reproduziria a "camada de tradução" que a L-03 já proíbe no ecossistema. Se um dia houver razão concreta (não hipotética) para fingir essa fronteira em teste, a saída é um `concept` de C++23 resolvido em compilação, nunca uma interface virtual.
+
+**A proteção do domínio não vem de interface, vem de regra de dependência fiscalizada por portão de CI:**
+
+- `domínio` nunca inclui header de `aplicação` nem de `casca de plataforma`, nem de GlintFx, nem do SO.
+- `aplicação` nunca inclui header de GlintFx nem do SO.
+- Só `casca de plataforma` inclui GlintFx.
+- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (L-09)**: procedimento e exemplo concreto em [TESTES.md secao A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
+
+**Nomenclatura de diretório real (quando o código nascer):** os nomes acima (domínio, aplicação, casca) são conceituais. Nos diretórios de verdade em `src/`, usar ASCII sem acento (ex.: `dominio/`, `aplicacao/`, `casca/`) por serem caminho de arquivo num projeto que builda em Windows como um dos cinco alvos de CI (L-10); acento em nome de diretório é fonte evitável de dor cross-platform.
+
+**"Átomos com POCO próprio"** vale no domínio e nos casos de uso, onde se paga sozinho: classe pequena, responsabilidade única, sem interface desnecessária. **Não** vale para a casca de plataforma: exigir um átomo por campo de um painel de inspeção num editor de usuário único é over-engineering. Átomo é sobre tamanho e responsabilidade, não sobre indireção: um POCO concreto de vinte linhas, sem interface nenhuma, é um átomo perfeito.
+
+### Checklist antes de commitar
+
+```
+[ ] A classe pertence a exatamente uma camada?
+[ ] Nenhuma dependência para cima (domínio -> aplicação, aplicação -> casca)?
+[ ] Nenhum header de GlintFx fora da casca de plataforma?
+[ ] Nenhum header de SO, RmlUi, SDL, GLFW ou Qt em lugar nenhum (L-01)?
 ```
 
 ---
@@ -371,11 +350,11 @@ public:
 
 ### 6.1 Naming
 
-- Names MUST reveal intent. No abbreviations unless universally known (`id`, `url`, `http`).
-- Functions: verb + noun (`buscarItem`, `salvarCache`, `renderizarLista`).
-- Booleans: `is`, `has`, `can`, `should` prefix (`isValido`, `hasCached`, `canRetry`).
-- Constants: ALL_CAPS with underscores (`MAX_TENTATIVAS`, `URL_BASE`).
-- Private members: `m_` prefix (`m_cliente_http`, `m_cache`).
+- Names MUST reveal intent. No abbreviations unless universally known (`id`, `url`).
+- Functions: verb + noun (`buscarObjeto`, `aplicarComando`, `desenharCelula`).
+- Booleans: `is`, `has`, `can`, `should` prefix (`isConvexo`, `hasHistoricoValido`, `canDesfazer`).
+- Constants: ALL_CAPS with underscores (`MAX_VERTICES`, `TIPOS_DE_VOLUME`).
+- Private members: `m_` prefix.
 - MUST NOT use single-letter names except loop counters (`i`, `j`) and lambda args.
 
 ### 6.2 Functions
@@ -386,22 +365,22 @@ public:
 - Return early to avoid deep nesting. MUST NOT exceed 3 levels of nesting.
 
 ```cpp
-// INCORRECT  -  deep nesting
-void processar(Item c) {
-    if (c.valida()) {
-        if (!cache.tem(c.id)) {
-            if (api.disponivel()) {
+// INCORRECT: deep nesting
+void processar(ComandoBruto c) {
+    if (c.valido()) {
+        if (!histórico.contem(c.id)) {
+            if (mapa.aceita(c)) {
                 // actual logic buried here
             }
         }
     }
 }
 
-// CORRECT  -  early returns (guard clauses)
-void processar(const Item& c) {
-    if (!c.valida()) return;
-    if (cache.tem(c.id)) return;
-    if (!api.disponivel()) { reportarErro("API indisponível"); return; }
+// CORRECT: early returns (guard clauses)
+void processar(const ComandoBruto& c) {
+    if (!c.valido()) return;
+    if (histórico.contem(c.id)) return;
+    if (!mapa.aceita(c)) { reportarErro("comando rejeitado pelo mapa"); return; }
     // actual logic at top level
 }
 ```
@@ -417,167 +396,130 @@ void processar(const Item& c) {
 i++;  // increment i
 
 // CORRECT
-// API externa usa páginas base-1; nossa API interna usa base-0
-pagina++;
+// o formato do GlintFx e 1-based para indice de camada (L-03); nosso domínio e 0-based
+camada_gmap = camada_dominio + 1;
 ```
 
 ### 6.4 Error Handling
 
 - MUST handle all error cases. MUST NOT silently swallow exceptions.
-- MUST log errors with context (file, function, relevant data).
-- MUST propagate errors to the caller  -  do not hide failures.
+- MUST propagate errors to the caller: do not hide failures.
 - MUST NOT use exceptions for control flow.
-- Use `std::optional`, `std::expected`, or result types for expected failures.
+- Use `std::optional` ou `std::expected` (padrao desde C++23) para falhas esperadas (ex.: arquivo de histórico ausente, mapa corrompido).
 
 ### 6.5 Constants vs Magic Numbers
 
 ```cpp
 // INCORRECT
-if (tentativas > 3) retry();
-QPixmap px = img.scaled(120, 160);
+if (vertices.size() < 3) return;
 
 // CORRECT
-constexpr int MAX_TENTATIVAS = 3;
-constexpr QSize TAMANHO_MINIATURA{120, 160};
-if (tentativas > MAX_TENTATIVAS) retry();
-QPixmap px = img.scaled(TAMANHO_MINIATURA);
+constexpr std::size_t MIN_VERTICES_POLIGONO = 3;
+if (vertices.size() < MIN_VERTICES_POLIGONO) return;
 ```
 
 ### 6.6 RAII and Resource Management
 
-- MUST use RAII for all resources (memory, file handles, DB connections, mutexes).
+- MUST use RAII for all resources (memória, arquivos, mutexes).
 - MUST prefer smart pointers (`unique_ptr`, `shared_ptr`) over raw `new`/`delete`.
 - MUST NOT call `delete` manually in application code.
 - MUST NOT store raw owning pointers.
+- Recursos do GlintFx (janela, textura, etc.) MUST ser envolvidos no wrapper RAII que a própria API deles fornecer; nunca gerenciados por ponteiro cru nosso.
 
 ### 6.7 DRY  -  Don't Repeat Yourself
 
-**Regra de Três:** Na **primeira** ocorrência, escreva. Na **segunda**, registre a repetição. Na **terceira**, extraia.
+**Regra de Tres:** Na **primeira** ocorrencia, escreva. Na **segunda**, registre a repeticao. Na **terceira**, extraia.
 
 ```cpp
-// 1ª e 2ª ocorrências: duplicação aceitável (WET  -  Write Everything Twice)
-QString formatarPreco(double v)  { return QString("R$ %1").arg(v, 0, 'f', 2); }
-QString formatarSaldo(double v)  { return QString("R$ %1").arg(v, 0, 'f', 2); }
+// 1a e 2a ocorrencias: duplicação aceitavel (WET: Write Everything Twice)
+bool dentroDosLimites(int v, int min, int max) { return v >= min && v <= max; }
+bool validarLargura(int v)  { return v >= 1 && v <= 256; }
 
-// 3ª ocorrência: EXTRAIA  -  nomeie a razão comum de mudança
-// Razão: "formatação de valores monetários em BRL"
-QString formatarBRL(double valor, int casas = 2) {
-    return QString("R$ %1").arg(valor, 0, 'f', casas);
+// 3a ocorrencia: EXTRAIA: nomeie a razão comum de mudança
+// Razao: "validar dimensão inteira de celula de mapa dentro do teto do formato"
+bool validarDimensaoCelula(int valor, int minimo, int maximo) {
+    return valor >= minimo && valor <= maximo;
 }
 ```
 
-**Duplicação real vs. coincidência:**
+**Duplicacao real vs. coincidência:**
 
-| Tipo | Definição | Regra |
+| Tipo | Definicao | Regra |
 |------|-----------|-------|
-| **Duplicação real** | Mesmo conceito, mesma razão de mudar | MUST extrair |
-| **Coincidência** | Parece similar hoje; divergirá amanhã | MUST NOT unificar |
-
-```cpp
-// COINCIDÊNCIA  -  NÃO unificar mesmo tendo lógica idêntica hoje:
-// Regras de negócio distintas; mudarão de forma independente
-bool validarIdade(int anos)        { return anos >= 0 && anos <= 120; }
-bool validarAnoFabricacao(int ano) { return ano  >= 0 && ano  <= 120; }
-
-// DUPLICAÇÃO REAL  -  MUST extrair:
-// Mesma razão de mudar: "validar quantidade positiva com teto de estoque"
-bool validarQuantidade(int qtd)  { return qtd > 0 && qtd <= 9999; }
-bool validarEstoque(int estoq)   { return estoq > 0 && estoq <= 9999; }
-// → bool validarQuantidadePositiva(int val) { return val > 0 && val <= 9999; }
-```
+| **Duplicacao real** | Mesmo conceito, mesma razão de mudar | MUST extrair |
+| **Coincidencia** | Parece similar hoje; divergira amanha | MUST NOT unificar |
 
 **Rules (RFC 2119):**
 
-- MUST name the *common reason to change* when extracting  -  similarity in code alone is insufficient justification.
-- MUST NOT unify logic with distinct business meanings even if syntactically identical.
-- SHOULD prefer WET (Write Everything Twice) over a premature abstraction that fits neither caller.
+- MUST name the *common reason to change* when extracting: similarity in code alone is insufficient justification.
+- MUST NOT unify logic with distinct meanings even if syntactically identical (ex.: validar largura de celula e validar numero de abas abertas são coincidência, não duplicação, ainda que ambos sejam "int dentro de faixa").
+- SHOULD prefer WET over a premature abstraction that fits neither caller.
 - MUST NOT create generic helpers to avoid two similar lines; three real occurrences are required.
 - MAY tolerate duplication in tests when each test independently documents a distinct behavior.
 
 ---
 
-## 7. UI/UX Guidelines
+## 7. UI/UX Guidelines (via GlintFx)
+
+Este editor não desenha nada diretamente (L-01, L-12): toda apresentação passa pela API do GlintFx, chamada exclusivamente pela casca de plataforma. As regras abaixo valem para a experiencia que a casca pede ao GlintFx para produzir, não para código de widget: não existe widget aqui.
 
 ### 7.1 Responsiveness
 
-- MUST NEVER block the UI thread with I/O, network, or heavy computation.
-- MUST use async patterns (callbacks, signals/slots, async/await, workers).
-- All operations > 100ms MUST show a loading indicator.
-- All operations > 3s MUST be cancellable.
+- MUST NEVER bloquear a thread principal com I/O ou computacao pesada (ex.: repartição de polígono em lote, leitura de arquivo grande).
+- Operacoes que passem de 100ms MUST mostrar indicacao de progresso (se o GlintFx expuser o recurso; senao, registrar a necessidade no bus: L-01).
 
 ### 7.2 Feedback
 
 - Every user action MUST produce visible feedback within 200ms.
 - Error messages MUST be human-readable, not stack traces or error codes.
-- Success and failure states MUST be visually distinct (color + icon, not color alone).
-- Empty states MUST show a helpful message, not a blank screen.
+- Estados de sucesso/falha MUST ser distinguiveis por mais de uma cor (icone ou texto também).
 
-### 7.3 Accessibility (WCAG AA minimum)
+### 7.3 Acessibilidade
 
-- Text/background contrast ratio MUST be ≥ 4.5:1 for normal text.
-- Text/background contrast ratio MUST be ≥ 3:1 for large text (≥ 18pt).
-- All interactive elements MUST be reachable via keyboard (Tab + Enter/Space).
-- All images MUST have descriptive alt text or `setAccessibleName()`.
-- MUST NOT convey information using color alone (add icon or text).
-
-```
-Contrast check reference:
-  Normal text on dark (#EFF0F1 on #31363B) = 7.2:1  ✅
-  Accent on dark     (#3DAEE9 on #31363B) = 3.8:1  ✅ (large text)
-  Red error on white (#DA4453 on #EFF0F1) = 4.6:1  ✅
-```
+- Elementos interativos MUST ser alcancaveis via teclado, quando a API do GlintFx expuser foco/navegacao por teclado.
+- Contraste de texto SHOULD seguir WCAG AA (>= 4.5:1 texto normal, >= 3:1 texto grande) como referência de design, ainda que o tema seja o do GlintFx, não nosso.
+- **Se o GlintFx não expuser um destes recursos hoje, a saida e registrar a necessidade pelo bus (L-01), nunca implementar um substituto paralelo.**
 
 ### 7.4 Consistency
 
-- MUST use the project's design token system for all colors, spacing, and typography.
-- MUST NOT hardcode color hex values in widget code  -  use theme tokens.
-- Font sizes: MUST follow the type scale (body 13px, subtitle 12px, title 16-18px).
-- Spacing: MUST use consistent margins (8px grid).
-- Interactive elements (buttons, links) MUST have hover AND pressed states.
+- MUST usar o sistema de tema do GlintFx para cor, espacamento e tipografia.
+- MUST NOT hardcode valor de cor na casca de plataforma: usar o token de tema exposto pela API deles.
 
-### 7.5 Forms and Inputs
+### 7.5 Edição de Campos (painel de inspeção)
 
-- MUST validate inputs at the point of submission, not silently on blur.
-- MUST show validation errors adjacent to the offending field.
-- MUST NOT clear the form on error  -  preserve user input.
-- Submit buttons MUST be disabled during async operations.
+- MUST validar entrada no momento da submissao, não silenciosamente ao perder o foco.
+- MUST mostrar erro de validação junto ao campo problematico.
+- MUST NOT limpar o campo em caso de erro: preservar o que o autor digitou.
 
 ---
 
-## 8. Security
+## 8. Segurança e Validação de Entrada
 
-> Full procedures in [TESTES.md](TESTES.md)  -  sections T8, T10, T12.
+Este projeto não tem rede, servidor, autenticacao, banco de dados nem múltiplos usuários: a superficie de ataque tradicional (OWASP Top 10, SQL injection, SSRF, CSRF) não existe aqui e foi removida desta secao (ver §14). O que resta e hygiene geral e validação de entrada de arquivo/usuario.
 
-### 8.1 OWASP Top 10  -  AI Coder Checklist
+### 8.1 Ameaças relevantes para um editor local
 
-| # | Risk | Rule |
-|---|------|------|
-| A01 | Broken Access Control | MUST validate authorization server-side on every request. |
-| A02 | Cryptographic Failures | MUST use AES-256+ for data at rest. MUST use TLS 1.2+ for data in transit. NEVER MD5/SHA1 for security. |
-| A03 | Injection | MUST use prepared statements for ALL SQL. MUST sanitize all inputs before use in commands/queries. |
-| A04 | Insecure Design | MUST threat-model new features before implementing. |
-| A05 | Security Misconfiguration | MUST NOT ship with debug flags, default passwords, or verbose error messages in production. |
-| A06 | Vulnerable Components | MUST check CVEs before adding any dependency (see T12 in TESTES.md). |
-| A07 | Auth Failures | MUST use established auth libraries. NEVER roll your own crypto. |
-| A08 | Software Integrity | MUST verify integrity of downloaded dependencies (checksums, signatures). |
-| A09 | Logging Failures | MUST log security events. MUST NOT log passwords, tokens, or PII. |
-| A10 | SSRF | MUST validate and allowlist all URLs before fetching. |
+| Ameaca | Regra |
+|---|---|
+| Arquivo de mapa corrompido ou malicioso (lido via API do GlintFx) | MUST tratar toda falha de leitura explicitamente; MUST NOT crashar; ver TESTES.md T14. |
+| Arquivo de histórico corrompido ou desatualizado (arquivo próprio, L-13) | MUST recusar reaplicar se a impressao digital do mapa não bater; MUST NOT tentar "adivinhar" o estado. |
+| Entrada de usuario em campo numerico/texto do inspetor | MUST validar faixa e tipo antes de aplicar ao domínio. |
 
 ### 8.2 Hardcoded Secrets  -  Zero Tolerance
 
-```cpp
-// INCORRECT  -  NEVER commit this
-const QString API_KEY = "sk-live-abc123xyz789";
-QString url = "https://api.com?token=mypassword";
+Este editor não fala com nenhuma API externa, mas a regra permanece por hygiene geral:
 
-// CORRECT  -  load from secure storage or environment
-const QString apiKey = gerenciadorChaves.recuperar("limitless_api_key");
+```cpp
+// INCORRECT: NEVER commit this
+const std::string TOKEN = "sk-live-abc123xyz789";
+
+// CORRECT: se um dia isso for necessário, carregar de fora do binario
 ```
 
 ### 8.3 Input Validation
 
-- MUST validate all data arriving from: user input, API responses, file reads, environment variables.
-- MUST NOT trust data from any external source.
+- MUST validate all data arriving from: leitura de arquivo (mapa via GlintFx, histórico próprio), entrada do usuario via UI.
+- MUST NOT trust data from any external source, incluindo arquivos gravados pelo próprio editor em versão anterior.
 - MUST constrain string lengths, numeric ranges, and allowed characters at entry points.
 
 ---
@@ -587,29 +529,20 @@ const QString apiKey = gerenciadorChaves.recuperar("limitless_api_key");
 ### 9.1 General Rules
 
 - MUST profile before optimizing. No premature optimization.
-- MUST cache results of expensive operations (network, disk, computation).
-- MUST NOT make redundant API calls  -  check cache first.
-- MUST use lazy loading for data not immediately needed.
-- MUST NOT copy large objects unnecessarily  -  use references and move semantics.
+- MUST cache results of expensive operations (I/O de disco, repartição de polígono, calculo geométrico).
+- MUST use lazy loading for data not immediately needed (ex.: mapas não abertos nas abas).
+- MUST NOT copy large objects unnecessarily: use references and move semantics.
 
-### 9.2 Network
-
-- MUST debounce user-triggered searches (wait ≥ 300ms after last keystroke).
-- MUST implement request cancellation for outdated requests.
-- MUST set reasonable timeouts (connect: 10s, read: 30s).
-- MUST retry with exponential backoff on transient failures (max 3 attempts).
-
-### 9.3 Memory
+### 9.2 Memória
 
 - MUST release resources when they go out of scope (RAII).
-- MUST NOT hold large objects in memory indefinitely  -  use LRU cache with size limit.
-- MUST NOT leak Qt objects  -  ensure parent ownership or explicit deletion.
+- MUST NOT hold large objects in memory indefinitely: histórico ilimitado em memória e aceitavel apenas porque e persistido (L-13); vazamento de objeto de domínio não e.
+- Recursos do GlintFx MUST ser liberados conforme o contrato de vida da API deles, nunca gerenciados por conta própria (L-01).
 
-### 9.4 Rendering
+### 9.3 Desenho
 
-- MUST NOT do layout calculations on the UI thread unnecessarily.
-- Avoid creating/destroying widgets in tight loops  -  reuse or use virtual scrolling.
-- Heavy image operations MUST be done off-thread, result posted to UI thread.
+- A casca de plataforma MUST NOT fazer calculo geométrico pesado dentro do laco de desenho por quadro: repartição de polígono côncavo (L-03) e operações similares MUST ser calculadas uma vez, no momento da edição/gravacao, e cacheadas.
+- Toda chamada a API de desenho do GlintFx acontece na casca; domínio e aplicação nunca desenham (§5).
 
 ---
 
@@ -642,26 +575,25 @@ Format: `<type>(<scope>): <description>`
 
 ```bash
 # CORRECT examples
-git commit -m "feat(filtros): add real-time chip filter applied to loaded grid"
-git commit -m "fix(tema): type icon not rendering in QLabel RichText via data URI"
-git commit -m "docs: add TESTES.md with complete audit and quality guide"
-git commit -m "chore: convert type images webp→png, remove webp files"
+git commit -m "feat(histórico): add UUID-based undo stack persistence"
+git commit -m "fix(mapa): round-trip byte-a-byte falhava em objeto sem UUID"
 
 # INCORRECT
 git commit -m "fix stuff"
 git commit -m "WIP"
-git commit -m "changes"
 ```
+
+**Convencao deste projeto:** ao fechar ou avancar um item do `TODO.md`, citar o ID (ex.: `M1.3`) no corpo/footer do commit e tocar a coluna `Status` no mesmo commit (implementação entregue -> `Pendente verificação`, nunca aprovado direto).
 
 ### 10.3 Branch Naming
 
 ```
 feat/nome-da-feature
-fix/descricao-do-bug
-refactor/modulo-afetado
+fix/descrição-do-bug
+refactor/módulo-afetado
 docs/nome-do-documento
 chore/ferramenta-ou-dep
-test/modulo-testado
+test/módulo-testado
 ```
 
 ### 10.4 Commit Checklist (MUST complete before every commit)
@@ -670,20 +602,20 @@ test/modulo-testado
 [ ] Build passes with zero errors
 [ ] Zero new compiler warnings introduced
 [ ] No hardcoded secrets, tokens, or credentials
-[ ] .gitignore excludes build artifacts, IDE files, .env files
-[ ] Commit message follows Conventional Commits format
+[ ] .gitignore excludes build artifacts, IDE files
+[ ] Commit message follows Conventional Commits format, cita ID do TODO.md quando aplicavel
 [ ] Files staged are only those related to the current task
-[ ] No unrelated changes mixed in (separate commits for separate concerns)
 ```
 
 ### 10.5 What the AI MUST NEVER Do in Git
 
 - MUST NOT force-push to `main` or `master`.
-- MUST NOT commit files containing secrets (`.env`, credentials, private keys).
+- MUST NOT commit files containing secrets.
 - MUST NOT amend published commits (use a new commit instead).
 - MUST NOT use `--no-verify` to skip hooks unless explicitly instructed.
 - MUST NOT batch unrelated changes into one commit.
-- MUST NOT commit generated files (build artifacts, `moc_*.cpp`, `qrc_*.cpp`).
+- MUST NOT commit generated build artifacts (`build/`, `CMakeFiles/`, binarios).
+- MUST NOT push or merge em `main` sem autorizacao explícita do lider (L-05/L-06).
 
 ### 10.6 Pull Request Description Template
 
@@ -694,286 +626,177 @@ test/modulo-testado
 ## Why
 [One sentence: why it was needed]
 
-## How
-- [Key technical decision 1]
-- [Key technical decision 2]
-
 ## Checklist
-- [ ] Build passes
-- [ ] Tests pass (reference TESTES.md sections run)
+- [ ] Build passes nos alvos aplicaveis (ver TESTES.md T15)
+- [ ] Tests pass (referenciar secoes de TESTES.md rodadas)
 - [ ] No new warnings
 - [ ] No secrets committed
-- [ ] CHANGELOG.md updated (if user-facing change)
 ```
 
 ---
 
 ## 11. Testing & Audit Mandate
 
-> Full procedures, commands, and tools: **[TESTES.md](TESTES.md)**
+> Full procedures, commands, and tools: **[TESTES.md](TESTES.md)**. Checklists de auditoria: **[AUDITORIAS.md](AUDITORIAS.md)**.
+
+**Lembrete permanente (L-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos e falha, não sucesso.
+
+**Lembrete permanente (L-06):** implementador, revisor e orquestrador são três agentes diferentes; auditoria e feita por C-level em modelo fable, execucao por agents operacionais em modelo sonnet; implementador nunca audita o próprio trabalho.
 
 ### When to Run Tests
 
 | Event | Required tests |
 |-------|---------------|
 | Every commit | Build passes, zero warnings |
-| Feature complete | T1 (unit), T2 (static analysis), T4 (ASan/UBSan) |
-| Before any release/deploy | T1-T12 full suite + A1-A10 full audit |
-| New dependency added | T5 (dependency scan) + T12 (CVE check) |
-| Auth/crypto code changed | T8 (secrets), T10 (SQL injection), A5 (dynamic analysis) |
-| UI changed | A3 (UX/accessibility) |
-| Architecture changed | A2 (layer audit), A7 (coupling), A9 (SOLID) |
+| Feature de domínio/aplicação completa | T1 (unit), T2 (estática), T4 (ASan/UBSan) |
+| Tocar leitura/escrita de mapa ou histórico | T14 (round-trip byte a byte) |
+| Tocar repartição de polígono côncavo | T3 (propriedade) + T17 (convexidade) |
+| Antes de qualquer release | T1, T2, T3, T4, T8, T12, T14, T15, T16, T17 completos + A2, A3, A10 |
+| Nova dependência adicionada | T12 (CVE check) |
+| Camada (domínio/aplicação/casca) mudou | A2 (auditoria de camadas) |
 
 ### Minimum Quality Gates (MUST pass before release)
 
 ```
-[ ] T1  Unit tests: 0 failures
-[ ] T2  Static analysis: 0 security/bugprone errors
-[ ] T4  ASan: 0 ERROR SUMMARY
-[ ] T8  Secrets scan: 0 detected
-[ ] T12 CVE scan: 0 CRITICAL unpatched
-[ ] A2  Architecture: 0 layer violations
-[ ] A10 Audit report generated and reviewed
+[ ] T1  Unit tests: 0 falhas
+[ ] T2  Static analysis: 0 erros
+[ ] T4  ASan/UBSan: 0 ERROR SUMMARY
+[ ] T8  Secrets scan: 0 detectados
+[ ] T12 CVE scan: 0 CRÍTICO sem patch
+[ ] T14 Round-trip de arquivo: byte a byte identico
+[ ] T17 Repartição de polígono: toda peça gerada e convexa
+[ ] A2  Camadas: 0 violações de dependência, portão declarou N > 0 arquivos varridos
+[ ] A10 Relatório de auditoria gerado e revisado
 ```
 
 ### Post-Release Cleanup Prompt (MANDATORY)
 
-Após uma release ser efetivamente lançada (tag publicada + artefatos anexados + CI verde no remoto), o agente DEVE perguntar ao usuário se deseja apagar pastas desnecessárias geradas durante o ciclo de build/test.
+Apos uma release ser efetivamente lancada (tag publicada + artefatos anexados + CI verde no remoto), o agente DEVE perguntar ao usuario se deseja apagar pastas desnecessarias geradas durante o ciclo de build/test (`build/`, `build-*/`, `CMakeFiles/`, `_deps/`, `Testing/`).
 
-**Quando perguntar:** somente após confirmação de release publicada (não após push comum, não após build local de teste, não antes de CI verde).
-
-**Pergunta padrão:**
-
-> "Release lançada. Quer apagar pastas desnecessárias geradas pelo ciclo de build/test (ex.: `build/`, `dist/`, `.venv/`, `target/`, `node_modules/`, caches)?"
-
-**Se o usuário disser não:** registrar e não tocar em nada.
-
-**Se o usuário disser sim:**
-
-1. Varrer a raiz do projeto buscando candidatos comuns por stack:
-   - **Genéricos:** `build/`, `dist/`, `out/`, `tmp/`, `.cache/`, `coverage/`, `htmlcov/`
-   - **Python:** `.venv/`, `__pycache__/`, `*.egg-info/`, `.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`, `.hypothesis/`, `.tox/`, `.import_linter_cache/`
-   - **C++/CMake:** `build/`, `build-*/`, `cmake-build-*/`, `_deps/`, `CMakeFiles/`, `Testing/`
-   - **Rust:** `target/`
-   - **Node/TS:** `node_modules/`, `.next/`, `.turbo/`, `.nuxt/`, `.svelte-kit/`
-   - **IDE/SO:** `.DS_Store`, `Thumbs.db`
-2. Listar cada candidato encontrado com tamanho aproximado (`du -sh`).
-3. **CONFIRMAR explicitamente cada grupo antes de remover** (operação destrutiva). Nunca apagar sem listar primeiro.
-4. Excluir caminhos rastreados pelo git ou que contenham mudanças não commitadas. Checar com `git status --ignored` e `git ls-files`.
-5. Excluir pastas que estão no `.gitignore` mas o usuário marcou como "manter" (ex.: `.venv/` em projetos que prefere preservar).
-6. Após remoção, mostrar resumo: "removidos X paths, Y MB liberados".
-
-**Regras invioláveis:**
-
-- NUNCA apagar pasta versionada (`src/`, `tests/`, `docs/`, etc.).
-- NUNCA apagar `dist/` se a release ainda não anexou os artefatos no servidor.
-- NUNCA apagar `.git/`, `.github/` (config persistente).
-- Sempre listar antes, confirmar depois.
+**Regras invioláveis:** nunca apagar pasta versionada; sempre listar (`du -sh`) antes, confirmar depois; excluir caminhos rastreados pelo git ou com mudanças não commitadas antes de propor a remocao.
 
 ---
 
-## 12. Language-Specific Rules
+## 12. C++23 e a Fronteira com o GlintFx
 
-### 12.1 C++ / Qt *(Mandatory)*
+**Versão:** C++23. **Exceção deliberada ao padrao global do vault** (que e C++/Qt23): este projeto usa C++23 sem Qt, por ordem direta do lider (L-01). Nenhum arquivo deste repositorio inclui header de Qt, RmlUi, SDL ou GLFW.
 
-**Version:** C++20 minimum. Qt 6.x.
+**Única dependência externa:** GlintFx, incluído apenas na casca de plataforma (§5, L-12). Se uma funcionalidade precisar de algo que a API pública do GlintFx não oferece, a resposta e registrar a necessidade pelo bus e esperar: nunca inventar um contorno (L-01).
 
-**Memory:**
+**Memória:**
 ```cpp
 // MUST use smart pointers
-auto obj = std::make_unique<MeuObjeto>();
-auto shared = std::make_shared<Servico>(dep);
-
-// MUST use QPointer for optional Qt object observation
-QPointer<QLabel> lbl_seguro = new QLabel(parent);
-if (lbl_seguro) lbl_seguro->setText("ok");  // safe even if deleted
+auto obj = std::make_unique<ComandoMoverObjeto>();
+auto compartilhado = std::make_shared<RepositorioHistorico>();
 
 // MUST NOT
-MeuObjeto* raw = new MeuObjeto();  // who owns this?
-delete raw;                         // manual delete = leak risk
+ComandoMoverObjeto* cru = new ComandoMoverObjeto();  // quem e dono disso?
+delete cru;                                           // delete manual = risco de leak
 ```
 
-**Qt Specifics:**
-- MUST use Qt parent-child ownership for widgets (parent deletes children).
-- MUST use signals/slots for cross-layer communication (Observer pattern built-in).
-- MUST NOT call network, file I/O, or database from the UI thread.
-- MUST use `QThread` + `moveToThread()` or `QtConcurrent` for background work.
-- MUST use `Qt::QueuedConnection` when emitting across threads.
-- MUST use `QSqlQuery` with `bindValue()`  -  NEVER string concatenation for SQL.
-- MUST check `QNetworkReply::error()` before reading response data.
-- MUST handle all `QFile::open()` failures.
-- Theme/style: MUST use QSS via central theme system, NEVER `setStyleSheet()` in individual widgets with hardcoded colors.
-
-**Modern C++20 MUST-use features:**
+**Modern C++23 MUST-use features:**
 ```cpp
-std::optional<Item>     // instead of nullptr checks
-std::variant<Ok, Erro>   // instead of error codes
-[[nodiscard]]            // on functions whose return value must be checked
-const auto&              // prefer const references
-if (auto val = buscar(); val.has_value())  // init-statement in if
+std::optional<Objeto>                       // instead of nullptr checks
+std::expected<Objeto, ErroLeitura>          // padrao em C++23, não mais experimental
+[[nodiscard]]                                // on functions whose return value must be checked
+const auto&                                  // prefer const references
+if (auto val = buscar(); val.has_value())    // init-statement in if
 ```
 
 **MUST NOT use:**
 ```cpp
 NULL           // use nullptr
-(Type*)ptr     // use static_cast<Type*>(ptr)
-printf/scanf   // use qDebug() / QTextStream
+(Tipo*)ptr     // use static_cast<Tipo*>(ptr)
+printf/scanf   // use std::print / std::format (C++23)
 gets()         // buffer overflow risk
-strcpy/strcat  // use QString or std::string
+strcpy/strcat  // use std::string
 ```
+
+**Concorrencia:** se uma tarefa exigir thread própria (ex.: I/O de arquivo grande sem travar a UI), usar `std::jthread`/`std::stop_token` (C++23). MUST NOT introduzir concorrencia especulativa: só onde há necessidade concreta e presente (YAGNI, §13.2).
 
 ---
 
-## 14. Universal Engineering Principles
+## 13. Universal Engineering Principles
 
-> Complement to SOLID and DRY. Apply across all languages and stacks to produce robust, professional, and high-performance code.
+> Complement to SOLID and DRY. Apply across the codebase.
 
-### 14.1 KISS  -  Keep It Simple, Stupid
+### 13.1 KISS  -  Keep It Simple, Stupid
 
-The simplest solution that correctly solves the problem is the right solution. Complexity is debt.
-
-**Rules:**
 - MUST NOT add layers of abstraction without a concrete, present reason.
-- MUST NOT use a design pattern just because it fits  -  only when it removes real pain.
+- MUST NOT use a design pattern just because it fits: only when it removes real pain.
 - When two solutions work, MUST choose the one a new team member understands in 30 seconds.
 
-### 14.2 YAGNI  -  You Aren't Gonna Need It
+### 13.2 YAGNI  -  You Aren't Gonna Need It
 
-Build what is required **now**. Future requirements arrive with their own context.
-
-**Rules:**
 - MUST NOT implement features, flags, or extension points for hypothetical future use.
 - MUST NOT add configuration options that no current caller uses.
 - MUST NOT generalize a function until the third real use case exists (see DRY § 6.7).
 
-### 14.3 Fail Fast
+### 13.3 Fail Fast
 
-Detect violations of preconditions as early as possible  -  at the system boundary, not buried in domain logic.
-
-**Rules:**
-- MUST validate all external input at the entry point (API, CLI, file, IPC, queue).
+- MUST validate all external input at the entry point (arquivo, entrada de usuario).
 - MUST NOT silently coerce invalid input into a valid-looking value.
-- MUST crash or return error immediately when an invariant is violated  -  never defer.
+- MUST crash or return error immediately when an invariant is violated: never defer.
 - MUST include the violated condition and the actual value in the error message.
-- MUST NOT use default values to mask missing required input.
 
-### 14.4 Law of Demeter  -  Principle of Least Knowledge
-
-A unit MUST only talk to its immediate collaborators. No reaching through the object graph.
+### 13.4 Law of Demeter  -  Principle of Least Knowledge
 
 **The "one dot" rule:** `a.fazAlgo()` is fine. `a.getB().getC().fazAlgo()` is a violation.
 
-**Rules:**
 - MUST NOT chain more than one method/property access on a foreign object.
-- MUST NOT reach through an object to access its internals  -  ask the object to act.
 - SHOULD expose behavior, not structure (Tell, Don't Ask).
 
-### 14.5 CQS  -  Command-Query Separation
+### 13.5 CQS  -  Command-Query Separation
 
-A function either **changes state** (command) or **returns data** (query). Never both.
-
-**Rules:**
-- Commands MUST return `void` (or `Result`/`Error` for success/failure only  -  no business data).
-- Queries MUST be pure: same input → same output, no side effects.
+- Commands MUST return `void` (or `Result`/`Error` for success/failure only).
+- Queries MUST be pure: same input -> same output, no side effects.
 - MUST NOT have a function that returns meaningful data AND produces a side effect.
-- Exception: language-idiomatic patterns like `pop()` (stack), `next()` (iterator) are accepted.
 
-### 14.6 Composition over Inheritance
+### 13.6 Composition over Inheritance
 
-Prefer assembling behavior from small collaborators over deep class hierarchies.
+- MUST NOT create inheritance hierarchies deeper than 2 levels.
+- MUST NOT use inheritance to share implementation: use composition or free functions.
 
-**Rules:**
-- MUST NOT create inheritance hierarchies deeper than 2 levels (base + one concrete).
-- MUST NOT use inheritance to share implementation  -  use composition or free functions.
-- SHOULD use interfaces/traits/protocols to define behavior contracts.
+### 13.7 Immutability by Default
 
-### 14.7 Immutability by Default
-
-Treat data as immutable unless there is a concrete reason to mutate it.
-
-**Rules:**
-- MUST declare variables as immutable (`const`, `val`, `let`, `final`, `const&`) by default.
+- MUST declare variables as immutable (`const`, `const&`) by default.
 - MUST NOT mutate function parameters.
 - SHOULD return new values instead of modifying existing ones in domain logic.
-- Shared mutable state MUST be protected by a synchronization primitive (mutex, atomic, lock).
 
-### 14.8 Explicit over Implicit
+### 13.8 Explicit over Implicit
 
-Behavior MUST be visible at the call site. Magic and hidden side effects are failure modes.
-
-**Rules:**
 - MUST NOT rely on global mutable state or thread-local singletons silently affecting behavior.
 - MUST pass dependencies explicitly (constructor/function parameters), not via globals.
-- Configuration that affects runtime behavior MUST be explicit, not inferred from environment magic.
-- MUST NOT use hidden default arguments that change behavior without callers knowing.
 
-### 14.9 High Cohesion, Low Coupling
+### 13.9 High Cohesion, Low Coupling
 
-- **Cohesion:** everything inside a module belongs together  -  one clear purpose.
-- **Coupling:** modules depend on each other as little as possible, and only through stable interfaces.
-
-**Rules:**
-- MUST NOT place logic in a module because it is *convenient*, only because it *belongs*.
-- Coupling between modules MUST go through interfaces, not concrete types.
-- A module MUST be testable in isolation without instantiating the full system.
+- MUST NOT place logic in a module because it is convenient, only because it belongs.
+- A module MUST be testable in isolation without instantiating the full system (ver TESTES.md T16, testabilidade sem janela).
 - Circular dependencies between modules MUST NOT exist.
 
-### 14.10 Idempotency
+### 13.10 Idempotency
 
-An operation that can be retried N times MUST produce the same result as running it once.
+- MUST design write operations (gravar mapa, gravar histórico) to be idempotent: gravar o mesmo estado duas vezes produz o mesmo arquivo, byte a byte (ver TESTES.md T14).
+- MUST NOT accumulate state on repeated calls (ex.: aplicar o mesmo comando duas vezes sem querer não deve duplicar o efeito na pilha).
+- MUST test the "salvar duas vezes" scenario para o arquivo de mapa e para o de histórico.
 
-**Rules:**
-- MUST design write operations (HTTP PUT/DELETE, DB upserts, file overwrites) to be idempotent.
-- MUST NOT accumulate state on repeated calls (e.g., double-append on retry).
-- SHOULD use idempotency keys for operations that cannot be made naturally idempotent.
-- MUST test the "call twice" scenario for all mutation endpoints.
+### 13.11 Tell, Don't Ask
 
-### 14.11 Tell, Don't Ask
-
-Don't query an object's state to make a decision externally  -  tell the object to act and let it decide internally.
-
-> Distinct from Law of Demeter (§ 14.4): LoD governs *how far* you reach into the object graph; TDA governs *where decisions live*. Both can be violated independently.
-
-**Rules:**
 - MUST NOT extract state from an object, compute a decision outside, then push the result back in.
 - MUST place the decision inside the object that owns the relevant data.
-- SHOULD expose behavior-revealing methods (`aprovar()`, `descontar()`) over state-revealing getters (`getStatus()`, `getValor()`).
+- SHOULD expose behavior-revealing methods (`aplicar()`, `desfazer()`) over state-revealing getters.
 
-### 14.12 POLA  -  Principle of Least Astonishment
+### 13.12 POLA  -  Principle of Least Astonishment
 
-A function, method, or API MUST behave exactly as its name and signature lead the caller to expect. Surprising behavior is a bug, even when documented.
-
-**Rules:**
 - MUST NOT perform side effects that the name does not indicate (`buscar*` MUST NOT write; `calcular*` MUST NOT mutate).
 - MUST NOT return a different type or shape depending on a hidden flag or global state.
-- MUST NOT silently ignore parameters  -  if a parameter is accepted, it MUST affect behavior.
-- MUST use names that reveal what the unit does at the abstraction level of the caller.
-- Boolean parameters that change the *kind* of operation MUST be replaced by two separate functions.
+- MUST NOT silently ignore parameters: if a parameter is accepted, it MUST affect behavior.
 
 ---
 
-## 15. API Design  -  REST
+## 14. Fora de Escopo  -  o que foi removido e por que
 
-- Nouns for URLs, Plural.
-- Verbs for HTTP methods (GET, POST, PUT, PATCH, DELETE).
-- Proper Status Codes (201, 204, 404, 422, 500).
-- ISO 8601 for dates.
+Este contrato e uma poda da versão genérica do vault para um editor de mapa desktop, local, de usuario único, sem rede, sem banco de dados, escrito em C++23 sem Qt sobre o GlintFx. Foram removidas por completo, por não se aplicarem: regras especificas de Qt/widgets, acessibilidade de navegador, OWASP Top 10 e SQL injection, API Design REST, Logging estruturado/observability de servidor, e LGPD (não há dado pessoal processado). O detalhe do que saiu de cada secao, e por que, está no relatório de poda do tech-lead (histórico de sessão/commit desta mudança), não duplicado aqui para não desatualizar em silencio.
 
 ---
-
-## 16. Logging & Observability
-
-- Structured JSON logging.
-- NO PII in logs.
-- `/health` endpoint mandatory.
-
----
-
-## 17. LGPD Compliance Baseline
-
-- Data Minimization.
-- Support Right to Erasure.
-- NO PII in stack traces or logs.
-
----
-*This contract is the authoritative reference for all code written in this project.*
+*This contract is the authoritative reference for all code written in this project, subordinado a [`GODS_LAWS.md`](GODS_LAWS.md).*

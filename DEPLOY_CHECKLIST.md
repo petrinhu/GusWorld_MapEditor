@@ -1,66 +1,68 @@
-# DEPLOY CHECKLIST  -  Alterações Irreversíveis em Produção
+# CHECKLIST DE RELEASE (gusworld_mapeditor)
 
-> **Cópia canônica** na raiz do vault (resumo executivo das 7 fases). Versão estável espelhada em [[Resources/Standards/DEPLOY_CHECKLIST]]. Versão completa executável (sub-checklists, comandos de exemplo, tabela de status) em `~/.claude/templates/deploy-checklist.md` — diretiva normativa cross-project descrita em `~/.claude/docs/deploy-irreversivel.md`.
-
-## Referências cruzadas
-
-- Manuais irmãos: [[CONTRACT]] · [[TESTES]] · [[AUDITORIAS]] · [[AGILE]]
-- Hub: [[Standards]] · [[CLAUDE]]
-- Projetos com migrations/produção: [[Projects/site_consultorio]] (migrations/ + public_html/ + cron/) · [[Projects/PokemonTCGViewer]] · [[Projects/rag_maker]]
-- Pré-deploy obrigatório: rodar [[TESTES]] T8 (gitleaks/secrets) + T10 (SQL Injection) + T12 (CVEs)
+> Este editor e uma aplicação desktop local, de usuário único, distribuída como binário via
+> GitHub Releases (L-07: AGPL-3.0-or-later, junto com o GlintFx). Não há servidor, banco de
+> dados, migração de schema, autenticação nem tráfego em produção: o checklist genérico de
+> deploy irreversível (blue-green, shadow traffic, dual write, 2FA, HSTS) não se aplica e foi
+> substituído pelo fluxo abaixo, adequado a publicação de um artefato binário multiplataforma.
+> **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este checklist em qualquer conflito.
 
 ---
 
-> Antes de executar qualquer operação marcada como irreversível percorra **todos** os itens abaixo.
+## O que torna uma release irreversível aqui
+
+Não existe "produção" para fazer rollback. O ponto de não-retorno é outro: **assim que a tag e
+publicada e o artefato anexado ao GitHub Release, usuários podem baixar** -- não da para
+"desfazer" um download que já aconteceu. Qualquer correção pos-publicação sai como release nova,
+nunca como reescrita da tag.
 
 ---
 
-## FASE 0  -  Classificação da Mudança
-- Migração ou alteração de schema de banco de dados
-- Implementação ou modificação de autenticação (2FA, OAuth, SSO)
-- Rotação de chaves criptográficas
-- Operação DROP, TRUNCATE ou ALTER TABLE sem rollback trivial
+## FASE 0  -  Classificação
+
+- [ ] Toda release pública deste projeto e, por definição, o evento irreversível (não ha
+      gradação de "só um pouco em produção"): trate toda tag publicada com o mesmo cuidado.
+- [ ] Mudança no formato de mapa consumido (o formato é do GlintFx, L-03): confirmar que a
+      versão do GlintFx pinada neste release já publicou e testou essa mudança do lado deles.
 
 ---
 
-## FASE 1  -  Pré-Condições de Ambiente
-- Backup completo (dados + schema) realizado nas últimas 2 horas
-- Hash SHA-256 do backup registrado
-- Restauração do backup testada em ambiente isolado
+## FASE 1  -  Pré-condições de Qualidade
+
+- [ ] CI verde nos cinco alvos (L-10): Fedora 44 (primário, pinado), Ubuntu, Arch, CachyOS, Windows.
+- [ ] TESTES.md T1, T2, T3, T4, T8, T12, T14, T16, T17 completos e verdes.
+- [ ] AUDITORIAS.md seções 1-7 sem item CRITICO em aberto.
+- [ ] Nenhuma violação pendente de GODS_LAWS.md, checada explicitamente contra L-01, L-03, L-04, L-12.
+- [ ] GlintFx pinado em versão publicada e testada (nunca `main`/`latest`).
 
 ---
 
-## FASE 2  -  Shadow Deployment (Validação de Tráfego em Sombra)
-- Mirror de tráfego ativo: requisições reais duplicadas para o ambiente Green/Shadow; respostas ao usuário só do Blue (produção atual)
-- Mínimo 30 min de tráfego espelhado; divergência de taxa de erro Blue x Green < 0,1%; latência P99 do Green não excede o Blue em mais de 15%
-- Sem Load Balancer configurável (ex.: hospedagem compartilhada): substituir por dupla validação manual em staging, documentada no `CLAUDE.md` do projeto, e avançar para a Fase 3
+## FASE 2  -  Build dos Artefatos
+
+- [ ] Binário gerado e fumaça-testado (abre, cria mapa vazio, fecha sem crash) em cada um dos
+      cinco alvos antes de anexar a release.
+- [ ] Round-trip de arquivo (TESTES.md T14) confirmado no binário final de cada plataforma, não
+      só no build de desenvolvimento.
 
 ---
 
-## FASE 3  -  Database Migration (Dual Writes)
-- A aplicação está configurada para escrever simultaneamente no banco legado e no novo schema
-- Backfill de dados históricos concluído
-- Validação de consistência lógica 100% (amostra mínima de 1.000 registros)
+## FASE 3  -  Publicação
+
+- [ ] Tag semver (`vX.Y.Z`), seguindo o versionamento combinado com o GlintFx.
+- [ ] Release notes citam os IDs do `TODO.md` fechados nesta release.
+- [ ] Artefatos dos cinco alvos anexados ao GitHub Release.
+- [ ] Licença AGPL-3.0-or-later presente em cada artefato distribuído (LICENSE + cabeçalho SPDX,
+      L-07).
+- [ ] Push, tag e publicação autorizados explicitamente pelo lider nesta sessão (autorização
+      anterior não vale para sempre).
 
 ---
 
-## FASE 4  -  Validação de Segurança
-- Bibliotecas criptográficas de fontes oficiais
-- Cabeçalhos de Segurança HTTP (HSTS, CSP, X-Frame)
-- Fluxo de 2FA validado (Passou)
+## FASE 4  -  Pós-Release
 
----
-
-## FASE 5  -  Blue-Green Cutover
-- Rollback plan documentado e testado
-- Health check retornando 200 OK por 5 minutos consecutivos
-- Taxa de erro pós-cutover < 0,5%
-- **Sub-fase 5.3 (passo irreversível):** mínimo 48h de operação estável no novo ambiente + aprovação nominal registrada (Responsável + Data-Hora + Assinatura) + banco/estado legado desativado mas mantido offline por 30 dias adicionais antes do descarte definitivo
-
----
-
-## FASE 6  -  Pós-Deploy e Documentação
-- Incident report: o que mudou, quando, quem aprovou, métricas de validação
-- Runbook de rollback atualizado com lições aprendidas
-- Alertas de monitoramento ajustados para a nova arquitetura
-- Time notificado da conclusão bem-sucedida do deploy
+- [ ] `TODO.md` atualizado: itens fechados nesta release marcados, nunca `OK` direto sem a onda
+      de verificação (ver convenção de frescor da tabela de pendências).
+- [ ] Prompt de limpeza de pastas de build oferecido ao usuário (CONTRACT.md §11, Post-Release
+      Cleanup Prompt).
+- [ ] Se um bug for encontrado após a publicação, a correção sai como release nova: a tag
+      publicada nunca e reescrita nem apagada.
