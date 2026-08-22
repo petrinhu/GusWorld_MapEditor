@@ -224,13 +224,13 @@ jobs:
       - name: Instalar gitleaks (binario pinado, verificado)
         run: |
           set -euo pipefail
-          curl -sSfL -o /tmp/gitleaks.tar.gz \
+          curl -sSfL -o "/tmp/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
             "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
           curl -sSfL -o /tmp/gitleaks_checksums.txt \
             "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
           grep "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" /tmp/gitleaks_checksums.txt \
             | (cd /tmp && sha256sum -c -)
-          sudo tar -xzf /tmp/gitleaks.tar.gz -C /usr/bin gitleaks
+          sudo tar -xzf "/tmp/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -C /usr/bin gitleaks
           sudo chmod 0755 /usr/bin/gitleaks
           gitleaks version
 
