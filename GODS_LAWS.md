@@ -225,3 +225,19 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 **Consequência de arquitetura, e ela reforça a L-12 em vez de mexer nela:** a fronteira entre a **aplicação** e a **casca de plataforma** deixa de ser boa prática e passa a ser requisito de produto. Toda capacidade de edição tem de existir e ser exercível **abaixo** da casca; a casca desenha e recebe entrada, e nada mais. Se uma operação só puder ser feita clicando, ela está no lugar errado.
 
 **Consequência de sequenciamento:** o modo headless depende do formato (o leitor e o escritor do GlintFx), **não** da janela. Ele é uma frente que anda assim que o formato existir, muito antes de existir interface, e é o caminho mais curto entre este projeto e um editor que faz algo útil de verdade.
+
+## L-18
+
+**Data:** 23/08/2026, decisão do líder. Lei espelhada do GlintFx (lá é a L-37) e do GusWorld (lá é a L-31), pela mesma ordem dele: **avisar o Gus Dragon é obrigação permanente, não detalhe de protocolo de bus** — por isso é lei própria, e não um parágrafo dentro da lei do bus.
+
+**O pedido, dele, na issue 8 do bus, verbatim:** *"nao precisa dizer algo so quando falo, pode falar quando por exemplo @petrinhu atualiza algo, ou por exemplo quando ele aprova/rejeita/muda algo das minhas ideias"*. Ele endereçou **a todos**, e é por isso que a lei vale nos três projetos.
+
+**O escopo veio do próprio Gus Dragon**, consultado pelo líder em 23/08/2026: ele é avisado, **sem precisar perguntar**, sobre **(a) tudo que é ideia DELE** — quando o líder aprova, rejeita ou muda — **e (b) o que for de alta prioridade dos projetos**, pela régua de WSJF que a tabela de pendências já usa.
+
+**O que isto NÃO é:** um fluxo de aviso sobre toda decisão técnica. O corte por prioridade existe justamente para que o que interessa a ele não se afogue no que não interessa.
+
+**O limite honesto, que se diz a ele em vez de prometer o impossível:** sessão não é serviço rodando. Aviso proativo só sai enquanto alguém está com a sessão aberta; decisão tomada com tudo fechado chega depois. **Ele prefere a verdade a promessa de aviso instantâneo.**
+
+**Nota de descumprimento, registrada porque é a causa do pedido:** o `PROTOCOL.md` do bus **já obrigava** a "Resposta 2" automática — o resultado da decisão do líder vai a ele sem reaprovação de texto. **Ele não deveria ter precisado pedir.** Se pediu, a resposta automática não estava saindo em algum dos quatro canais, e vale conferir se alguma ideia dele ficou sem retorno.
+
+**Formato, quando a resposta for na discussion 7** (o catálogo de bugs que ele mantém): timestamp, uma das três classificações que ele fixou (**Bug Consertado**, **Bug Funcional**, **Bug Possível**) e itens numerados entre parênteses. Ele tem 11 anos, programa, usa Manjaro e git — **o que ele não merece é resposta vaga**, e "não existe código disso ainda" é melhor resposta que estimativa inventada.
