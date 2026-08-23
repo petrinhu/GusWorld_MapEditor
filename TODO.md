@@ -14,6 +14,7 @@ Esta seção existe porque a ausência dela já custou caro nesta noite: um agen
 - **Custo de Atraso (Valor + Criticidade + Redução de Risco) de cada item:** lente do `product-manager`, 22/08/2026.
 - **Job Size de cada item:** lente do `engineering-manager`, 22/08/2026, na unidade "fatia de trabalho de agente" (implementação + revisão adversarial + teste), não hora-pessoa.
 - **Montagem por thread direta** (sem as lentes de arquitetura e de sequenciamento), por decisão do Chief of Staff: o grafo de dependência e as portas de mão única deste projeto já estão congelados nas próprias leis, então não sobrava julgamento para uma lente paralela descobrir.
+- **Os itens `COR-10`, `COR-11` e `FMT-7` foram pontuados pelo ORQUESTRADOR**, em 23/08/2026, não pelas lentes de produto e de engenharia que pontuaram todo o resto. Eles nasceram das decisões 7, 8 e 9 do GlintFx, que chegaram depois da montagem da tabela. A escala usada é a mesma, mas **o número deles vale menos que o dos outros** e deve ser refeito pelas lentes na próxima reordenação.
 - **Pesquisa que sustenta as decisões de produto e de histórico:** levantamento de prior art de 21/08/2026 sobre Warcraft II (formato PUD), Warcraft III, Tiled, LDtk, Godot, Valve Hammer, Ogmo e RPG Maker, mais taxonomia de volumes de colisão e arquitetura de undo/redo. É a base das `L-13` e `L-14` e do documento de necessidade de formato enviado ao GlintFx.
 
 ## Como o WSJF foi calculado
@@ -27,7 +28,6 @@ Esta seção existe porque a ausência dela já custou caro nesta noite: um agen
 
 - **`EXT-1` Formato de mapa v1 publicado pelo GlintFx**, leitor E escritor públicos. Sem data. Trava o grupo `FMT-*`. **O que já foi conquistado:** UUID estável de objeto e de mapa, rotação livre, lista de volumes por objeto, bit separado para bloquear busca de caminho, canal de propriedades nomeadas, e preservação de bloco desconhecido ao regravar com bit "seguro de copiar".
 - **`EXT-2` GlintFx expõe janela, desenho e entrada.** Sem data. Trava **todo** o grupo `APP-*` e o `DES-1`. Hoje o `src` deles tem três arquivos.
-- **`EXT-5` Herança de tipo com exceção por instância**, marcada como tal. Na mesa do CTO do GlintFx. Afeta `APP-5`.
 
 ## Achados das lentes que o líder precisa decidir (não decididos por agente)
 
@@ -62,7 +62,10 @@ Vazia.
 | 8.0 | COR-4 | W4 | Núcleo | Transação explícita por gesto: arrastar o pincel por quarenta células é **um** passo de desfazer. O caro é o gesto abortado no meio, não o caminho feliz. | Alta | COR-3 | Média | ⏳ Pendente | — |
 | 4.3 | COR-5 | W4 | Núcleo | Serialização versionada de comando, exigida pelo histórico persistido (`L-13`). Terceiro contrato de dado do projeto, sem prior art: nenhum editor grande persiste histórico. | Alta | COR-3 | Alta | ⏳ Pendente | — |
 | 4.2 | COR-6 | W5 | Núcleo | Impressão digital do mapa gravada no histórico e recusa graciosa de reaplicar quando o mapa mudou por fora. Sem ela, o histórico persistido corrompe o documento em silêncio. | Média | COR-5 | Média | ⏳ Pendente | — |
+| 3.7 | COR-11 | W5 | Núcleo | Recálculo de redimensionamento de mapa. **É trabalho nosso** por decisão do GlintFx (item 8): a lib só fixa a convenção de coordenada na especificação, porque redimensionar é operação de autoria e não de mecanismo. Sem isto, crescer o mapa desloca objeto para fora sem o autor perceber. | Média | COR-2 | Média | ⏳ Pendente | — |
+| 3.6 | COR-10 | W5 | Núcleo | Herança de tipo com marca de sobrescrita por instância, chaveada por UUID de instância. **É trabalho nosso** por decisão do GlintFx (item 7): o formato guarda instâncias resolvidas mais referência de tipo opaca, e a herança fica no editor. Sem a marca, ao reabrir não se sabe se o valor foi escolhido pelo autor ou herdado, e a próxima mudança de tipo sobrescreve o trabalho dele. | Alta | COR-2 | Média | ⏳ Pendente | — |
 | 3.0 | FMT-5 | W6 | Formato | Arquivo de projeto do editor ao lado do mapa: histórico persistido, notas de autoria, configuração de grade. Nunca dentro do formato do GlintFx (`L-03`). **Não depende de EXT-1**: o formato é nosso. | Alta | COR-6 | Alta | ⏳ Pendente | — |
+| 2.3 | FMT-7 | W7 | Formato | Agrupamento de objetos da sessão de edição, no nosso arquivo ao lado. **Fica fora do formato** por decisão do GlintFx (item 9): grupo de sessão é do editor; grupo que o jogo precisa em runtime vai no canal de propriedades deles. | Baixa | FMT-5 | Média | ⏳ Pendente | — |
 | 8.0 | FMT-1 | W7 | Formato | Abrir mapa pelo leitor público do GlintFx. Primeira vez que o editor toca um mapa real: valida ou derruba tudo que COR-2 supôs. Dispara a `L-02`. | Alta | EXT-1, COR-2 | Média | ⏳ Pendente | — |
 | 9.0 | FMT-6 | W8 | Formato | Validação de teleporte entre mapas: o destino aponta para um mapa que existe. Viável porque o destino é endereço direto por UUID de mapa. | Média | FMT-1 | Baixa | ⏳ Pendente | — |
 | 5.2 | FMT-2 | W8 | Formato | Gravar pelo escritor público do GlintFx. Fecha o ciclo abrir, editar, salvar. Sai errado em silêncio se COR-7 não estiver pronto e testado antes. | Alta | FMT-1, COR-7 | Média | ⏳ Pendente | — |
