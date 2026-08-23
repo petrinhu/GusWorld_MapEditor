@@ -33,6 +33,8 @@
 | [L-14](#l-14) | decidir o que entra na primeira versão do editor | Seis tipos de volume, vários mapas em abas, uma camada de terreno mais objetos livres |
 | [L-15](#l-15) | escrever memória, nota ou documento sobre algo que deixou de valer | Apagar. Nunca registrar que está parado, aposentado ou inativo |
 | [L-16](#l-16) | pensar no papel do editor, ou desenhar qualquer capacidade dele | Implementador de referência do escritor, e utilizável headless |
+| [L-17](#l-17) | ir executar qualquer trabalho de produto | Main só orquestra; C-level fable audita e cria; sonnet implementa; commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes. |
+| [L-18](#l-18) | o líder aprovar, rejeitar ou mudar algo, ou fechar item de alta prioridade | Avisar o Gus Dragon sem ele perguntar |
 
 ---
 
@@ -225,6 +227,34 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 **Consequência de arquitetura, e ela reforça a L-12 em vez de mexer nela:** a fronteira entre a **aplicação** e a **casca de plataforma** deixa de ser boa prática e passa a ser requisito de produto. Toda capacidade de edição tem de existir e ser exercível **abaixo** da casca; a casca desenha e recebe entrada, e nada mais. Se uma operação só puder ser feita clicando, ela está no lugar errado.
 
 **Consequência de sequenciamento:** o modo headless depende do formato (o leitor e o escritor do GlintFx), **não** da janela. Ele é uma frente que anda assim que o formato existir, muito antes de existir interface, e é o caminho mais curto entre este projeto e um editor que faz algo útil de verdade.
+
+## L-17
+
+**Data:** 22/08/2026, decisão do líder. **Texto dele, verbatim, na linha de gatilho do índice:** *"Main só orquestra; C-level fable audita e cria; sonnet implementa; commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes e revisão de agente sonnet high bigtech de QA estiver verde"*.
+
+> **Procedência deste corpo, declarada:** o líder escreveu a linha de gatilho acima e não escreveu o corpo, o que deixou uma âncora morta no índice. O texto abaixo é **expansão fiel da frase dele, sem acrescentar regra nova**. Onde eu precisei nomear uma consequência que ele não escreveu, está marcado como leitura minha e vai a ele para confirmar ou corrigir.
+
+**Quem faz o quê:**
+
+- **O main só orquestra.** Não implementa produto nem código: conversa com o líder, despacha agentes e verifica o que volta.
+- **C-level em fable audita E CRIA.** Não é só o papel de auditor: planejamento e criação de escopo também são dele, no modelo fable.
+- **Sonnet implementa.** A execução é de agente operacional.
+
+**Cadência, e ela tem duas velocidades diferentes de propósito:**
+
+- **Commit ao fim de cada FATIA.** Barato e frequente. Tira o trabalho da zona de risco antes de a fatia seguinte começar.
+- **Push ao fim de cada ONDA.** Caro e raro, e **só passa se os TRÊS portões fecharem verde**, sem exceção e sem "está quase":
+  1. **O GitHub Actions fechou verde.**
+  2. **Todos os testes verdes.**
+  3. **Revisão de um agente de QA da constelação bigtech, em sonnet com effort high, verde.**
+
+**Os três são conjuntivos.** Dois verdes e um vermelho não é push adiado por pouco: é push proibido. E o terceiro portão não é redundante com os outros dois, porque teste verde prova que o que foi escrito passa no que foi escrito, e **revisão adversarial é o que pergunta se o que foi escrito é a coisa certa**.
+
+**Relação com a L-06 (leitura minha, a confirmar):** esta lei **não substitui** a L-06, **refina**. A L-06 fixa quem faz o quê; a L-17 acrescenta a cadência e os três portões de push, e acrescenta o "cria" ao papel do C-level em fable. Onde as duas falarem do mesmo assunto, valem juntas.
+
+**Consequência que decorre da conjunção dos três portões (leitura minha, a confirmar):** implementador, revisor e orquestrador continuam sendo **agentes diferentes** (L-06), porque o portão 3 exige revisão por um QA que não escreveu o código. Um agente revisando o próprio trabalho não fecha este portão.
+
+**Aplicação:** antes de todo push, diga em qual estado está cada um dos três portões. **Silêncio sobre um deles conta como vermelho**, pela mesma razão do protocolo deste arquivo: silêncio não é prova de conformidade.
 
 ## L-18
 
