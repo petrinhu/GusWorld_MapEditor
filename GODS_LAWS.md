@@ -230,9 +230,9 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 
 ## L-17
 
-**Data:** 22/08/2026, decisão do líder. **Texto dele, verbatim, na linha de gatilho do índice:** *"Main só orquestra; C-level fable audita e cria; sonnet implementa; commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes e revisão de agente sonnet high bigtech de QA estiver verde"*.
+**Data:** 22/08/2026, decisão do líder, com a linha de gatilho revista por ele em 23/08/2026. **Texto dele, verbatim, na linha de gatilho do índice:** *"Main só orquestra; C-level fable audita e cria; sonnet implementa; commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes."*
 
-> **Procedência deste corpo, declarada:** o líder escreveu a linha de gatilho acima e não escreveu o corpo, o que deixou uma âncora morta no índice. O texto abaixo é **expansão fiel da frase dele, sem acrescentar regra nova**. Onde eu precisei nomear uma consequência que ele não escreveu, está marcado como leitura minha e vai a ele para confirmar ou corrigir.
+> **Nota de correção, registrada porque o erro foi do tipo mais grave que este arquivo comporta.** A primeira versão deste corpo citava como verbatim do líder uma frase com um **terceiro portão** (revisão de um agente de QA) que ele **removeu** da linha de gatilho enquanto o corpo estava sendo escrito. O corpo foi alinhado ao texto atual dele em 23/08/2026. **Atribuir verbatim ao líder o que ele não escreveu é pior que deixar a lei sem corpo**, porque a citação falsa se propaga como se fosse ordem. Causa mecânica, para não repetir: o orquestrador rodou `git add` no arquivo inteiro e engoliu a edição do líder junto com a própria escrita. **Antes de commitar arquivo que o líder também edita, confira `git diff --cached` linha a linha.**
 
 **Quem faz o quê:**
 
@@ -243,18 +243,17 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 **Cadência, e ela tem duas velocidades diferentes de propósito:**
 
 - **Commit ao fim de cada FATIA.** Barato e frequente. Tira o trabalho da zona de risco antes de a fatia seguinte começar.
-- **Push ao fim de cada ONDA.** Caro e raro, e **só passa se os TRÊS portões fecharem verde**, sem exceção e sem "está quase":
+- **Push ao fim de cada ONDA.** Caro e raro, e **só passa se os DOIS portões fecharem verde**, sem exceção e sem "está quase":
   1. **O GitHub Actions fechou verde.**
   2. **Todos os testes verdes.**
-  3. **Revisão de um agente de QA da constelação bigtech, em sonnet com effort high, verde.**
 
-**Os três são conjuntivos.** Dois verdes e um vermelho não é push adiado por pouco: é push proibido. E o terceiro portão não é redundante com os outros dois, porque teste verde prova que o que foi escrito passa no que foi escrito, e **revisão adversarial é o que pergunta se o que foi escrito é a coisa certa**.
+**Os dois são conjuntivos.** Um verde e um vermelho não é push adiado por pouco: é push proibido.
 
-**Relação com a L-06 (leitura minha, a confirmar):** esta lei **não substitui** a L-06, **refina**. A L-06 fixa quem faz o quê; a L-17 acrescenta a cadência e os três portões de push, e acrescenta o "cria" ao papel do C-level em fable. Onde as duas falarem do mesmo assunto, valem juntas.
+**Alcance, decidido pelo líder em 23/08/2026: os dois portões valem para TODO push, sem distinção de tipo de commit.** Não existe categoria de commit que não conte, pela mesma razão pela qual ele recusou abrir categoria de dependência que não conta: **"terceiro que não conta" é como a regra volta a vazar.** E o custo de obedecer é zero num commit de documentação, porque os dois portões são mecânicos e medidos pelo mesmo pipeline que roda de qualquer forma.
 
-**Consequência que decorre da conjunção dos três portões (leitura minha, a confirmar):** implementador, revisor e orquestrador continuam sendo **agentes diferentes** (L-06), porque o portão 3 exige revisão por um QA que não escreveu o código. Um agente revisando o próprio trabalho não fecha este portão.
+**Relação com a L-06:** esta lei **não substitui** a L-06, **refina**. A L-06 fixa quem faz o quê; a L-17 acrescenta a cadência e os dois portões de push, e acrescenta o "cria" ao papel do C-level em fable. Onde as duas falarem do mesmo assunto, valem juntas. **A regra de que implementador, revisor e orquestrador são agentes diferentes continua sendo da L-06**, e não desta lei.
 
-**Aplicação:** antes de todo push, diga em qual estado está cada um dos três portões. **Silêncio sobre um deles conta como vermelho**, pela mesma razão do protocolo deste arquivo: silêncio não é prova de conformidade.
+**Aplicação:** antes de todo push, diga em qual estado está cada um dos dois portões. **Silêncio sobre um deles conta como vermelho**, pela mesma razão do protocolo deste arquivo: silêncio não é prova de conformidade.
 
 ## L-18
 
