@@ -210,6 +210,29 @@ jobs:
   # 0 porque o gate real e o historico inteiro, nao so o working tree
   # (pega segredo commitado e depois removido). Binario baixado do
   # tarball de release pinado e verificado por checksum, nao curl|sh.
+  #
+  # Download com REPETICAO (tools/ci/download_with_retry.py), depois de
+  # falha real medida em 23/08/2026: "curl: (35) Recv failure: Connection
+  # reset by peer" ao baixar o binario -- rede transitoria, nao vazamento
+  # e nao defeito de codigo; reexecutar o job resolveu na hora. Pela
+  # GODS_LAWS.md L-17, portao vermelho bloqueia o push seguinte, entao uma
+  # conexao resetada nao pode continuar derrubando o job por um motivo
+  # que nao tem nada a ver com o codigo -- e o habito de reexecutar
+  # vermelho sem ler e exatamente o que a L-09 existe para combater.
+  #
+  # A verificacao de checksum CONTINUA obrigatoria e CONTINUA podendo
+  # falhar o job: ontem ela estava CERTA em recusar seguir (nao conseguiu
+  # conferir o binario e parou, em vez de instalar assim mesmo). Isto nao
+  # foi relaxado.
+  #
+  # Os logs abaixo distinguem, com prefixo inequivoco, as tres causas
+  # possiveis de vermelho neste job -- que sao situacoes DIFERENTES e nao
+  # podem parecer a mesma coisa para quem le o resumo:
+  #   REDE      -- falha transitoria de rede, foi repetida, so falha o job
+  #                se esgotar as tentativas.
+  #   CHECKSUM  -- binario baixado nao confere com o checksum publicado;
+  #                falha REAL, nunca repetida, nunca instalada assim mesmo.
+  #   ACHADO    -- gitleaks encontrou segredo no historico; falha REAL.
   # ---------------------------------------------------------------------
   secrets:
     name: gitleaks (secrets no historico)
@@ -221,15 +244,29 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Instalar gitleaks (binario pinado, verificado)
+      - name: Instalar gitleaks (binario pinado, verificado, download com repeticao)
         run: |
           set -euo pipefail
-          curl -sSfL -o "/tmp/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
-            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
-          curl -sSfL -o /tmp/gitleaks_checksums.txt \
-            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_checksums.txt"
-          grep "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" /tmp/gitleaks_checksums.txt \
-            | (cd /tmp && sha256sum -c -)
+
+          echo "::group::Download (rede, com repeticao -- ver tools/ci/download_with_retry.py)"
+          python3 tools/ci/download_with_retry.py \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
+            "/tmp/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          python3 tools/ci/download_with_retry.py \
+            "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_checksums.txt" \
+            "/tmp/gitleaks_checksums.txt"
+          echo "::endgroup::"
+
+          echo "::group::Verificacao de checksum (falha aqui e REAL -- nunca repetida, nunca ignorada)"
+          if grep "gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" /tmp/gitleaks_checksums.txt \
+              | (cd /tmp && sha256sum -c -); then
+            echo "CHECKSUM: OK, binario confere com o publicado na release."
+          else
+            echo "::error::CHECKSUM (real, binario NAO confere com o publicado na release -- isto NAO e falha de rede, nao foi repetido de proposito): nao instalar, nao reexecutar sem investigar." >&2
+            exit 1
+          fi
+          echo "::endgroup::"
+
           sudo tar -xzf "/tmp/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" -C /usr/bin gitleaks
           sudo chmod 0755 /usr/bin/gitleaks
           gitleaks version
@@ -240,4 +277,13 @@ jobs:
       # nao editar o .gitleaksignore para faze-lo passar sem antes provar,
       # igual foi feito com o achado atual, que o valor e ficticio.
       - name: gitleaks -- historico completo
-        run: gitleaks detect --source . --redact --no-banner --verbose --exit-code 1
+        run: |
+          set -euo pipefail
+          echo "::group::gitleaks detect (achado aqui e REAL -- segredo no historico, nao rede nem checksum)"
+          if gitleaks detect --source . --redact --no-banner --verbose --exit-code 1; then
+            echo "::endgroup::"
+          else
+            echo "::endgroup::"
+            echo "::error::ACHADO (real, gitleaks): segredo encontrado no historico do repositorio -- isto NAO e falha de rede nem de checksum. Nao reexecutar sem investigar; revise o output acima e o .gitleaksignore." >&2
+            exit 1
+          fi
