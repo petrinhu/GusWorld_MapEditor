@@ -36,7 +36,7 @@ Esta seção existe porque a ausência dela já custou caro nesta noite: um agen
 
 ## Vocabulário de Status (fechado)
 
-- **✅ Concluído**, **🔄 Em andamento**, **🟡 Parcial**, **⏳ Pendente**, **💡 Decisão tomada**, **🎨 Pendente design** (aguarda decisão do líder, não pode ser puxado), **🔍 Pendente verificação** (implementado, aguarda validação).
+- **✅ Concluído**, **🔄 Em andamento**, **🟡 Parcial**, **⏳ Pendente**, **💡 Decisão tomada**, **🎨 Pendente design** (aguarda decisão do líder, não pode ser puxado), **🔍 Pendente verificação** (implementado, aguarda validação), **⛔ Bloqueado** (parou por causa externa, não avança até a causa sair), **❌ Reprovado** (entregue, revisado adversarialmente e reprovado; volta para a fila com o motivo na descrição), **🚫 Cancelado** (decidiu-se não fazer; nada entregue, fora da fila).
 - Regra de trânsito: implementação entregue vira **🔍**, nunca **✅** direto. **✅** só depois do teste ou da auditoria correspondente passar.
 
 ## Fundação já entregue em 22/08/2026 (registro, não pendência)
