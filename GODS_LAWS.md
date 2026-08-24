@@ -118,6 +118,20 @@ O rigor de teste, portão de CI e auditoria é **o mesmo do GlintFx**, adaptado 
 
 **Framework de teste: HARNESS PRÓPRIO, decidido em 22/08/2026 via `AskUserQuestion`.** Nada de Catch2 nem de qualquer biblioteca de teste de terceiro. A lente de engenharia achou a colisão: o `TESTES.md` recomendava Catch2, e a **L-01 proíbe biblioteca de terceiro**; framework de teste é biblioteca de terceiro linkada no binário. O GlintFx resolveu o mesmo problema escrevendo harness próprio, e o deles é referência legítima de como fazer. O líder recusou tanto o Catch2 quanto a saída de abrir exceção declarada na lei, e a razão de recusar a exceção é a que importa: **"terceiro que não conta" é como dependência volta a entrar num projeto que a expulsou.**
 
+**Desenho do teste, decidido pelo líder em 24/08/2026, e as três peças são porta de mão única.**
+
+**1. Prefixo e namespace do harness: `GUSMAP_` e `gusmap::test`.** É `Gus` mais `map`, homenagem ao Gus Dragon, e aparece em toda linha de asserção do projeto para sempre. Trocar depois de trezentos testes escritos é reescrever a asserção de todos.
+
+**2. Teste baseado em propriedade com gerador PRÓPRIO, nunca da biblioteca padrão.** O padrão da linguagem especifica o motor (`mt19937` dá a mesma sequência crua em qualquer lugar) mas **não especifica as distribuições**, que são a conta que transforma o número cru em valor. Consequência medida: mesma semente, mesmo código, **casos de teste diferentes no Fedora e no Windows**, e a receita de reprodução impressa na falha não reproduz nada. Isso mataria a reprodutibilidade exatamente nos cinco alvos da L-10. O gerador é escrito em casa, de algoritmo publicado, e nasce com teste de valores dourados que falha na hora se alguma plataforma divergir.
+
+**3. Semente fixa no CI, exploração à parte, e toda descoberta vira caso fixo.** Três regras que andam juntas:
+
+- **No CI, semente fixa.** Determinístico, reproduzível, e **nunca instável**. Teste que falha por sorteio bloquearia push sob a L-17 sem defeito nenhum no código, e pior, ensinaria a reexecutar vermelho sem ler, que é o hábito que a L-09 inteira existe para combater.
+- **Num job separado de exploração**, que roda por fora e **não bloqueia push**, semente do relógio **impressa no log**. É ele que varre território novo, e resolve a fraqueza real da semente fixa, que é testar sempre os mesmos casos.
+- **Falha achada pela exploração vira caso FIXO no CI**, com a semente dela. O bug encontrado nunca mais volta sem ser notado, e a descoberta vira proteção permanente em vez de sumir na execução seguinte.
+
+**4. Redução automática do contraexemplo (shrinking) entra junto**, não fica para depois: quando uma propriedade falha, a ferramenta encolhe o caso até o menor que ainda quebra. Depurar repartição de polígono com quarenta vértices é outra coisa que depurar com quatro.
+
 **Refinamento decidido pelo líder em 22/08/2026, com a tensão à vista.** A regra acima, aplicada ao pé da letra num projeto que ainda não tem código, deixaria o CI **vermelho por meses** — e vermelho crônico treina todo mundo a ignorar vermelho, que é a mesma doença por outro caminho. A distinção que resolve está entre duas frases: *"olhei e está limpo"* quando não se olhou nada é **mentira**, e foi ela que derrubou o portão do GlintFx; *"não há nada para olhar ainda, e eu declaro isso"* é **verdade**.
 
 Portanto: **enquanto NENHUMA das pastas de camada existir** (`domain`, `application`, `platform`), o portão **sai zero**, declarando que varreu zero e que não há alvo — e é **proibido** imprimir "OK", "limpo" ou "nenhuma violação" nesse caminho, porque isso seria afirmar verificação que não houve. **No instante em que QUALQUER uma das três pastas passar a existir, varrer zero volta a ser FALHA**, e a trava fecha sozinha, sem ninguém precisar virar uma chave.
