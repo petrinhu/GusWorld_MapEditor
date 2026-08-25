@@ -39,3 +39,9 @@ set_tests_properties(harness_selftest_fail PROPERTIES WILL_FAIL TRUE)
 # GODS_LAWS.md L-09's property-test decision depends on stops being a
 # promise and becomes a gate the instant this test is green on all five.
 mapeditor_add_test(prop_determinism_test)
+
+# domain_version_test.cpp - proves the domain layer (GODS_LAWS.md L-12)
+# compiles and links against the harness (desenho-cor1.md §5, item 1).
+# This is the test that arms the CI layer gate's trap the moment
+# src/domain/ exists (GODS_LAWS.md L-09).
+mapeditor_add_test(domain_version_test mapeditor::domain)

@@ -19,11 +19,7 @@ project(gusworld_mapeditor VERSION 0.1.0 LANGUAGES CXX)
 list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 include(MapeditorCompileOptions)
 
-# add_subdirectory(src) entra no passo 2 do desenho (desenho-cor1.md
-# §6), junto com o primeiro arquivo de src/domain/ -- ate la, src/ nem
-# existe (GODS_LAWS.md L-11: projeto do zero), e chamar
-# add_subdirectory sobre um diretorio inexistente e erro de CMake, nao
-# "nada a verificar ainda".
+add_subdirectory(src)
 
 # A costura com o GlintFx fica DOCUMENTADA aqui, nao implementada
 # (desenho-cor1.md §2.1: "nenhuma opcao morta, nenhum if especulativo").
