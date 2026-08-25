@@ -3,9 +3,10 @@
 """
 tools/ci/selftest_check_allowed_includes.py
 
-Autoteste de check_allowed_includes.py com QUATRO controles (GODS_LAWS.md
+Autoteste de check_allowed_includes.py com CINCO controles (GODS_LAWS.md
 L-09 + decisao do lider de 22/08/2026 sobre a TRAVA "verde declarando
-zero", mesma exigencia do irmao selftest_check_layers.py):
+zero", mesma exigencia do irmao selftest_check_layers.py; o quinto entrou
+em 24/08/2026 com a decisao do lider sobre a REGRA DE CORTE da allowlist):
 
     1. POSITIVO -- planta dependencia proibida de tres formas (lib de
        terceiro fora de platform, lib de terceiro DENTRO de platform --
@@ -25,6 +26,13 @@ zero", mesma exigencia do irmao selftest_check_layers.py):
        arquivo C++ no repo inteiro -> exit 1; (c) so a pasta <nome>
        existindo com um arquivo que NAO casa extensao C++ -> exit 1 --
        o buraco explicito apontado pelo lider.
+    5. DECISAO  -- fixa a REGRA DE CORTE decidida pelo lider em 24/08/2026
+       (auditoria do COR-1): <limits> ACEITO (entrou na allowlist por
+       decisao), e os cinco headers que compilam em -std=c++23 mas ficaram
+       fora POR DECISAO (<iso646.h>, <stdalign.h>, <stdbool.h>,
+       <stdatomic.h>, <strstream>) continuam BARRADOS. Existe para ninguem
+       "corrigir de volta" a lista achando que foi esquecimento -- ver o
+       comentario REGRA DE CORTE em check_allowed_includes.py.
 
 Uso:
     python3 tools/ci/selftest_check_allowed_includes.py
@@ -149,12 +157,43 @@ def control_trava() -> tuple[bool, str]:
     return ok_geral, "\n".join(detalhes)
 
 
+def control_decisao() -> tuple[bool, str]:
+    """5o controle (decisao do lider, 24/08/2026, apos a auditoria
+    adversarial do COR-1): prova as DUAS direcoes da REGRA DE CORTE da
+    allowlist -- <limits> aceito, e cada um dos cinco headers excluidos
+    POR DECISAO barrado com violacao nomeada."""
+    detalhes: list[str] = []
+    ok_geral = True
+
+    with tempfile.TemporaryDirectory(prefix="deps-decisao-limits-") as td:
+        root = Path(td)
+        _write(root, "domain/limites.cpp", "#include <limits>\n")
+        r = _run(root)
+        ok = r.returncode == 0 and "OK" in r.stdout
+        detalhes.append(f"<limits> aceito: {'PASS' if ok else 'FAIL'} "
+                         f"exit={r.returncode} stdout={r.stdout!r} stderr={r.stderr!r}")
+        ok_geral = ok_geral and ok
+
+    for header in ("iso646.h", "stdalign.h", "stdbool.h", "stdatomic.h", "strstream"):
+        with tempfile.TemporaryDirectory(prefix="deps-decisao-barrado-") as td:
+            root = Path(td)
+            _write(root, "domain/uso.cpp", f"#include <{header}>\n")
+            r = _run(root)
+            ok = r.returncode == 1 and f"<{header}>" in r.stderr
+            detalhes.append(f"<{header}> barrado: {'PASS' if ok else 'FAIL'} "
+                             f"exit={r.returncode} stderr={r.stderr!r}")
+            ok_geral = ok_geral and ok
+
+    return ok_geral, "\n".join(detalhes)
+
+
 def main() -> int:
     controles = [
         ("positivo", control_positivo),
         ("negativo", control_negativo),
         ("vazio", control_vazio),
         ("trava", control_trava),
+        ("decisao", control_decisao),
     ]
     falhou = False
     for nome, fn in controles:
@@ -167,7 +206,7 @@ def main() -> int:
     if falhou:
         print("selftest_check_allowed_includes: FALHA -- ver controle(s) acima.")
         return 1
-    print("selftest_check_allowed_includes: OK -- os quatro controles se comportaram como esperado.")
+    print("selftest_check_allowed_includes: OK -- os cinco controles se comportaram como esperado.")
     return 0
 
 

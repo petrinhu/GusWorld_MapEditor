@@ -68,6 +68,25 @@ from layer_common import (  # noqa: E402
 # vez de blocklist aqui. Inclui os headers de compatibilidade C (cXXX) e
 # suas contrapartes .h por pragmatismo (nao e regra de estilo deste portao
 # escolher entre <cstdint> e <stdint.h> -- isso e clang-tidy, TESTES.md T2).
+#
+# REGRA DE CORTE da lista (decisao do lider, 24/08/2026, depois de a
+# auditoria adversarial do COR-1 medir a lista contra o compilador em
+# -std=c++23 e achar 6 headers que compilam e nao estavam aqui): entra o
+# header C++ padrao VIVO, na forma idiomatica de C++. Fica FORA, POR
+# DECISAO e nao por esquecimento, o header que compila mas e:
+#   (a) compatibilidade com C sem conteudo em C++23 -- <iso646.h>,
+#       <stdalign.h>, <stdbool.h> sao vazios ou redundantes em C++
+#       (diferente de <stdio.h>/<string.h> etc. acima, que tem conteudo
+#       real e por isso estao na lista);
+#   (b) alternativa em estilo C a um header C++ proprio -- <stdatomic.h>:
+#       atomicos no estilo C; em C++ o certo e <atomic>;
+#   (c) depreciado -- <strstream>, depreciado desde C++98, substituido
+#       por <sstream>.
+# Dos 6 achados, so <limits> entrou (ver a entrada dele abaixo). Quem
+# esbarrar no portao ao incluir um dos cinco de cima esta esbarrando de
+# proposito; nao "corrigir de volta" sem ordem do lider. O autoteste
+# (selftest_check_allowed_includes.py, controle "decisao") fixa as duas
+# direcoes: <limits> passa, os cinco continuam barrados.
 STD_HEADERS: frozenset[str] = frozenset({
     # C compat (nome C++ e nome C)
     "cassert", "assert.h", "cctype", "ctype.h", "cerrno", "errno.h",
@@ -79,6 +98,12 @@ STD_HEADERS: frozenset[str] = frozenset({
     "cuchar", "uchar.h", "cwchar", "wchar.h", "cwctype", "wctype.h",
     # Concepts / coroutines
     "concepts", "coroutine", "generator",
+    # Numeric limits. <limits> entrou em 24/08/2026 por decisao do lider
+    # (achado da auditoria do COR-1: estava fora por ESQUECIMENTO, e o
+    # implementador, barrado ao precisar de std::numeric_limits, contornou
+    # com <cstdint> -- barrar header padrao vivo empurra o autor para
+    # contorno pior, que e o oposto do que este portao existe para fazer).
+    "limits",
     # Utilities
     "any", "bit", "bitset", "chrono", "compare", "expected",
     "functional", "initializer_list", "optional", "source_location",
