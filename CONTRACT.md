@@ -326,12 +326,12 @@ Este projeto usa camadas horizontais finas, com a dependência apontando só par
 
 **A proteção do domínio não vem de interface, vem de regra de dependência fiscalizada por portão de CI:**
 
-- `domínio` nunca inclui header de `aplicação` nem de `casca de plataforma`, nem de GlintFx, nem do SO.
-- `aplicação` nunca inclui header de GlintFx nem do SO.
-- Só `casca de plataforma` inclui GlintFx.
+- `domain` nunca inclui header de `application` nem de `platform`, nem de GlintFx, nem do SO.
+- `application` nunca inclui header de GlintFx nem do SO.
+- Só `platform` inclui GlintFx.
 - **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (L-09)**: procedimento e exemplo concreto em [TESTES.md seção A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
 
-**Nomenclatura de diretório real (quando o código nascer):** os nomes acima (domínio, aplicação, casca) são conceituais. Nos diretórios de verdade em `src/`, usar ASCII sem acento (ex.: `dominio/`, `aplicacao/`, `casca/`) por serem caminho de arquivo num projeto que builda em Windows como um dos cinco alvos de CI (L-10); acento em nome de diretório é fonte evitável de dor cross-platform.
+**Nomenclatura de diretório real, decidida em 22/08/2026 (L-12):** os nomes conceituais acima (domínio, aplicação, casca de plataforma) descrevem a camada em prosa; os diretórios de verdade em `src/` usam os nomes em **INGLÊS**: `domain/`, `application/`, `platform/`. Três razões, todas de L-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows (um dos cinco alvos de CI, L-10). A prosa deste contrato e as mensagens de commit continuam em português; só o nome do diretório e do identificador de código muda de idioma.
 
 **"Átomos com POCO próprio"** vale no domínio e nos casos de uso, onde se paga sozinho: classe pequena, responsabilidade única, sem interface desnecessária. **Não** vale para a casca de plataforma: exigir um átomo por campo de um painel de inspeção num editor de usuário único é over-engineering. Átomo é sobre tamanho e responsabilidade, não sobre indireção: um POCO concreto de vinte linhas, sem interface nenhuma, é um átomo perfeito.
 
@@ -339,8 +339,8 @@ Este projeto usa camadas horizontais finas, com a dependência apontando só par
 
 ```
 [ ] A classe pertence a exatamente uma camada?
-[ ] Nenhuma dependência para cima (domínio -> aplicação, aplicação -> casca)?
-[ ] Nenhum header de GlintFx fora da casca de plataforma?
+[ ] Nenhuma dependência para cima (domain -> application, application -> platform)?
+[ ] Nenhum header de GlintFx fora de `platform/`?
 [ ] Nenhum header de SO, RmlUi, SDL, GLFW ou Qt em lugar nenhum (L-01)?
 ```
 

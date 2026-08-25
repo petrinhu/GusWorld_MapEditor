@@ -62,7 +62,7 @@ fi
 
 **Objetivo:** verificar que cada módulo do domínio e da aplicação se comporta conforme especificado, de forma isolada e sem janela (ver T16).
 
-**Ferramenta recomendada:** Catch2 (mesma ferramenta usada no GlintFx, evita duas suítes de teste diferentes convivendo no ecossistema). **Esta é uma recomendação de tooling, não uma lei confirmada pelo líder** -- ver pendência no relatório de poda.
+**Ferramenta: harness PRÓPRIO, decidido pelo líder em 22/08/2026 (GODS_LAWS L-09).** Nada de Catch2 nem de qualquer biblioteca de teste de terceiro: framework de teste é biblioteca linkada no binário, e a L-01 proíbe terceiro linkado. O líder recusou tanto o Catch2 quanto abrir exceção declarada na lei -- "terceiro que não conta é como dependência volta a entrar num projeto que a expulsou". O harness do GlintFx é a referência legítima de desenho. **Prefixo de macro `GUSMAP_` e namespace `gusmap::test`** (L-09, 24/08/2026), presentes em toda asserção do projeto.
 
 **Critério de aprovação:** 0 falhas. Cobertura mínima de 80% no domínio e na aplicação (camadas 100% testáveis sem janela, ver T16), sem piso definido para a casca de plataforma enquanto o GlintFx não tiver janela.
 
@@ -85,7 +85,16 @@ Este projeto **não** escreve o parser do formato de mapa (isso é do GlintFx, L
 1. **Parsing do arquivo de histórico** (arquivo próprio do editor, L-13): gerar entradas aleatórias/corrompidas (truncadas, bytes inválidos, impressão digital de mapa que não bate) e confirmar que o editor **recusa** reaplicar sem crashar, nunca "adivinha" o estado.
 2. **Repartição de polígono côncavo em peças convexas** (fronteira nossa por decisão da L-03): gerar polígonos aleatórios (côncavos, com vértice colinear, com orientação invertida, degenerados) e verificar as invariantes descritas em T17.
 
-**Ferramenta:** teste baseado em propriedade (ex.: `RapidCheck` ou geração própria com seed fixa e registrada em log) rodando sobre as duas superfícies acima; fuzzing puro (libFuzzer) e opcional, priorizar teste de propriedade por cobrir melhor o espaço de polígonos validos/inválidos.
+**Ferramenta: NUNCA `RapidCheck` nem qualquer motor de propriedade de terceiro (L-01, L-09).** O desenho abaixo foi decidido pelo líder em 24/08/2026 e as três peças são porta de mão única -- não reabrir por conveniência de implementação.
+
+1. **Gerador PRÓPRIO, nunca da biblioteca padrão para a parte de distribuição.** O padrão da linguagem especifica o motor (`std::mt19937` dá a mesma sequência crua em qualquer lugar) mas **não** especifica as distribuições (`std::uniform_int_distribution` e companhia), que são a conta que transforma o número cru em valor de teste. Consequência medida: mesma semente, mesmo código, casos de teste **diferentes** no Fedora e no Windows, e a receita de reprodução impressa na falha não reproduz nada -- isso mataria a reprodutibilidade nos cinco alvos da L-10. As distribuições nascem escritas em casa, de algoritmo publicado, com **teste de valores dourados** que falha na hora se alguma plataforma divergir.
+2. **Semente fixa no CI, exploração à parte, e toda descoberta vira caso fixo:**
+   - **No CI, semente fixa.** Determinístico, reproduzível, nunca instável -- teste que falha por sorteio bloquearia push sob a L-17 sem defeito nenhum no código.
+   - **Job separado de exploração**, que roda por fora e **não bloqueia push**, com semente do relógio **impressa no log**. É ele que varre território novo, cobrindo a fraqueza da semente fixa (testar sempre os mesmos casos).
+   - **Falha achada pela exploração vira caso FIXO no CI**, com a semente dela. O bug encontrado nunca mais volta sem ser notado.
+3. **Redução automática do contraexemplo (shrinking) entra junto, não fica para depois.** Quando uma propriedade falha, a ferramenta encolhe o caso até o menor que ainda quebra -- depurar repartição de polígono com quarenta vértices é outra coisa que depurar com quatro.
+
+Roda sobre as duas superfícies do topo desta seção; fuzzing puro (libFuzzer) é opcional, priorizar teste de propriedade por cobrir melhor o espaço de polígonos válidos/inválidos.
 
 ---
 
@@ -245,11 +254,11 @@ Para **cada** peça resultante da repartição:
 
 **Procedimento:**
 
-1. Rodar o verificador de camadas (script próprio, ex.: `scripts/verificar_camadas.sh`, baseado em `grep`/`ast-grep` sobre `#include`) contra `src/dominio/`, `src/aplicacao/` e `src/casca/` (nomes de diretório em ASCII sem acento, por serem caminho de arquivo num projeto que builda em Windows, L-10; os nomes reais definitivos ficam a critério de quem escrever o `CMakeLists.txt`).
+1. Rodar o verificador de camadas (script próprio, ex.: `scripts/verificar_camadas.sh`, baseado em `grep`/`ast-grep` sobre `#include`) contra `src/domain/`, `src/application/` e `src/platform/` (nomes de diretório em inglês, decisão final da L-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows, L-10).
 2. **O verificador MUST imprimir `Arquivos varridos: N` e falhar se `N == 0` (L-09, ver seção 0 deste documento).**
-3. Falha se qualquer arquivo de `dominio/` incluir header de `aplicacao/`, `casca/`, GlintFx ou do SO.
-4. Falha se qualquer arquivo de `aplicacao/` incluir header do GlintFx ou do SO.
-5. Falha se algum outro diretório, além de `casca/`, incluir header do GlintFx.
+3. Falha se qualquer arquivo de `domain/` incluir header de `application/`, `platform/`, GlintFx ou do SO.
+4. Falha se qualquer arquivo de `application/` incluir header do GlintFx ou do SO.
+5. Falha se algum outro diretório, além de `platform/`, incluir header do GlintFx.
 
 **Critério de aprovação:** 0 violações criticas, com `N > 0` arquivos efetivamente varridos.
 
