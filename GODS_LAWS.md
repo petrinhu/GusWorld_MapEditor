@@ -62,6 +62,10 @@ Toda interação com janela, entrada, desenho, som e recurso passa **exclusivame
 
 **O `gusworld_mapeditor` deixa de definir o formato e passa a gravá-lo**, como qualquer consumidor no mundo. Necessidade nossa **não vira campo por decisão nossa**: vira pedido, descrito em palavras, julgado por eles.
 
+**Convenção de extensão da casa, ampliada em 24/08/2026:** todo formato próprio do ecossistema usa `.gw.<tipo>`. Verbatim do líder, relatado pela sessão do `gusworld`: *"`.gw.text` e mantenha o padrão de `.gw.[tipo]` para nossos formatos próprios"*. **Consequência para nós: o arquivo de projeto do editor (`FMT-5`), que é formato genuinamente nosso, segue essa convenção** e não pode ser batizado fora dela.
+
+**A distinção que o caso expôs, e que vale para todo tipo futuro: EXTENSÃO NÃO É FORMATO.** O nome do arquivo diz de quem é a etiqueta; não diz quem desenhou o conteúdo. A armadilha que isto existe para impedir é alguém ver `.gw.` num nome, concluir que o formato é nosso, e sentir-se livre para mudá-lo. Documentado também do lado do `gusworld`, em `docs/tech/convencao-formatos-gw.md`.
+
 **Extensão do arquivo, decidida pelo líder em 24/08/2026: `.gw.map`.** Verbatim: *"nossos os mapas terão formato proprio em .gw.map"*, esclarecido por ele em seguida como sendo **só a extensão**. **Os bytes continuam sendo o formato do GlintFx, byte a byte.** A extensão é identidade do GusWorld no nome do arquivo, não formato próprio: nada nesta lei muda, o editor segue gravando no formato deles, e o papel de implementador de referência da L-16 segue de pé. Registrado com esta redundância de propósito, porque a frase original **lida sozinha soa como revogação desta lei**, e o orquestrador chegou a montar o argumento contra antes de perguntar. Quem reler daqui a um ano lê a resposta junto.
 
 **Aplicação:** é proibido criar formato concorrente, camada de tradução, ou "formato do editor que depois converte". Se o editor precisa gravar algo que o formato deles não carrega (histórico, nota de autor, camada de trabalho), isso vai em **arquivo ao lado**, nunca dentro do formato de mapa — regra declarada por eles e aceita aqui.
