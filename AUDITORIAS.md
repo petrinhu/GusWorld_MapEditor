@@ -37,6 +37,12 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 - [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (L-09; ver TESTES.md seção 0).
 - [ ] Nenhuma dependência circular entre módulos.
 - [ ] Nenhum "serviço-deus" na aplicação com dezenas de casos de uso; um caso de uso por operação de edição.
+- [ ] Nenhuma unidade (classe, caso de uso, arquivo) acumula razões de mudar de mais de uma lei
+      não relacionada (L-19): a resposta à pergunta 1 da L-19 consta no relatório de revisão de
+      cada fatia auditada, unidade por unidade.
+- [ ] Spot-check do auditor (L-19): o maior arquivo de cada camada e o arquivo com mais aparições
+      no `git log --stat` passaram pelas cinco perguntas respondidas pelo próprio auditor, e o
+      resultado bate com os relatórios de revisão.
 
 🟠 **IMPORTANTE**
 
@@ -99,6 +105,8 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 🟠 **IMPORTANTE / 🟢 COSMÉTICO**
 
 - [ ] SOLID respeitado (CONTRACT.md §3): nenhuma classe com mais de uma razão para mudar.
+- [ ] Nenhum "é só mais um método": unidade que cresceu na fatia teve as cinco perguntas da L-19
+      respondidas na revisão adversarial; silêncio sobre uma unidade conta como não revisada.
 - [ ] DRY, regra de três (CONTRACT.md §6.7): nenhuma abstração criada antes da terceira ocorrência real.
 - [ ] Funções <= 40 linhas, <= 4 parâmetros, <= 3 níveis de aninhamento.
 - [ ] Nomes revelam intenção; comentários explicam o porquê, não o que.
