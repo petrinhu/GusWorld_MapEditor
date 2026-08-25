@@ -204,6 +204,40 @@ jobs:
       - name: Autoteste -- portao de dependencia permitida
         run: python3 tools/ci/selftest_check_allowed_includes.py
 
+      - name: Autoteste -- medidor de hotspots (restricao "nunca bloqueia", L-19)
+        run: python3 tools/ci/selftest_measure_hotspots.py
+
+  # ---------------------------------------------------------------------
+  # MEDIDOR informativo de L-19 (GODS_LAWS.md), decisao do lider depois do
+  # CTO propor um numero em vez da regra qualitativa. ISTO NAO E UM PORTAO:
+  # nao pode reprovar o CI em circunstancia nenhuma -- zero limite, zero
+  # numero magico, zero comparacao com teto, so imprime. Roda uma vez (e
+  # analise estatica de texto + `git log`, nao precisa dos cinco alvos da
+  # L-10). `continue-on-error: true` no step e cinto-e-suspensorio alem da
+  # garantia do proprio script (que ja sai 0 sempre): mesmo se o ambiente
+  # falhar de um jeito que o script nao previu (python3 ausente, etc.),
+  # este job nunca deixa o workflow vermelho.
+  #
+  # fetch-depth 0 (mesmo padrao do job "secrets" abaixo): a segunda lista
+  # do medidor (frequencia nos ultimos N commits) depende de historico, e
+  # o padrao raso do Actions (fetch-depth 1) a deixaria sem o que contar.
+  # Se mesmo assim vier raso (ex.: workflow_dispatch com configuracao
+  # diferente), o proprio script DETECTA e DECLARA -- nunca imprime lista
+  # vazia como se fosse "ninguem tocou em nada" (GODS_LAWS.md L-09, mesmo
+  # espirito aplicado a um medidor que nao e portao).
+  # ---------------------------------------------------------------------
+  hotspots-informativo:
+    name: Medidor de hotspots (informativo, L-19 -- NUNCA bloqueia o CI)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Medidor de hotspots (tamanho + frequencia -- so imprime)
+        continue-on-error: true
+        run: python3 tools/ci/measure_hotspots.py . --commits 20
+
   # ---------------------------------------------------------------------
   # gitleaks -- secrets no historico completo. Mesmo padrao do GlintFx e
   # do restante do ecossistema (transcritor, tab_pendencias): fetch-depth
