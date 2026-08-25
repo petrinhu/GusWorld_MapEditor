@@ -107,7 +107,7 @@ jobs:
             echo "AVISO: sem CMakeLists.txt neste commit -- nada para compilar ainda (GODS_LAWS.md L-11). Build pulado, declarado explicitamente."
             exit 0
           fi
-          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.cc }}
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.cc }} -DMAPEDITOR_WERROR=ON
           cmake --build build
           ctest --test-dir build --output-on-failure
 
@@ -156,7 +156,7 @@ jobs:
             Write-Host "AVISO: sem CMakeLists.txt neste commit -- nada para compilar ainda (GODS_LAWS.md L-11). Build pulado, declarado explicitamente."
             exit 0
           }
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DMAPEDITOR_WERROR=ON
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build build --config Release
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
