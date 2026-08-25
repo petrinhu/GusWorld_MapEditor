@@ -1,3 +1,5 @@
+> **DOCUMENTO GENÉRICO DO VAULT, NÃO É REGRA DESTE PROJETO.** Este é o teoria de liderança C-level , escrito para valer em vários projetos de portes e stacks diferentes. Exemplo citado aqui (linguagem, biblioteca, ferramenta) é ilustração do conceito, **nunca recomendação para o `gusworld_mapeditor`**. As regras deste projeto vivem, nesta ordem de autoridade: [`GODS_LAWS.md`](GODS_LAWS.md), depois [`CONTRACT.md`](CONTRACT.md) e [`TESTES.md`](TESTES.md). Em qualquer conflito, elas vencem este arquivo.
+
 # Quem Lidera o Pipeline de Release? Mapa de C-Levels e a Constelação de Agents
 
 > Resposta curta: **nenhum C-level único lidera o pipeline inteiro**. O CEO coordena estrategicamente; CPO, CTO e CMO lideram operacionalmente cada grande bloco. CIO **não é** o papel correto para produto digital. Este documento mapeia a teoria de liderança e a sua materialização na constelação de agents do Claude.

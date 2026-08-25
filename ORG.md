@@ -1,3 +1,5 @@
+> **DOCUMENTO GENÉRICO DO VAULT, NÃO É REGRA DESTE PROJETO.** Este é o manual de governança da constelação de agents , escrito para valer em vários projetos de portes e stacks diferentes. Exemplo citado aqui (linguagem, biblioteca, ferramenta) é ilustração do conceito, **nunca recomendação para o `gusworld_mapeditor`**. As regras deste projeto vivem, nesta ordem de autoridade: [`GODS_LAWS.md`](GODS_LAWS.md), depois [`CONTRACT.md`](CONTRACT.md) e [`TESTES.md`](TESTES.md). Em qualquer conflito, elas vencem este arquivo.
+
 # ORG.md — Organização tipo Bigtech no Claude
 
 > Manual de governança da constelação de agents C-level e do roteamento de pipeline. Junta o aprendizado acumulado (agents, skills, hooks, manuais) com os artefatos `[[pipeline_release_1.0]]` e `[[lideranca_pipeline_release]]`. Estrutura o `~/.claude` como uma empresa de produto digital, dimensionável do projeto pequeno (early) à bigtech.

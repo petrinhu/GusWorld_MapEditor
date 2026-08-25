@@ -1,3 +1,5 @@
+> **DOCUMENTO GENÉRICO DO VAULT, NÃO É REGRA DESTE PROJETO.** Este é o metodologia ágil da casa , escrito para valer em vários projetos de portes e stacks diferentes. Exemplo citado aqui (linguagem, biblioteca, ferramenta) é ilustração do conceito, **nunca recomendação para o `gusworld_mapeditor`**. As regras deste projeto vivem, nesta ordem de autoridade: [`GODS_LAWS.md`](GODS_LAWS.md), depois [`CONTRACT.md`](CONTRACT.md) e [`TESTES.md`](TESTES.md). Em qualquer conflito, elas vencem este arquivo.
+
 # AGILE.md  -  Diretiva de Sistema: Metodologia Ágil
 
 > **Cópia canônica** na raiz do vault. Versão estável espelhada em [[Resources/Standards/AGILE]].

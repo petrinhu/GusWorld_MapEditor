@@ -1,3 +1,5 @@
+> **DOCUMENTO GENÉRICO DO VAULT, NÃO É REGRA DESTE PROJETO.** Este é o pipeline de release de 12 fases , escrito para valer em vários projetos de portes e stacks diferentes. Exemplo citado aqui (linguagem, biblioteca, ferramenta) é ilustração do conceito, **nunca recomendação para o `gusworld_mapeditor`**. As regras deste projeto vivem, nesta ordem de autoridade: [`GODS_LAWS.md`](GODS_LAWS.md), depois [`CONTRACT.md`](CONTRACT.md) e [`TESTES.md`](TESTES.md). Em qualquer conflito, elas vencem este arquivo.
+
 # Pipeline Completo: Da Ideia ao Release 1.0 de um Aplicativo
 
 > Referência profissional do ciclo completo de desenvolvimento de produto digital: fases, sub-fases, caminhos paralelos, entregáveis, papéis humanos e o **agent responsável** em cada etapa. Integrado à constelação de C-levels em [[ORG]] e à teoria de liderança em [[lideranca_pipeline_release]].

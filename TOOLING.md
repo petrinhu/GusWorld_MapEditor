@@ -1,3 +1,5 @@
+> **DOCUMENTO GENÉRICO DO VAULT, NÃO É REGRA DESTE PROJETO.** Este é o catálogo de ferramentas por agent , escrito para valer em vários projetos de portes e stacks diferentes. Exemplo citado aqui (linguagem, biblioteca, ferramenta) é ilustração do conceito, **nunca recomendação para o `gusworld_mapeditor`**. As regras deste projeto vivem, nesta ordem de autoridade: [`GODS_LAWS.md`](GODS_LAWS.md), depois [`CONTRACT.md`](CONTRACT.md) e [`TESTES.md`](TESTES.md). Em qualquer conflito, elas vencem este arquivo.
+
 # TOOLING.md — Ferramentas FOSS Automatizáveis dos Agents
 
 > 6º manual canônico do vault. Catálogo das melhores ferramentas livres (FOSS) Linux, automatizáveis via CLI/headless, mapeadas aos agents que devem usá-las SEMPRE que a tarefa pedir. Status auditado no sistema (Fedora 44) em 2026-05-28.
