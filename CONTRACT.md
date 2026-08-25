@@ -119,6 +119,12 @@ public:
 
 - One class = one clearly stated responsibility.
 - Class size: SHOULD NOT exceed 300 lines. If it does, decompose.
+- **This number is orientation, not the criterion (GODS_LAWS.md L-19).** The rule that decides
+  monolith is REASON TO CHANGE, not line count: a unit is sane at 500 coherent lines with one law
+  behind it, and rotten at 80 lines if two unrelated laws force it to change. Exceeding 300 lines
+  MUST NOT trigger an automatic split; it MUST trigger the five L-19 questions in adversarial
+  review, answered against the actual unit. Splitting a coherent unit to please the number is the
+  remedy becoming the disease -- see L-19, "O que esta lei NÃO proíbe".
 - Constructor MUST NOT perform heavy work (I/O, cálculo pesado). Use an `inicializar()` method.
 - MUST implement the Rule of Five/Zero or equivalent resource management.
 
