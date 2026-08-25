@@ -72,9 +72,26 @@ void check_eq(const A& a, const B& b, std::string_view file, int line, std::stri
 // LIMITATION, documented on purpose (desenho-cor1.md §3.3): this only
 // works in the top-level body of a GUSMAP_TEST case. Used inside a
 // lambda or a helper function, the `return` below returns from THAT
-// lambda/helper, not from the test case -- a helper that needs a
-// precondition guard must use GUSMAP_CHECK and return a bool of its
-// own instead.
+// lambda/helper, not from the test case -- and the consequence is
+// WORSE than "wrong function returns", measured by the adversarial
+// audit of COR-1: if the caller of that lambda/helper trusts the
+// REQUIRE to have aborted and keeps using data it guards (e.g. an
+// index REQUIRE was meant to bounds-check), the process can go on to
+// crash with an uncaught exception or a raw memory fault. The failure
+// IS still recorded (no silent PASS), but the executable dies by
+// SIGABRT/SIGSEGV instead of finishing the case with a clean
+// "[FAIL] name" -- and because ONE executable holds every
+// GUSMAP_TEST case linked into it (mapeditor_add_test, one binary per
+// tests/*.cpp), that crash takes every OTHER case in the SAME binary
+// down with it, unreported, and ctest sees a crashed process instead
+// of a readable summary. A helper that needs a precondition guard must
+// use GUSMAP_CHECK and return a bool of its own instead, checked by
+// the caller before it touches the guarded data.
+//
+// One class of misuse IS caught at compile time, for free: inside a
+// non-void lambda, the bare `return;` below does not typecheck, so
+// GUSMAP_REQUIRE in a lambda that is expected to return a value simply
+// fails to compile instead of returning early with the wrong type.
 #define GUSMAP_REQUIRE(cond)                                                                      \
     do {                                                                                          \
         if (!(cond)) {                                                                            \

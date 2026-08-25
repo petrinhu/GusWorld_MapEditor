@@ -122,6 +122,25 @@ void run_property_impl(std::string_view prop_name, std::uint64_t seed, int itera
 // SAME body still fails. It is a bounded, best-effort local reduction
 // (prop.cpp documents the exact bound), not a promise of the globally
 // smallest possible counterexample.
+//
+// CONTRACT (found missing by COR-1's adversarial audit): `body` MUST
+// be a pure function of (rng, i) -- it must not accumulate state in
+// anything that outlives a single call (a captured reference, a
+// static, a global, a member the lambda mutates across invocations).
+// The runner calls `body` far more often than "iterations" suggests:
+// once (muted) to detect the failure, then AGAIN for every shrink
+// probe (up to the bounded budget in prop.cpp), then once more (this
+// time unmuted) for the final reported replay. Measured by the audit
+// with an instrumented, deliberately impure body: a SINGLE failing
+// iteration out of 10 requested drove 1363 calls to `body` before
+// run_property_impl returned. If `body` mutates shared state instead
+// of deriving everything it needs from the `Rng&` it is handed, the
+// shrinker ends up reacting to how many times it has already run, not
+// to the values `rng` produced -- and the reported counterexample stops
+// meaning anything. Domain generators for future properties (COR-7's
+// polygon/history round-trip tests are the obvious candidates) must
+// build a fresh value from `rng` on every call, never mutate one in
+// place across calls.
 template <typename F>
 void run_property(std::string_view prop_name, std::uint64_t seed, int iterations, F&& body) {
     run_property_impl(prop_name, seed, iterations,
