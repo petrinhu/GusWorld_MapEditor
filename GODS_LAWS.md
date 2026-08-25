@@ -35,6 +35,7 @@
 | [L-16](#l-16) | pensar no papel do editor, ou desenhar qualquer capacidade dele | Implementador de referência do escritor, e utilizável headless |
 | [L-17](#l-17) | ir executar qualquer trabalho de produto | Main só orquestra; C-level fable audita e cria; sonnet implementa; commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes. |
 | [L-18](#l-18) | o líder aprovar, rejeitar ou mudar algo, ou fechar item de alta prioridade | Avisar o Gus Dragon sem ele perguntar |
+| [L-19](#l-19) | criar classe ou caso de uso, acrescentar método ou responsabilidade a unidade existente, ou revisar fatia | Proibido monolito: uma razão de mudar por unidade. Regra qualitativa, julgada na revisão adversarial pelas cinco perguntas |
 
 ---
 
@@ -290,3 +291,72 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 **Nota de descumprimento, registrada porque é a causa do pedido:** o `PROTOCOL.md` do bus **já obrigava** a "Resposta 2" automática — o resultado da decisão do líder vai a ele sem reaprovação de texto. **Ele não deveria ter precisado pedir.** Se pediu, a resposta automática não estava saindo em algum dos quatro canais, e vale conferir se alguma ideia dele ficou sem retorno.
 
 **Formato, quando a resposta for na discussion 7** (o catálogo de bugs que ele mantém): timestamp, uma das três classificações que ele fixou (**Bug Consertado**, **Bug Funcional**, **Bug Possível**) e itens numerados entre parênteses. Ele tem 11 anos, programa, usa Manjaro e git — **o que ele não merece é resposta vaga**, e "não existe código disso ainda" é melhor resposta que estimativa inventada.
+
+## L-19
+
+**Data:** 24/08/2026, via `AskUserQuestion`. Promove a lei em vigor a ordem original que a L-12 cita desde 22/08/2026 e que nunca tinha virado regra no corpo de lei nenhuma: *"PROIBIDO monolitos."*
+
+**Por que esta lei existe como lei própria:** a frase aparecia uma única vez neste arquivo, dentro das aspas do cabeçalho da L-12, sem gatilho, sem aplicação e sem forma de alguém violar e ser pego. Ordem citada não é ordem em vigor. É a mesma família de defeito que a L-09 registra no portão que varre zero e imprime verde: a promessa existe, a verificação não. Esta lei transforma a citação em regra com gatilho e com lugar no processo.
+
+**Decisão do líder, 24/08/2026: a regra é QUALITATIVA.** Ele recusou explicitamente fixar número (linhas por arquivo, métodos por classe) com portão de CI que mede e falha. A lei descreve o que é monolito neste projeto e a fiscalização mora na **revisão adversarial**, não em portão automático. Custo declarado na pergunta e assumido por ele: sem número, a lei depende do revisor reconhecer o monolito, e casos parecidos podem sair julgados diferente. As cinco perguntas abaixo existem para encolher esse espaço de julgamento, não para eliminá-lo.
+
+### O que é monolito NESTE projeto
+
+Monolito não é arquivo grande: é uma unidade (classe, caso de uso, arquivo) que acumula **razões diferentes de mudar**. E neste projeto as razões de mudar já estão catalogadas, porque as leis as fixaram: o formato do mapa é do GlintFx (L-03), o histórico tem regras próprias (L-13), a lista de volumes é fechada (L-14), a API de plataforma é a do GlintFx (L-01), a repartição convexa é nossa (L-03). A régua concreta:
+
+> **Se mudanças vindas de leis DIFERENTES e não relacionadas obrigam a editar a MESMA unidade, ela está virando monolito.**
+
+### Onde o monolito vai nascer aqui, e por que cada lugar é atraente
+
+Monolito nunca nasce por burrice; nasce por conveniência local que parece razoável no dia. Os lugares de risco deste editor, com a conveniência nomeada:
+
+| Lugar de risco | Como nasce | Por que parece razoável |
+|---|---|---|
+| **Documento de mapa** (o agregado do domínio) | O documento agrega célula, objeto posicionado e volume, e por isso todo comportamento novo "cabe nele": serializar, validar, repartir polígono, aplicar comando, tudo vira método do documento | "O dado já está aqui, é um método a mais" |
+| **Pilha de histórico** | Em vez de cada comando saber aplicar e desfazer a si mesmo (L-13), a pilha vira despachante com um `switch` por tipo de comando, ganhando um caso por operação | A serialização dos comandos (L-13) pede um registro central, e o registro tenta virar dono da execução |
+| **Camada de aplicação** | O serviço-deus que a L-12 já proíbe por nome: um `EditorService` onde cada operação de edição nova é "só mais um método" ao lado dos irmãos | Descobribilidade: "está tudo num lugar só" |
+| **Casca de plataforma** | A isenção de atomização da L-12 lida como licença: um `EditorApp` que roteia entrada E troca ferramenta E gerencia abas E decide regra de negócio | Os callbacks do GlintFx chegam todos no mesmo lugar |
+| **Caminho de gravação** | Escritor + repartição convexa + selo de integridade + arquivo de histórico ao lado, tudo numa classe só | "Para o usuário, salvar é um gesto só" |
+| **Modo headless (L-16)** | Um runner de linha de comando que acumula subcomandos e lógica própria até virar um segundo editor | "É só a CLI, não é o produto" |
+
+### As cinco perguntas do revisor
+
+"Isto é monolito?" ninguém sabe responder. As perguntas abaixo, sim, e cada uma se responde **olhando o código**, não opinando:
+
+1. **A pergunta das leis.** Quais leis obrigariam esta unidade a mudar (L-01 API, L-03 formato, L-13 histórico, L-14 escopo)? Responde-se lendo os includes e os métodos públicos. Uma lei: unidade sã. Duas ou mais, não relacionadas: monolito em formação.
+2. **A frase sem "e".** O CONTRACT.md §3 já fixa o teste: descreva a unidade numa frase; se precisar de "e" ligando verbos de natureza diferente ("aplica movimento E persiste E valida geometria"), reprova. A frase escrita entra no relatório de revisão.
+3. **O teste monta o mundo?** Para exercitar UM comportamento da unidade, o arrange do teste precisa de documento aberto, histórico vivo e abas montadas? Átomo de domínio se constrói sozinho, com os próprios campos. Responde-se lendo o arrange dos testes da fatia. (É a L-16 dita de outro jeito: capacidade que só é exercível com o mundo montado está no lugar errado.)
+4. **O que entra pelo include?** O header da unidade puxa grupos que não conversam entre si (grade + serialização + histórico)? A lista de includes é a lista de dependências, e se lê em dez segundos.
+5. **Quem paga a próxima feature?** No diff da fatia (`git log --stat`), a operação nova tocou quais arquivos? Se toda operação nova aterrissa no mesmo arquivo (mais um método, mais um caso de `switch`), esse arquivo é o monolito nascendo. É a pergunta mais objetiva das cinco: responde-se com o diff, não com julgamento.
+
+### Sinais precoces
+
+Esta lei nasce com o projeto em 923 linhas e o maior arquivo em 237. Monolito de 3000 linhas todo mundo vê; a lei existe para reconhecê-lo com 300:
+
+- **O mesmo arquivo aparece no diff de todas as fatias.** É o sinal mais barato de medir e o mais confiável.
+- **Construtor, ou fixture de teste, ganhando parâmetro a cada fatia.** A unidade está precisando de cada vez mais mundo para existir.
+- **`switch` sobre tipo de comando, volume ou ferramenta que ganha um caso por feature.** O desenho da L-13 é o oposto disso: cada comando sabe aplicar e desfazer a si mesmo.
+- **Nome sem substantivo de domínio:** `Manager`, `Service`, `Helper`, `Utils`, `Core`. Célula, comando, volume e porta têm nome próprio; a unidade que não consegue dizer o que é, é porque faz de tudo.
+- **Um `utils.hpp` acumulando funções soltas** sem razão comum de mudar (o CONTRACT.md §6.7 já proíbe o helper genérico antes da terceira ocorrência real).
+- **A frase "é só mais um método" aparecendo como justificativa na revisão.** Essa frase é o som do monolito crescendo: verdadeira em cada passo individual, falsa na soma.
+
+### O que esta lei NÃO proíbe
+
+Regra sem fronteira vira desculpa para fragmentar tudo, e aí o remédio é a doença:
+
+- **Unidade grande e coesa.** Tamanho não é o critério. A repartição de polígono côncavo (L-03) pode legitimamente virar o maior arquivo do domínio e continuar sendo um átomo, porque tem uma razão de mudar. Caso real da casa: `tests/harness/prop.cpp` é hoje o maior arquivo do projeto (237 linhas) e é são: motor de teste de propriedade, uma razão de mudar, o desenho fixado na L-09.
+- **O documento de mapa agregar os dados.** O documento É o agregado: célula, objeto e volume moram nele por definição. Monolito é acúmulo de **comportamento** (serializar, validar, repartir, despachar), não de dados. Proibir o agregado seria proibir o domínio.
+- **A casca de plataforma numa peça.** A L-12 isenta a casca da atomização, e esta lei não revoga a isenção. A casca degenera por outro caminho, que a L-12 e o CONTRACT.md §5 já cobrem: regra de negócio dentro dela.
+- **Fragmentar por contagem.** A divisão é por razão de mudar, nunca por linha. Espalhar um algoritmo coeso em cinco arquivos "step" para agradar contagem reprova nas mesmas cinco perguntas (a terceira, na hora: o teste agora precisa montar os cinco). O teto de ~300 linhas do CONTRACT.md §2.2 continua sendo orientação (SHOULD), não portão: excedê-lo obriga a responder as cinco perguntas na revisão, não a dividir.
+
+### Fiscalização (onde a lei mora no processo)
+
+Lei qualitativa sem lugar no processo é lei que ninguém aplica. Três amarras:
+
+1. **Na revisão adversarial de cada fatia** (implementador, revisor e orquestrador são três agentes, L-06): para **cada unidade criada ou crescida** na fatia, o revisor responde as cinco perguntas e grava as respostas no relatório de revisão. **Silêncio sobre uma unidade conta como unidade não revisada**, pelo mesmo princípio da L-17: silêncio não é prova de conformidade. A quinta pergunta se responde sempre, porque o diff sempre existe.
+2. **No `AUDITORIAS.md`:** a seção 1 ganha item CRÍTICO ("nenhuma unidade acumula razões de mudar de mais de uma lei; os relatórios de revisão das fatias auditadas contêm as cinco perguntas respondidas por unidade") e a seção 6 passa a apontar para esta lei. O auditor (C-level em fable, L-06) não confia nos relatórios: pega o maior arquivo de cada camada e o arquivo com mais aparições no `git log --stat`, responde ele mesmo as cinco perguntas e compara com o que os relatórios disseram.
+3. **Divergência tem dono.** Se implementador e revisor discordarem, ou se a separação exigida tiver custo real (reescrita grande, fronteira genuinamente duvidosa), a decisão vai ao líder por L-05, nunca sai no silêncio de um agente.
+
+**Ao despachar subagent** que crie classe ou caso de uso, o texto desta lei vai no prompt da task (protocolo deste arquivo, item 2); a ordem de serviço do revisor cita as cinco perguntas como parte do entregável dele.
+
+---
