@@ -289,7 +289,7 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 
 ## GM-18
 
-**Data:** 23/08/2026, decisão do líder. Lei espelhada do GlintFx (lá é a L-37) e do GusWorld (lá é a L-31), pela mesma ordem dele: **avisar o Gus Dragon é obrigação permanente, não detalhe de protocolo de bus** — por isso é lei própria, e não um parágrafo dentro da lei do bus.
+**Data:** 23/08/2026, decisão do líder. Lei espelhada do GlintFx (lá é a L-37) e do GusWorld (lá é a GW-31), pela mesma ordem dele: **avisar o Gus Dragon é obrigação permanente, não detalhe de protocolo de bus** — por isso é lei própria, e não um parágrafo dentro da lei do bus.
 
 **O pedido, dele, na issue 8 do bus, verbatim:** *"nao precisa dizer algo so quando falo, pode falar quando por exemplo @petrinhu atualiza algo, ou por exemplo quando ele aprova/rejeita/muda algo das minhas ideias"*. Ele endereçou **a todos**, e é por isso que a lei vale nos três projetos.
 
