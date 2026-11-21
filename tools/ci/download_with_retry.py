@@ -12,8 +12,8 @@ falhou com "curl: (35) Recv failure: Connection reset by peer" ao baixar o
 binario do gitleaks das releases do GitHub. Nao foi vazamento nem defeito
 de codigo -- foi a rede que caiu no meio do download, e reexecutar o job
 resolveu na hora. Um portao vermelho por causa de rede bloqueia push
-(GODS_LAWS.md L-17) por um motivo que nao tem nada a ver com o codigo, e
-ensina a reexecutar CI vermelho sem ler -- o habito que a L-09 existe para
+(GODS_LAWS.md GM-17) por um motivo que nao tem nada a ver com o codigo, e
+ensina a reexecutar CI vermelho sem ler -- o habito que a GM-09 existe para
 combater.
 
 Uso:

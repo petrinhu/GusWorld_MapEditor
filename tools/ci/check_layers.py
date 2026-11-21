@@ -3,7 +3,7 @@
 """
 tools/ci/check_layers.py
 
-Portao de CI: regra de dependencia entre camadas (GODS_LAWS.md L-12).
+Portao de CI: regra de dependencia entre camadas (GODS_LAWS.md GM-12).
 
     1. domain      -- POCO puro. NUNCA inclui application nem platform.
     2. application -- caso de uso. NUNCA inclui header do GlintFx.
@@ -13,11 +13,11 @@ A camada de um arquivo e decidida pelo NOME DO DIRETORIO que o contem
 (qualquer componente do caminho, sem diferenciar maiuscula, igual a
 "domain", "application" ou "platform" -- ver layer_common.classify_layer).
 Isto e deliberado: nao existe ainda uma convencao de onde o codigo mora
-(GODS_LAWS.md L-11, projeto do zero), entao o portao nao assume um layout
+(GODS_LAWS.md GM-11, projeto do zero), entao o portao nao assume um layout
 de topo especifico (nem `src/domain/`, nem `domain/`, nem `libs/x/domain/`)
 -- ele reconhece a camada onde quer que ela apareca na arvore.
 
-GODS_LAWS.md L-09, regra que motivou esta tarefa: um portao que varre ZERO
+GODS_LAWS.md GM-09, regra que motivou esta tarefa: um portao que varre ZERO
 arquivos e imprime verde e indistinguivel de um portao que olhou e nao
 achou nada. Este script SEMPRE declara quantos arquivos varreu por camada.
 
@@ -33,7 +33,7 @@ e a trava tem de perceber isso.
     - NENHUMA das tres pastas existe em lugar nenhum da arvore E total==0:
       Exit 0. Este e o caminho "ainda nao ha o que auditar" -- a mensagem
       NUNCA afirma "OK", "limpo" ou "sucesso", porque nao houve verificacao
-      nenhuma, so ausencia de alvo (GODS_LAWS.md L-11).
+      nenhuma, so ausencia de alvo (GODS_LAWS.md GM-11).
     - QUALQUER uma das tres pastas existe (vazia ou nao) E total==0:
       Exit 1. A pasta de camada existe e mesmo assim nada foi varrido --
       sintoma de filtro quebrado ou arvore incoerente, exatamente a mesma
@@ -72,7 +72,7 @@ def _violation_str(file: Path, line_no: int, msg: str) -> str:
 
 def run(root: Path) -> tuple[int, list[str]]:
     """Devolve (total_arquivos_de_camada, lista_de_violacoes_formatadas).
-    Tambem imprime o resumo de contagem -- e a parte que L-09 exige."""
+    Tambem imprime o resumo de contagem -- e a parte que GM-09 exige."""
     counts = {"domain": 0, "application": 0, "platform": 0}
     violations: list[str] = []
 
@@ -91,13 +91,13 @@ def run(root: Path) -> tuple[int, list[str]]:
                     violations.append(_violation_str(
                         f, inc.line_no,
                         f'domain inclui "{inc.path}" (camada application) -- '
-                        "proibido por GODS_LAWS.md L-12: dominio e POCO puro.",
+                        "proibido por GODS_LAWS.md GM-12: dominio e POCO puro.",
                     ))
                 elif "platform" in segs:
                     violations.append(_violation_str(
                         f, inc.line_no,
                         f'domain inclui "{inc.path}" (camada platform) -- '
-                        "proibido por GODS_LAWS.md L-12: dominio e POCO puro.",
+                        "proibido por GODS_LAWS.md GM-12: dominio e POCO puro.",
                     ))
 
         elif layer == "application":
@@ -107,13 +107,13 @@ def run(root: Path) -> tuple[int, list[str]]:
                     violations.append(_violation_str(
                         f, inc.line_no,
                         f'application inclui "{inc.path}" (header do GlintFx) -- '
-                        "proibido por GODS_LAWS.md L-12: so platform pode "
+                        "proibido por GODS_LAWS.md GM-12: so platform pode "
                         "incluir GlintFx direto.",
                     ))
 
         # platform: nenhuma regra de camada aqui. A proibicao de dependencia
         # de terceiro fora do GlintFx e do escopo do OUTRO portao
-        # (check_allowed_includes.py, GODS_LAWS.md L-01).
+        # (check_allowed_includes.py, GODS_LAWS.md GM-01).
 
     total = sum(counts.values())
     print(
@@ -140,7 +140,7 @@ def main(argv: list[str]) -> int:
                 "varridos e NENHUMA das pastas domain/application/platform "
                 f"existe ainda em lugar nenhum de '{root}'. Isto NAO e uma "
                 "verificacao bem-sucedida: e ausencia de alvo (GODS_LAWS.md "
-                "L-11, projeto do zero). Decisao do lider em 22/08/2026: "
+                "GM-11, projeto do zero). Decisao do lider em 22/08/2026: "
                 "este caminho sai 0 SO enquanto nenhuma das tres pastas "
                 "existir; no instante em que uma aparecer, varrer zero "
                 "arquivos volta a ser falha."
@@ -153,10 +153,10 @@ def main(argv: list[str]) -> int:
             "check_layers: FALHA -- ha pasta de camada existindo "
             f"({existentes}) mas 0 arquivo de codigo C++ foi varrido dentro "
             f"delas sob '{root}'. Isto NAO e o caminho \"projeto ainda nao "
-            "comecou\" (GODS_LAWS.md L-11): a pasta ja existe, entao isto e "
+            "comecou\" (GODS_LAWS.md GM-11): a pasta ja existe, entao isto e "
             "sintoma de filtro de extensao errado, pasta so com arquivo que "
             "nao casa (ex.: um .md dentro de domain/), ou arvore quebrada. "
-            "GODS_LAWS.md L-09 continua valendo aqui: varrer zero, com "
+            "GODS_LAWS.md GM-09 continua valendo aqui: varrer zero, com "
             "pasta existindo, e falha, nao sucesso.",
             file=sys.stderr,
         )
@@ -168,7 +168,7 @@ def main(argv: list[str]) -> int:
             print(v, file=sys.stderr)
         return 1
 
-    print("check_layers: OK -- nenhuma violacao de camada (GODS_LAWS.md L-12).")
+    print("check_layers: OK -- nenhuma violacao de camada (GODS_LAWS.md GM-12).")
     return 0
 
 

@@ -3,23 +3,23 @@
 tools/ci/layer_common.py
 
 Utilidades compartilhadas pelos dois portoes de CI de arquitetura/dependencia
-(check_layers.py e check_allowed_includes.py). GODS_LAWS.md L-12 (camadas
-horizontais finas: domain / application / platform) e L-01 (so a API publica
+(check_layers.py e check_allowed_includes.py). GODS_LAWS.md GM-12 (camadas
+horizontais finas: domain / application / platform) e GM-01 (so a API publica
 do GlintFx, lista do permitido).
 
 Nada aqui depende de biblioteca externa: so a stdlib do Python 3, para rodar
-sem instalar nada nos cinco alvos de CI (L-10) que tem python3 disponivel
+sem instalar nada nos cinco alvos de CI (GM-10) que tem python3 disponivel
 (a matriz de build C++ e outra frente; estes portoes rodam num job unico
 ubuntu-latest, GlintFx/.github/workflows/ci.yml faz o mesmo com o job "leis").
 
-Limitacao declarada (regra "no silent caps", GODS_LAWS.md L-09 exige
+Limitacao declarada (regra "no silent caps", GODS_LAWS.md GM-09 exige
 honestidade sobre o que o portao NAO cobre): a extracao de #include e
 textual, nao usa um parser C++ de verdade. Comentario de bloco (/* ... */)
 e removido do arquivo inteiro antes de procurar por diretivas; comentario de
 linha (//) e removido linha a linha. Diretiva de include partida em duas
 linhas por barra invertida no fim da linha NAO e reconhecida -- nenhum
 arquivo real deste projeto faz isso hoje (nada a varrer ainda, GODS_LAWS.md
-L-11), e se algum dia aparecer, os proprios portoes vao falhar ruidosamente
+GM-11), e se algum dia aparecer, os proprios portoes vao falhar ruidosamente
 por "0 arquivos" se a extracao quebrar tudo, nunca em silencio.
 """
 from __future__ import annotations
@@ -47,7 +47,7 @@ EXCLUDE_DIR_NAMES = {
 # Prefixos de diretorio de build (build, build-shared, cmake-build-debug, ...)
 EXCLUDE_DIR_PREFIXES = ("build", "cmake-build", "out")
 
-# As tres camadas de L-12, nesta ordem porque e a ordem de dependencia
+# As tres camadas de GM-12, nesta ordem porque e a ordem de dependencia
 # permitida (dominio no centro, plataforma na casca externa).
 LAYER_NAMES = ("domain", "application", "platform")
 
@@ -161,7 +161,7 @@ def extract_includes(path: Path) -> list[Include]:
     multi-linha antes de um #include desloca o numero de linha reportado.
     O portao ainda acusa o arquivo certo; so a linha pode escorregar
     quando isso acontece -- aceitavel porque nenhum arquivo real do
-    projeto existe ainda (GODS_LAWS.md L-11) e o caso e raro na pratica."""
+    projeto existe ainda (GODS_LAWS.md GM-11) e o caso e raro na pratica."""
     try:
         raw = path.read_text(encoding="utf-8", errors="replace")
     except OSError:

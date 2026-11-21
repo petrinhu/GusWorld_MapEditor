@@ -78,7 +78,7 @@ std::uint64_t Rng::below(std::uint64_t n) {
     }
     // UINT64_MAX from <cstdint>, not std::numeric_limits<uint64_t>::max()
     // from <limits>: tools/ci/check_allowed_includes.py's STD_HEADERS
-    // allowlist (GODS_LAWS.md L-01, existing tool, out of this slice's
+    // allowlist (GODS_LAWS.md GM-01, existing tool, out of this slice's
     // scope to touch) lists <climits> (the C header) but not the
     // separate C++ <limits> header -- a real gap in that allowlist,
     // flagged to the main/CTO rather than patched here. <cstdint> is
@@ -104,7 +104,7 @@ double Rng::unit_double() { return static_cast<double>(next_u64() >> 11) * 0x1.0
 namespace {
 
 // Bounded search budget for the shrinker below: declared, not a
-// promise of a globally minimal counterexample (GODS_LAWS.md L-09: no
+// promise of a globally minimal counterexample (GODS_LAWS.md GM-09: no
 // silent caps -- the budget is a named constant, and run_property_impl
 // prints how many probes it actually spent).
 constexpr int kMaxShrinkProbes = 2000;

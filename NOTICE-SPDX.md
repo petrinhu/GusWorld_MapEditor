@@ -80,7 +80,7 @@ name: CI
 
 Assim que existir o primeiro arquivo de código do projeto (hoje o repositório
 ainda não tem nenhum, ver `README.md`). O portão de CI que vai fiscalizar
-esta regra segue a mesma exigência do GlintFx (L-09 de `GODS_LAWS.md`):
+esta regra segue a mesma exigência do GlintFx (GM-09 de `GODS_LAWS.md`):
 **declara quantos arquivos varreu**, porque um portão que varre zero e
 imprime verde é uma falha silenciosa, não um sucesso.
 
@@ -88,5 +88,5 @@ imprime verde é uma falha silenciosa, não um sucesso.
 
 Convenção conferida ao vivo no código do GlintFx (`GlintFx/src`,
 `GlintFx/include`, `GlintFx/cmake`, `GlintFx/tests/tools`,
-`GlintFx/.github/workflows/ci.yml`), não inventada de cabeça. Ver `L-07` de
+`GlintFx/.github/workflows/ci.yml`), não inventada de cabeça. Ver `GM-07` de
 `GODS_LAWS.md`.

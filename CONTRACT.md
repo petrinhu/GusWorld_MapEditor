@@ -3,7 +3,7 @@
 > **Audience:** AI coding agents (Claude, GPT, Gemini, Copilot, etc.)
 > **Purpose:** Mandatory reference before writing, modifying, or reviewing any code neste projeto.
 > **Authority:** Rules use RFC 2119 keywords  -  MUST, MUST NOT, SHOULD, SHOULD NOT, MAY.
-> **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este contrato em qualquer conflito. Leia-o antes de agir; os gatilhos relevantes (L-01, L-04, L-05, L-06, L-09, L-10, L-12, L-13, L-14) estão citados abaixo nos pontos onde se aplicam.
+> **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este contrato em qualquer conflito. Leia-o antes de agir; os gatilhos relevantes (GM-01, GM-04, GM-05, GM-06, GM-09, GM-10, GM-12, GM-13, GM-14) estão citados abaixo nos pontos onde se aplicam.
 > **Testing & Audit:** All testing, quality and audit procedures are defined in [TESTES.md](TESTES.md). Checklists de auditoria em [AUDITORIAS.md](AUDITORIAS.md).
 > **Escopo:** este é um editor de mapa desktop, local, de usuário único, construído em C++23 sobre o framework GlintFx (`../GlintFx` / `github.com/petrinhu/GlintFx`), sem rede, sem banco de dados, sem servidor. Seções da versão genérica deste contrato que pressupunham Qt, SQL, REST/HTTP ou frontend web foram removidas ou reescritas; ver seção 14 para o detalhe.
 
@@ -15,7 +15,7 @@
 2. [OOP Fundamentals](#2-oop-fundamentals)
 3. [SOLID Principles](#3-solid-principles)
 4. [Design Patterns  -  Reference](#4-design-patterns--reference)
-5. [Camadas de Arquitetura (L-12)](#5-camadas-de-arquitetura-l-12)
+5. [Camadas de Arquitetura (GM-12)](#5-camadas-de-arquitetura-gm-12)
 6. [Clean Code Rules](#6-clean-code-rules)
 7. [UI/UX Guidelines (via GlintFx)](#7-uiux-guidelines-via-glintfx)
 8. [Segurança e Validação de Entrada](#8-segurança-e-validação-de-entrada)
@@ -72,7 +72,7 @@ Done
 - Skip the build step before committing.
 - Use deprecated APIs, unsafe functions, or patterns marked ANTI-PATTERN below.
 - Ignore compiler warnings.
-- Incluir header de RmlUi, SDL, GLFW, Qt ou qualquer outro terceiro, ou chamar o sistema operacional diretamente (L-01).
+- Incluir header de RmlUi, SDL, GLFW, Qt ou qualquer outro terceiro, ou chamar o sistema operacional diretamente (GM-01).
 
 ---
 
@@ -119,12 +119,12 @@ public:
 
 - One class = one clearly stated responsibility.
 - Class size: SHOULD NOT exceed 300 lines. If it does, decompose.
-- **This number is orientation, not the criterion (GODS_LAWS.md L-19).** The rule that decides
+- **This number is orientation, not the criterion (GODS_LAWS.md GM-19).** The rule that decides
   monolith is REASON TO CHANGE, not line count: a unit is sane at 500 coherent lines with one law
   behind it, and rotten at 80 lines if two unrelated laws force it to change. Exceeding 300 lines
-  MUST NOT trigger an automatic split; it MUST trigger the five L-19 questions in adversarial
+  MUST NOT trigger an automatic split; it MUST trigger the five GM-19 questions in adversarial
   review, answered against the actual unit. Splitting a coherent unit to please the number is the
-  remedy becoming the disease -- see L-19, "O que esta lei NÃO proíbe".
+  remedy becoming the disease -- see GM-19, "O que esta lei NÃO proíbe".
 - Constructor MUST NOT perform heavy work (I/O, cálculo pesado). Use an `inicializar()` method.
 - MUST implement the Rule of Five/Zero or equivalent resource management.
 
@@ -210,7 +210,7 @@ class IEscritorHistorico { virtual void escrever(const std::vector<ComandoSerial
 
 - High-level modules MUST NOT import low-level modules directly.
 - Inject dependencies via constructor (preferred), setter, or factory.
-- **Exceção deliberada:** a casca de plataforma (§5) depende **direto** da API concreta do GlintFx, sem interface própria  -  ver §5 para a justificativa (L-12).
+- **Exceção deliberada:** a casca de plataforma (§5) depende **direto** da API concreta do GlintFx, sem interface própria  -  ver §5 para a justificativa (GM-12).
 
 ```cpp
 // CORRECT  -  aplicação depende de abstracao, injetada via construtor
@@ -234,7 +234,7 @@ Apply patterns when they solve a real problem. MUST NOT apply patterns speculati
 |---------|----------|----------|
 | **Singleton** | Exactly one instance needed (ex.: registro de UUIDs em uso) | MUST be thread-safe se acessado de mais de uma thread. AVOID quando dificultar teste  -  prefer DI. |
 | **Factory Method** | Subclasses decidem qual comando/volume criar | Define abstract `criar()`, override in subclasses. |
-| **Abstract Factory** | Famílias de objetos relacionados (ex.: os seis tipos de volume de colisão da L-14) | One factory interface, multiple concrete factories. |
+| **Abstract Factory** | Famílias de objetos relacionados (ex.: os seis tipos de volume de colisão da GM-14) | One factory interface, multiple concrete factories. |
 | **Builder** | Construção de objeto complexo com muitos parâmetros opcionais | Separate construction from representation. |
 | **Prototype** | Clonar objetos caros (ex.: duplicar um objeto posicionado) | Implement deep copy. Avoid shared mutable state. |
 
@@ -276,11 +276,11 @@ public:
 | Pattern | Use When | Key Rule |
 |---------|----------|----------|
 | **Chain of Responsibility** | Múltiplos handlers podem processar um evento de entrada | Each handler decides to handle or pass forward. |
-| **Command** | Encapsular ação como objeto: é a espinha dorsal do undo/redo exigido pela L-13 | Separate invoker from receiver; MUST ser serializável (L-13). |
+| **Command** | Encapsular ação como objeto: é a espinha dorsal do undo/redo exigido pela GM-13 | Separate invoker from receiver; MUST ser serializável (GM-13). |
 | **Iterator** | Percorrer coleção sem expor internals | Use standard iteration protocol. |
 | **Mediator** | Reduzir acoplamento entre muitos objetos | Central hub coordinates communication. |
-| **Memento** | Salvar/restaurar estado de objeto | Snapshot without violating encapsulation; NÃO é a estratégia de undo/redo aqui (L-13 exige comando, não snapshot do mapa inteiro). |
-| **Observer** | Notificar dependentes de mudança de estado: é como as vistas assinam o histórico (L-13, regra 4) | Se a API do GlintFx expuser um mecanismo de evento/callback próprio, usá-lo (L-01); nunca inventar um paralelo. |
+| **Memento** | Salvar/restaurar estado de objeto | Snapshot without violating encapsulation; NÃO é a estratégia de undo/redo aqui (GM-13 exige comando, não snapshot do mapa inteiro). |
+| **Observer** | Notificar dependentes de mudança de estado: é como as vistas assinam o histórico (GM-13, regra 4) | Se a API do GlintFx expuser um mecanismo de evento/callback próprio, usá-lo (GM-01); nunca inventar um paralelo. |
 | **State** | Objeto muda de comportamento conforme estado interno | Replace conditionals with state objects. |
 | **Strategy** | Trocar algoritmo em tempo de execução | Extract algorithm family into interchangeable objects. |
 | **Template Method** | Definir esqueleto, subclasses preenchem passos | Base class controls flow, subclasses override steps. |
@@ -291,7 +291,7 @@ public:
 | Pattern | Use When |
 |---------|----------|
 | **Repository** | Abstrair a origem de um dado (ex.: leitura/escrita do arquivo de histórico) da lógica de aplicação. |
-| **Event Sourcing** | Aplica-se diretamente a L-13: a pilha de comandos serializados é a fonte de verdade do histórico, não um snapshot do mapa. |
+| **Event Sourcing** | Aplica-se diretamente a GM-13: a pilha de comandos serializados é a fonte de verdade do histórico, não um snapshot do mapa. |
 | **Dependency Injection** | Fornecer dependências de fora da classe (via construtor). |
 | **Service Locator** | AVOID  -  dependência escondida, difícil de testar. Use DI instead. |
 | **MVC / MVP / MVVM** | Separar estado do domínio (Model) da apresentação. Na casca de plataforma, o "View" é a chamada a API de desenho do GlintFx; MUST NOT reconstruir o estado do domínio a partir do que foi desenhado. |
@@ -300,7 +300,7 @@ public:
 
 ---
 
-## 5. Camadas de Arquitetura (L-12)
+## 5. Camadas de Arquitetura (GM-12)
 
 Este projeto usa camadas horizontais finas, com a dependência apontando só para dentro. Este modelo substitui integralmente o modelo genérico Frontend/Middleware/Backend/Infraestrutura das versões anteriores deste contrato, que pressupunha HTTP, SQL e UI framework: nada disso existe aqui.
 
@@ -328,16 +328,16 @@ Este projeto usa camadas horizontais finas, com a dependência apontando só par
 +-------------------------------------------------------------+
 ```
 
-**Por que a casca não tem interface própria (L-12):** o GlintFx é a única implementação que vai existir, por lei (L-01); e a API de janela, desenho e entrada ainda está em construção: desenhar uma porta hoje é supor uma forma que pode não existir amanhã. Uma interface aqui reproduziria a "camada de tradução" que a L-03 já proíbe no ecossistema. Se um dia houver razão concreta (não hipotética) para fingir essa fronteira em teste, a saída é um `concept` de C++23 resolvido em compilação, nunca uma interface virtual.
+**Por que a casca não tem interface própria (GM-12):** o GlintFx é a única implementação que vai existir, por lei (GM-01); e a API de janela, desenho e entrada ainda está em construção: desenhar uma porta hoje é supor uma forma que pode não existir amanhã. Uma interface aqui reproduziria a "camada de tradução" que a GM-03 já proíbe no ecossistema. Se um dia houver razão concreta (não hipotética) para fingir essa fronteira em teste, a saída é um `concept` de C++23 resolvido em compilação, nunca uma interface virtual.
 
 **A proteção do domínio não vem de interface, vem de regra de dependência fiscalizada por portão de CI:**
 
 - `domain` nunca inclui header de `application` nem de `platform`, nem de GlintFx, nem do SO.
 - `application` nunca inclui header de GlintFx nem do SO.
 - Só `platform` inclui GlintFx.
-- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (L-09)**: procedimento e exemplo concreto em [TESTES.md seção A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
+- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (GM-09)**: procedimento e exemplo concreto em [TESTES.md seção A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
 
-**Nomenclatura de diretório real, decidida em 22/08/2026 (L-12):** os nomes conceituais acima (domínio, aplicação, casca de plataforma) descrevem a camada em prosa; os diretórios de verdade em `src/` usam os nomes em **INGLÊS**: `domain/`, `application/`, `platform/`. Três razões, todas de L-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows (um dos cinco alvos de CI, L-10). A prosa deste contrato e as mensagens de commit continuam em português; só o nome do diretório e do identificador de código muda de idioma.
+**Nomenclatura de diretório real, decidida em 22/08/2026 (GM-12):** os nomes conceituais acima (domínio, aplicação, casca de plataforma) descrevem a camada em prosa; os diretórios de verdade em `src/` usam os nomes em **INGLÊS**: `domain/`, `application/`, `platform/`. Três razões, todas de GM-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows (um dos cinco alvos de CI, GM-10). A prosa deste contrato e as mensagens de commit continuam em português; só o nome do diretório e do identificador de código muda de idioma.
 
 **"Átomos com POCO próprio"** vale no domínio e nos casos de uso, onde se paga sozinho: classe pequena, responsabilidade única, sem interface desnecessária. **Não** vale para a casca de plataforma: exigir um átomo por campo de um painel de inspeção num editor de usuário único é over-engineering. Átomo é sobre tamanho e responsabilidade, não sobre indireção: um POCO concreto de vinte linhas, sem interface nenhuma, é um átomo perfeito.
 
@@ -347,7 +347,7 @@ Este projeto usa camadas horizontais finas, com a dependência apontando só par
 [ ] A classe pertence a exatamente uma camada?
 [ ] Nenhuma dependência para cima (domain -> application, application -> platform)?
 [ ] Nenhum header de GlintFx fora de `platform/`?
-[ ] Nenhum header de SO, RmlUi, SDL, GLFW ou Qt em lugar nenhum (L-01)?
+[ ] Nenhum header de SO, RmlUi, SDL, GLFW ou Qt em lugar nenhum (GM-01)?
 ```
 
 ---
@@ -402,7 +402,7 @@ void processar(const ComandoBruto& c) {
 i++;  // increment i
 
 // CORRECT
-// o formato do GlintFx e 1-based para indice de camada (L-03); nosso domínio e 0-based
+// o formato do GlintFx e 1-based para indice de camada (GM-03); nosso domínio e 0-based
 camada_gmap = camada_dominio + 1;
 ```
 
@@ -467,12 +467,12 @@ bool validarDimensaoCelula(int valor, int minimo, int maximo) {
 
 ## 7. UI/UX Guidelines (via GlintFx)
 
-Este editor não desenha nada diretamente (L-01, L-12): toda apresentação passa pela API do GlintFx, chamada exclusivamente pela casca de plataforma. As regras abaixo valem para a experiencia que a casca pede ao GlintFx para produzir, não para código de widget: não existe widget aqui.
+Este editor não desenha nada diretamente (GM-01, GM-12): toda apresentação passa pela API do GlintFx, chamada exclusivamente pela casca de plataforma. As regras abaixo valem para a experiencia que a casca pede ao GlintFx para produzir, não para código de widget: não existe widget aqui.
 
 ### 7.1 Responsiveness
 
 - MUST NEVER bloquear a thread principal com I/O ou computação pesada (ex.: repartição de polígono em lote, leitura de arquivo grande).
-- Operações que passem de 100ms MUST mostrar indicação de progresso (se o GlintFx expuser o recurso; senão, registrar a necessidade no bus: L-01).
+- Operações que passem de 100ms MUST mostrar indicação de progresso (se o GlintFx expuser o recurso; senão, registrar a necessidade no bus: GM-01).
 
 ### 7.2 Feedback
 
@@ -484,7 +484,7 @@ Este editor não desenha nada diretamente (L-01, L-12): toda apresentação pass
 
 - Elementos interativos MUST ser alcançáveis via teclado, quando a API do GlintFx expuser foco/navegação por teclado.
 - Contraste de texto SHOULD seguir WCAG AA (>= 4.5:1 texto normal, >= 3:1 texto grande) como referência de design, ainda que o tema seja o do GlintFx, não nosso.
-- **Se o GlintFx não expuser um destes recursos hoje, a saída é registrar a necessidade pelo bus (L-01), nunca implementar um substituto paralelo.**
+- **Se o GlintFx não expuser um destes recursos hoje, a saída é registrar a necessidade pelo bus (GM-01), nunca implementar um substituto paralelo.**
 
 ### 7.4 Consistency
 
@@ -508,7 +508,7 @@ Este projeto não tem rede, servidor, autenticação, banco de dados nem múltip
 | Ameaça | Regra |
 |---|---|
 | Arquivo de mapa corrompido ou malicioso (lido via API do GlintFx) | MUST tratar toda falha de leitura explicitamente; MUST NOT crashar; ver TESTES.md T14. |
-| Arquivo de histórico corrompido ou desatualizado (arquivo próprio, L-13) | MUST recusar reaplicar se a impressão digital do mapa não bater; MUST NOT tentar "adivinhar" o estado. |
+| Arquivo de histórico corrompido ou desatualizado (arquivo próprio, GM-13) | MUST recusar reaplicar se a impressão digital do mapa não bater; MUST NOT tentar "adivinhar" o estado. |
 | Entrada de usuário em campo numérico/texto do inspetor | MUST validar faixa e tipo antes de aplicar ao domínio. |
 
 ### 8.2 Hardcoded Secrets  -  Zero Tolerance
@@ -542,12 +542,12 @@ const std::string TOKEN = "sk-live-abc123xyz789";
 ### 9.2 Memória
 
 - MUST release resources when they go out of scope (RAII).
-- MUST NOT hold large objects in memory indefinitely: histórico ilimitado em memória é aceitável apenas porque é persistido (L-13); vazamento de objeto de domínio não é.
-- Recursos do GlintFx MUST ser liberados conforme o contrato de vida da API deles, nunca gerenciados por conta própria (L-01).
+- MUST NOT hold large objects in memory indefinitely: histórico ilimitado em memória é aceitável apenas porque é persistido (GM-13); vazamento de objeto de domínio não é.
+- Recursos do GlintFx MUST ser liberados conforme o contrato de vida da API deles, nunca gerenciados por conta própria (GM-01).
 
 ### 9.3 Desenho
 
-- A casca de plataforma MUST NOT fazer calculo geométrico pesado dentro do laco de desenho por quadro: repartição de polígono côncavo (L-03) e operações similares MUST ser calculadas uma vez, no momento da edição/gravação, e cacheadas.
+- A casca de plataforma MUST NOT fazer calculo geométrico pesado dentro do laco de desenho por quadro: repartição de polígono côncavo (GM-03) e operações similares MUST ser calculadas uma vez, no momento da edição/gravação, e cacheadas.
 - Toda chamada a API de desenho do GlintFx acontece na casca; domínio e aplicação nunca desenham (§5).
 
 ---
@@ -621,7 +621,7 @@ test/módulo-testado
 - MUST NOT use `--no-verify` to skip hooks unless explicitly instructed.
 - MUST NOT batch unrelated changes into one commit.
 - MUST NOT commit generated build artifacts (`build/`, `CMakeFiles/`, binários).
-- MUST NOT push or merge em `main` sem autorização explícita do líder (L-05/L-06).
+- MUST NOT push or merge em `main` sem autorização explícita do líder (GM-05/GM-06).
 
 ### 10.6 Pull Request Description Template
 
@@ -645,9 +645,9 @@ test/módulo-testado
 
 > Full procedures, commands, and tools: **[TESTES.md](TESTES.md)**. Checklists de auditoria: **[AUDITORIAS.md](AUDITORIAS.md)**.
 
-**Lembrete permanente (L-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso.
+**Lembrete permanente (GM-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso.
 
-**Lembrete permanente (L-06):** implementador, revisor e orquestrador são três agentes diferentes; auditoria e feita por C-level em modelo fable, execução por agents operacionais em modelo sonnet; implementador nunca audita o próprio trabalho.
+**Lembrete permanente (GM-06):** implementador, revisor e orquestrador são três agentes diferentes; auditoria e feita por C-level em modelo fable, execução por agents operacionais em modelo sonnet; implementador nunca audita o próprio trabalho.
 
 ### When to Run Tests
 
@@ -685,9 +685,9 @@ Após uma release ser efetivamente lançada (tag publicada + artefatos anexados 
 
 ## 12. C++23 e a Fronteira com o GlintFx
 
-**Versão:** C++23. **Exceção deliberada ao padrão global do vault** (que é C++/Qt23): este projeto usa C++23 sem Qt, por ordem direta do líder (L-01). Nenhum arquivo deste repositório inclui header de Qt, RmlUi, SDL ou GLFW.
+**Versão:** C++23. **Exceção deliberada ao padrão global do vault** (que é C++/Qt23): este projeto usa C++23 sem Qt, por ordem direta do líder (GM-01). Nenhum arquivo deste repositório inclui header de Qt, RmlUi, SDL ou GLFW.
 
-**Única dependência externa:** GlintFx, incluído apenas na casca de plataforma (§5, L-12). Se uma funcionalidade precisar de algo que a API pública do GlintFx não oferece, a resposta e registrar a necessidade pelo bus e esperar: nunca inventar um contorno (L-01).
+**Única dependência externa:** GlintFx, incluído apenas na casca de plataforma (§5, GM-12). Se uma funcionalidade precisar de algo que a API pública do GlintFx não oferece, a resposta e registrar a necessidade pelo bus e esperar: nunca inventar um contorno (GM-01).
 
 **Memória:**
 ```cpp

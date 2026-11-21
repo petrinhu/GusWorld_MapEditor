@@ -5,7 +5,7 @@
 > [TESTES.md, Classificação de Problemas](TESTES.md#classificação-de-problemas)).
 > **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este guia em qualquer conflito.
 
-**Lembrete permanente (L-06, verbatim do líder):** "main apenas orquestra, interage comigo e
+**Lembrete permanente (GM-06, verbatim do líder):** "main apenas orquestra, interage comigo e
 dispara agentes. Auditorias apenas com clevel bigtech fable, trabalhadores sonnet bigtech."
 Toda auditoria abaixo é conduzida por um C-level em modelo fable; a implementação auditada foi
 feita por um agent operacional em modelo sonnet; **o implementador nunca audita o próprio
@@ -16,31 +16,31 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 
 ## Índice
 
-1. [Arquitetura e Camadas (L-12)](#1-arquitetura-e-camadas-l-12)
-2. [Integridade do Arquivo de Mapa (L-03)](#2-integridade-do-arquivo-de-mapa-l-03)
-3. [Histórico Persistido (L-13)](#3-histórico-persistido-l-13)
-4. [Fronteira com o GlintFx (L-01)](#4-fronteira-com-o-glintfx-l-01)
-5. [Escopo do Editor (L-04, L-14)](#5-escopo-do-editor-l-04-l-14)
+1. [Arquitetura e Camadas (GM-12)](#1-arquitetura-e-camadas-gm-12)
+2. [Integridade do Arquivo de Mapa (GM-03)](#2-integridade-do-arquivo-de-mapa-gm-03)
+3. [Histórico Persistido (GM-13)](#3-histórico-persistido-gm-13)
+4. [Fronteira com o GlintFx (GM-01)](#4-fronteira-com-o-glintfx-gm-01)
+5. [Escopo do Editor (GM-04, GM-14)](#5-escopo-do-editor-gm-04-gm-14)
 6. [Qualidade de Código Geral](#6-qualidade-de-código-geral)
 7. [Robustez de Entrada](#7-robustez-de-entrada)
 8. [Relatório Final](#8-relatório-final)
 
 ---
 
-## 1. Arquitetura e Camadas (L-12)
+## 1. Arquitetura e Camadas (GM-12)
 
 🔴 **CRÍTICO**
 
 - [ ] Nenhum arquivo de domínio inclui header de aplicação, casca de plataforma, GlintFx ou do SO.
 - [ ] Nenhum arquivo de aplicação inclui header de GlintFx ou do SO.
 - [ ] Só a casca de plataforma inclui header de GlintFx, e o chama direto, sem interface própria.
-- [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (L-09; ver TESTES.md seção 0).
+- [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (GM-09; ver TESTES.md seção 0).
 - [ ] Nenhuma dependência circular entre módulos.
 - [ ] Nenhum "serviço-deus" na aplicação com dezenas de casos de uso; um caso de uso por operação de edição.
 - [ ] Nenhuma unidade (classe, caso de uso, arquivo) acumula razões de mudar de mais de uma lei
-      não relacionada (L-19): a resposta à pergunta 1 da L-19 consta no relatório de revisão de
+      não relacionada (GM-19): a resposta à pergunta 1 da GM-19 consta no relatório de revisão de
       cada fatia auditada, unidade por unidade.
-- [ ] Spot-check do auditor (L-19): o maior arquivo de cada camada e o arquivo com mais aparições
+- [ ] Spot-check do auditor (GM-19): o maior arquivo de cada camada e o arquivo com mais aparições
       no `git log --stat` passaram pelas cinco perguntas respondidas pelo próprio auditor, e o
       resultado bate com os relatórios de revisão.
 
@@ -51,13 +51,13 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 
 ---
 
-## 2. Integridade do Arquivo de Mapa (L-03)
+## 2. Integridade do Arquivo de Mapa (GM-03)
 
 🔴 **CRÍTICO**
 
 - [ ] Round-trip byte a byte passou (TESTES.md T14): gravar → ler → comparar, e gravar duas vezes → arquivos idênticos.
 - [ ] Nenhum campo próprio do editor foi infiltrado no formato `.gmap` do GlintFx; qualquer necessidade adicional foi resolvida em arquivo ao lado (histórico, nota de autor), nunca dentro do formato deles.
-- [ ] Identificador estável (UUID) de cada objeto nunca é reescrito nem reciclado após exclusão (dependência da L-13 resolvida pelo GlintFx).
+- [ ] Identificador estável (UUID) de cada objeto nunca é reescrito nem reciclado após exclusão (dependência da GM-13 resolvida pelo GlintFx).
 - [ ] Repartição de polígono côncavo em peças convexas passou nos dois testes de T17: ida e volta (área preservada) e convexidade de cada peça gerada.
 
 🟠 **IMPORTANTE**
@@ -66,7 +66,7 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 
 ---
 
-## 3. Histórico Persistido (L-13)
+## 3. Histórico Persistido (GM-13)
 
 🔴 **CRÍTICO**
 
@@ -75,11 +75,11 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 - [ ] Seleção e câmera ficam fora do histórico (são estado de sessão, não de conteúdo).
 - [ ] O arquivo de histórico grava uma impressão digital do mapa e recusa reaplicar se o mapa mudou por fora.
 - [ ] Vistas assinam os sinais do histórico e não guardam cópia própria do estado (nenhum caminho de atualização paralelo).
-- [ ] Com várias abas abertas (L-14): quando um passo de desfazer/refazer afeta um mapa que não é o da aba ativa, o editor troca a aba automaticamente para o mapa afetado.
+- [ ] Com várias abas abertas (GM-14): quando um passo de desfazer/refazer afeta um mapa que não é o da aba ativa, o editor troca a aba automaticamente para o mapa afetado.
 
 ---
 
-## 4. Fronteira com o GlintFx (L-01)
+## 4. Fronteira com o GlintFx (GM-01)
 
 🔴 **CRÍTICO**
 
@@ -89,14 +89,14 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 
 ---
 
-## 5. Escopo do Editor (L-04, L-14)
+## 5. Escopo do Editor (GM-04, GM-14)
 
 🟠 **IMPORTANTE**
 
-- [ ] Nenhuma feature de carta, item ou NPC do jogo vazou para o editor (L-04).
-- [ ] Só os seis tipos de volume de colisão definidos na L-14 existem; nenhum tipo extra (hitbox de combate, zona de câmera, zona de audio) foi adicionado sem nova lei do líder.
+- [ ] Nenhuma feature de carta, item ou NPC do jogo vazou para o editor (GM-04).
+- [ ] Só os seis tipos de volume de colisão definidos na GM-14 existem; nenhum tipo extra (hitbox de combate, zona de câmera, zona de audio) foi adicionado sem nova lei do líder.
 - [ ] Só uma camada de terreno pintada mais objetos livres por cima; nenhuma camada de pintura sobreposta adicional.
-- [ ] Nenhuma tentativa de desenhar a tela (WYSIWYG) antes do GlintFx ter janela (L-14, item 4) -- se isso apareceu, e violação de ordem direta do líder, não decisão técnica.
+- [ ] Nenhuma tentativa de desenhar a tela (WYSIWYG) antes do GlintFx ter janela (GM-14, item 4) -- se isso apareceu, e violação de ordem direta do líder, não decisão técnica.
 
 ---
 
@@ -105,7 +105,7 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 🟠 **IMPORTANTE / 🟢 COSMÉTICO**
 
 - [ ] SOLID respeitado (CONTRACT.md §3): nenhuma classe com mais de uma razão para mudar.
-- [ ] Nenhum "é só mais um método": unidade que cresceu na fatia teve as cinco perguntas da L-19
+- [ ] Nenhum "é só mais um método": unidade que cresceu na fatia teve as cinco perguntas da GM-19
       respondidas na revisão adversarial; silêncio sobre uma unidade conta como não revisada.
 - [ ] DRY, regra de três (CONTRACT.md §6.7): nenhuma abstração criada antes da terceira ocorrência real.
 - [ ] Funções <= 40 linhas, <= 4 parâmetros, <= 3 níveis de aninhamento.
@@ -130,6 +130,6 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 **Entregável obrigatório:** documento com score global (0-100), lista de problemas por prioridade
 (🔴/🟠/🟢) e patches unificados (formato descrito em [TESTES.md, Formato de Patch](TESTES.md#formato-de-patch)).
 
-Produzido por um C-level em modelo fable (L-06); nunca pelo agente que implementou o código
+Produzido por um C-level em modelo fable (GM-06); nunca pelo agente que implementou o código
 auditado. Antes de aceitar o relatório, o orquestrador reconfere o build e faz spot-check de pelo
 menos três afirmações do relatório contra arquivo e linha reais.

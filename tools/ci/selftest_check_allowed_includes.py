@@ -4,7 +4,7 @@
 tools/ci/selftest_check_allowed_includes.py
 
 Autoteste de check_allowed_includes.py com CINCO controles (GODS_LAWS.md
-L-09 + decisao do lider de 22/08/2026 sobre a TRAVA "verde declarando
+GM-09 + decisao do lider de 22/08/2026 sobre a TRAVA "verde declarando
 zero", mesma exigencia do irmao selftest_check_layers.py; o quinto entrou
 em 24/08/2026 com a decisao do lider sobre a REGRA DE CORTE da allowlist):
 

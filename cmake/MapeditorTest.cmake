@@ -4,7 +4,7 @@
 #
 # Single subject: the default CTest timeout and the function that
 # registers a test executable linked against gusworld_mapeditor's own
-# harness (GODS_LAWS.md L-09: no Catch2/GoogleTest, no third-party test
+# harness (GODS_LAWS.md GM-09: no Catch2/GoogleTest, no third-party test
 # framework). Mirrors GlintFx's own GlintfxTest.cmake, minus
 # glintfx_copy_runtime_dlls_after_build: every layer target in this
 # project today is STATIC, so there is no DLL of ours to place next to

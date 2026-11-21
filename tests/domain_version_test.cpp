@@ -11,7 +11,7 @@
 // links against the harness and runs on all five CI targets
 // (desenho-cor1.md §5, item 1; mirrors GlintFx's own version_test.cpp).
 // This is the commit that arms the CI layer gate's trap (GODS_LAWS.md
-// L-09): domain=1+ arquivos varridos from here on.
+// GM-09): domain=1+ arquivos varridos from here on.
 
 GUSMAP_TEST(domain_version_matches_project_version) {
     const mapeditor::domain::Version v = mapeditor::domain::version();

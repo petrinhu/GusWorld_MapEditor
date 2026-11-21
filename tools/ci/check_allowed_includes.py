@@ -3,7 +3,7 @@
 """
 tools/ci/check_allowed_includes.py
 
-Portao de CI: dependencia proibida (GODS_LAWS.md L-01), desenhado como
+Portao de CI: dependencia proibida (GODS_LAWS.md GM-01), desenhado como
 LISTA DO PERMITIDO, nunca lista do proibido -- ordem explicita da tarefa,
 porque uma lista do proibido so pega quem ela ja conhece (RmlUi hoje, o
 proximo framework amanha) e a lista do permitido pega qualquer coisa nova
@@ -13,7 +13,7 @@ alguem tente colar.
 Regra:
     - Include entre <angulos>: permitido SE o nome for da biblioteca padrao
       C++23 (STD_HEADERS abaixo), OU se o arquivo estiver na camada
-      "platform" (GODS_LAWS.md L-12) E o include comecar com "glintfx/"
+      "platform" (GODS_LAWS.md GM-12) E o include comecar com "glintfx/"
       -- a UNICA excecao de terceiro que existe neste projeto, por lei.
     - Include entre "aspas": permitido SE resolver para um arquivo REAL
       deste repositorio (relativo ao arquivo que inclui, a raiz do repo,
@@ -24,12 +24,12 @@ Regra:
 
 Consequencia deliberada: cabecalho de sistema (<windows.h>, <unistd.h>, um
 header solto do SDK do SO) tambem cai fora da lista do permitido, mesmo
-fora da camada platform -- GODS_LAWS.md L-01 e explicito ("e proibido
+fora da camada platform -- GODS_LAWS.md GM-01 e explicito ("e proibido
 falar direto com o sistema operacional"), e mesmo dentro de platform,
 sistema operacional so entra via GlintFx, entao nem platform ganha
 excecao para header de SO.
 
-GODS_LAWS.md L-09: este portao tambem declara quantos arquivos varreu.
+GODS_LAWS.md GM-09: este portao tambem declara quantos arquivos varreu.
 
 TRAVA decidida pelo lider em 22/08/2026 (mesma semantica do check_layers.py
 irmao, gatilho em layer_common.any_layer_dir_exists): enquanto NENHUMA das
@@ -179,7 +179,7 @@ def run(root: Path) -> tuple[int, list[str]]:
                 )
                 violations.append(
                     f'VIOLACAO {f}:{inc.line_no}: include <{inc.path}> fora da '
-                    f"lista do permitido ({reason}) -- GODS_LAWS.md L-01."
+                    f"lista do permitido ({reason}) -- GODS_LAWS.md GM-01."
                 )
             else:
                 if _resolve_quoted(inc.path, f, root):
@@ -188,7 +188,7 @@ def run(root: Path) -> tuple[int, list[str]]:
                     f'VIOLACAO {f}:{inc.line_no}: include "{inc.path}" nao '
                     "resolve para nenhum arquivo real deste repositorio -- "
                     "so e permitido incluir entre aspas codigo NOSSO "
-                    "(GODS_LAWS.md L-01)."
+                    "(GODS_LAWS.md GM-01)."
                 )
 
     print(f"check_allowed_includes: {scanned} arquivo(s) C++ varrido(s).")
@@ -210,7 +210,7 @@ def main(argv: list[str]) -> int:
                 "varridos e NENHUMA das pastas domain/application/platform "
                 f"existe ainda em lugar nenhum de '{root}'. Isto NAO e uma "
                 "verificacao bem-sucedida: e ausencia de alvo (GODS_LAWS.md "
-                "L-11, projeto do zero). Decisao do lider em 22/08/2026: "
+                "GM-11, projeto do zero). Decisao do lider em 22/08/2026: "
                 "este caminho sai 0 SO enquanto nenhuma das tres pastas "
                 "existir; no instante em que uma aparecer, varrer zero "
                 "arquivos volta a ser falha."
@@ -224,9 +224,9 @@ def main(argv: list[str]) -> int:
             "check_allowed_includes: FALHA -- ha pasta de camada existindo "
             f"({existentes}) mas 0 arquivo C++ foi varrido no repositorio "
             f"inteiro sob '{root}'. Isto NAO e o caminho \"projeto ainda "
-            "nao comecou\" (GODS_LAWS.md L-11): a pasta ja existe, entao "
+            "nao comecou\" (GODS_LAWS.md GM-11): a pasta ja existe, entao "
             "isto e sintoma de filtro de extensao errado ou arvore "
-            "quebrada. GODS_LAWS.md L-09 continua valendo: varrer zero, "
+            "quebrada. GODS_LAWS.md GM-09 continua valendo: varrer zero, "
             "com pasta existindo, e falha, nao sucesso.",
             file=sys.stderr,
         )
@@ -238,7 +238,7 @@ def main(argv: list[str]) -> int:
             print(v, file=sys.stderr)
         return 1
 
-    print("check_allowed_includes: OK -- todo include e permitido (GODS_LAWS.md L-01).")
+    print("check_allowed_includes: OK -- todo include e permitido (GODS_LAWS.md GM-01).")
     return 0
 
 

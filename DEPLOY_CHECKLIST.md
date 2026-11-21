@@ -1,7 +1,7 @@
 # CHECKLIST DE RELEASE (gusworld_mapeditor)
 
 > Este editor é uma aplicação desktop local, de usuário único, distribuída como binário via
-> GitHub Releases (L-07: AGPL-3.0-or-later, junto com o GlintFx). Não há servidor, banco de
+> GitHub Releases (GM-07: AGPL-3.0-or-later, junto com o GlintFx). Não há servidor, banco de
 > dados, migração de schema, autenticação nem tráfego em produção: o checklist genérico de
 > deploy irreversível (blue-green, shadow traffic, dual write, 2FA, HSTS) não se aplica e foi
 > substituído pelo fluxo abaixo, adequado a publicação de um artefato binário multiplataforma.
@@ -22,17 +22,17 @@ nunca como reescrita da tag.
 
 - [ ] Toda release pública deste projeto e, por definição, o evento irreversível (não ha
       gradação de "só um pouco em produção"): trate toda tag publicada com o mesmo cuidado.
-- [ ] Mudança no formato de mapa consumido (o formato é do GlintFx, L-03): confirmar que a
+- [ ] Mudança no formato de mapa consumido (o formato é do GlintFx, GM-03): confirmar que a
       versão do GlintFx pinada neste release já publicou e testou essa mudança do lado deles.
 
 ---
 
 ## FASE 1  -  Pré-condições de Qualidade
 
-- [ ] CI verde nos cinco alvos (L-10): Fedora 44 (primário, pinado), Ubuntu, Arch, CachyOS, Windows.
+- [ ] CI verde nos cinco alvos (GM-10): Fedora 44 (primário, pinado), Ubuntu, Arch, CachyOS, Windows.
 - [ ] TESTES.md T1, T2, T3, T4, T8, T12, T14, T16, T17 completos e verdes.
 - [ ] AUDITORIAS.md seções 1-7 sem item CRITICO em aberto.
-- [ ] Nenhuma violação pendente de GODS_LAWS.md, checada explicitamente contra L-01, L-03, L-04, L-12.
+- [ ] Nenhuma violação pendente de GODS_LAWS.md, checada explicitamente contra GM-01, GM-03, GM-04, GM-12.
 - [ ] GlintFx pinado em versão publicada e testada (nunca `main`/`latest`).
 
 ---
@@ -52,7 +52,7 @@ nunca como reescrita da tag.
 - [ ] Release notes citam os IDs do `TODO.md` fechados nesta release.
 - [ ] Artefatos dos cinco alvos anexados ao GitHub Release.
 - [ ] Licença AGPL-3.0-or-later presente em cada artefato distribuído (LICENSE + cabeçalho SPDX,
-      L-07).
+      GM-07).
 - [ ] Push, tag e publicação autorizados explicitamente pelo líder nesta sessão (autorização
       anterior não vale para sempre).
 

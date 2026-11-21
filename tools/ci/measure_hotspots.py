@@ -3,7 +3,7 @@
 """
 tools/ci/measure_hotspots.py
 
-MEDIDOR informativo de L-19 (GODS_LAWS.md), decidido pelo lider depois do
+MEDIDOR informativo de GM-19 (GODS_LAWS.md), decidido pelo lider depois do
 CTO propor numero e ele aprovar so a MEDICAO, nunca o julgamento. Razao
 dele, verbatim relatada na tarefa: "lei qualitativa falha exatamente
 quando ninguem olha", e a quinta pergunta do revisor (git log --stat) fica
@@ -16,7 +16,7 @@ tambem: este script NUNCA reprova nada.
       inclusive raiz inexistente, inclusive git ausente.
     - Zero limite, zero numero magico, zero comparacao com teto. Ele nao
       diz "grande demais". So imprime.
-    - Ele NAO e um portao, entao a regra da L-09 de falhar em zero
+    - Ele NAO e um portao, entao a regra da GM-09 de falhar em zero
       arquivos varridos NAO se aplica a ele -- mas o ESPIRITO dela sim:
       declarar o proprio escopo. Se varreu zero, ele diz "0 arquivos" com
       todas as letras, nunca lista vazia em silencio.
@@ -32,7 +32,7 @@ nenhum relatorio, e um relatorio que finge sucesso quando so meio saiu):
     [2] Arquivos por FREQUENCIA DE APARICAO nos ultimos N commits
         (--commits, configuravel, default DEFAULT_COMMITS abaixo -- nunca
         magico, sempre visivel e sempre alteravel na linha de comando ou
-        no workflow). E a lista que sustenta a 5a pergunta da L-19 ("quem
+        no workflow). E a lista que sustenta a 5a pergunta da GM-19 ("quem
         paga a proxima feature?").
 
         Cuidado real, documentado porque ja mordeu outro portao da casa:
@@ -41,7 +41,7 @@ nenhum relatorio, e um relatorio que finge sucesso quando so meio saiu):
         (git rev-parse --is-shallow-repository) e a ausencia de git
         (git rev-parse --is-inside-work-tree) e DECLARA a causa em vez de
         imprimir lista vazia de um jeito que parece "ninguem tocou em
-        nada" -- exatamente o defeito que a L-09 registra no portao de
+        nada" -- exatamente o defeito que a GM-09 registra no portao de
         camadas, vestido de outra roupa.
 
 Uso:
@@ -165,7 +165,7 @@ def medir_frequencia(root: Path, commits: int) -> tuple[list[tuple[str, int]], s
             f"HEAD so enxerga {disponiveis} localmente. A lista abaixo cobre "
             f"apenas o que o checkout raso permite ver, NAO os ultimos "
             f"{commits} commits reais do projeto -- isto e historico "
-            "indisponivel, nao ausencia de mudanca (GODS_LAWS.md L-09, "
+            "indisponivel, nao ausencia de mudanca (GODS_LAWS.md GM-09, "
             "mesmo espirito aplicado aqui)."
         )
     elif disponiveis < commits:
@@ -215,7 +215,7 @@ def _imprimir_lista_tamanho(root: Path) -> None:
 def _imprimir_lista_frequencia(root: Path, commits: int) -> None:
     print(f"\n[2] Arquivos por FREQUENCIA nos ultimos {commits} commit(s) "
           "pedidos (--commits, configuravel -- sustenta a 5a pergunta da "
-          "L-19: 'quem paga a proxima feature?').")
+          "GM-19: 'quem paga a proxima feature?').")
     freq, aviso = medir_frequencia(root, commits)
     if aviso:
         print(f"    {aviso}")
@@ -230,7 +230,7 @@ def _imprimir_lista_frequencia(root: Path, commits: int) -> None:
 
 def main(argv: list[str]) -> int:
     print("=" * 72)
-    print("measure_hotspots -- MEDIDOR INFORMATIVO (GODS_LAWS.md L-19).")
+    print("measure_hotspots -- MEDIDOR INFORMATIVO (GODS_LAWS.md GM-19).")
     print("NAO E PORTAO: nunca reprova CI, nunca compara com teto, so imprime.")
     print("=" * 72)
 

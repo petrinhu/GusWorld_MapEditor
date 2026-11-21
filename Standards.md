@@ -2,7 +2,7 @@
 
 Índice local dos manuais que regem este repositório. Não é um hub de vault: não referencia
 outros projetos nem a estrutura PARA (Areas/Journal/Archive), que não existem aqui. Este é um
-repositório público e independente (L-07).
+repositório público e independente (GM-07).
 
 ## Autoridade
 
@@ -12,12 +12,12 @@ repositório público e independente (L-07).
 
 ## Manuais de Execução (raiz)
 
-- [`CONTRACT.md`](CONTRACT.md): padrões de código, SOLID, Clean Code, camadas (L-12), C++23 sem
+- [`CONTRACT.md`](CONTRACT.md): padrões de código, SOLID, Clean Code, camadas (GM-12), C++23 sem
   Qt, Git.
 - [`TESTES.md`](TESTES.md): testes, portões de CI e auditoria (T1-T17, A2/A3/A10), adaptado ao
-  stack único deste projeto (C++23 + GlintFx, cinco alvos de CI, L-10).
+  stack único deste projeto (C++23 + GlintFx, cinco alvos de CI, GM-10).
 - [`AUDITORIAS.md`](AUDITORIAS.md): checklists de auditoria por prioridade (CRÍTICO/IMPORTANTE/
-  COSMÉTICO), separação fable/sonnet (L-06).
+  COSMÉTICO), separação fable/sonnet (GM-06).
 - [`DEPLOY_CHECKLIST.md`](DEPLOY_CHECKLIST.md): checklist de release de aplicação desktop (sem
   produção/servidor).
 - [`AGILE.md`](AGILE.md): metodologia ágil (não alterado nesta poda; cópia da referência do

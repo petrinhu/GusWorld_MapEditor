@@ -8,9 +8,9 @@
 #include <vector>
 
 // prop.hpp - deterministic property-based testing module of gusmap's
-// own harness (D3, desenho-cor1.md §4; GODS_LAWS.md L-09).
+// own harness (D3, desenho-cor1.md §4; GODS_LAWS.md GM-09).
 //
-// No third-party library (RapidCheck, libFuzzer, ...): L-01 forbids
+// No third-party library (RapidCheck, libFuzzer, ...): GM-01 forbids
 // it, and the leader confirmed on 24/08/2026 that an in-house generator
 // written from a published algorithm is our own code, not a
 // dependency. std::mt19937 was rejected on purpose: the C++ standard
@@ -18,7 +18,7 @@
 // std::uniform_int_distribution et al. can (and do) produce different
 // sequences from the same seed across libstdc++ and MSVC STL --
 // exactly the cross-platform reproducibility this project's five CI
-// targets (GODS_LAWS.md L-10) depend on. Rng below is splitmix64
+// targets (GODS_LAWS.md GM-10) depend on. Rng below is splitmix64
 // (Sebastiano Vigna, public-domain algorithm) plus samplers written by
 // hand from plain unsigned 64-bit arithmetic, with no UB and no
 // standard-library distribution anywhere in the path -- bit-identical
@@ -29,7 +29,7 @@ namespace gusmap::test {
 
 // Rng - deterministic, seedable pseudo-random source.
 //
-// PROIBIDO no harness inteiro (GODS_LAWS.md L-09): semente de relogio,
+// PROIBIDO no harness inteiro (GODS_LAWS.md GM-09): semente de relogio,
 // std::random_device, endereco de memoria, qualquer entropia
 // ambiente. Toda semente e um literal escrito no teste. Determinismo
 // nao e um modo, e a UNICA opcao -- por isso Rng nao tem nenhum

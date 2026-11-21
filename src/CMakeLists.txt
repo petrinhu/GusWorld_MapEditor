@@ -3,10 +3,10 @@
 # src/CMakeLists.txt
 #
 # Single subject: the layer libraries and the include root they share.
-# domain/ is the first layer (GODS_LAWS.md L-12: horizontal layers,
+# domain/ is the first layer (GODS_LAWS.md GM-12: horizontal layers,
 # dependency pointing only inward); application/ and platform/ are
 # born, each with its own add_subdirectory() entry here, only on the
-# day their first real .cpp lands (GODS_LAWS.md L-09: an empty layer
+# day their first real .cpp lands (GODS_LAWS.md GM-09: an empty layer
 # directory arms the CI layer gate's trap with nothing to scan).
 
 add_library(mapeditor_domain STATIC)

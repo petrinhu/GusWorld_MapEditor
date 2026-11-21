@@ -6,10 +6,10 @@
 
 // domain/version.hpp - runtime version of the editor itself (COR-1).
 //
-// First POCO of the domain layer (GODS_LAWS.md L-12: pure value type,
+// First POCO of the domain layer (GODS_LAWS.md GM-12: pure value type,
 // zero GlintFx, zero OS, zero third party). It exists to give the
 // domain layer real content the moment it is born, arming the CI layer
-// gate (GODS_LAWS.md L-09) with something to scan instead of an empty
+// gate (GODS_LAWS.md GM-09) with something to scan instead of an empty
 // directory -- mirrors how GlintFx's own core layer was born with
 // version.cpp first.
 //

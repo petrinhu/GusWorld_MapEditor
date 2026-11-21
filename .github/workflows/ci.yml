@@ -1,22 +1,22 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 name: CI
 
-# Cinco alvos distintos, por ordem do lider (GODS_LAWS.md, L-10):
+# Cinco alvos distintos, por ordem do lider (GODS_LAWS.md, GM-10):
 # Fedora 44 (primario, pinado -- e a maquina dele, o CI tem de falhar
 # quando a maquina dele falharia), Ubuntu, Arch, CachyOS (imagem OFICIAL
 # deles, cachyos/cachyos -- NAO e Arch renomeado, toolchain e repositorio
 # proprios, verde no job Arch nunca autoriza declarar CachyOS suportado)
 # e Windows.
 #
-# ESTADO ATUAL (22/08/2026, GODS_LAWS.md L-11): este repositorio ainda NAO
-# tem codigo de aplicacao -- o GlintFx (unica base permitida por L-01) foi
+# ESTADO ATUAL (22/08/2026, GODS_LAWS.md GM-11): este repositorio ainda NAO
+# tem codigo de aplicacao -- o GlintFx (unica base permitida por GM-01) foi
 # reiniciado do zero no mesmo dia e ainda nao expoe janela nem desenho.
 # Os jobs de build abaixo por isso nao compilam nada: eles prontificam a
 # toolchain e o padrao C++23 (prova real, nao so `--version`) e, na
 # ausencia de CMakeLists.txt, DECLARAM ISSO EXPLICITAMENTE em vez de
 # fingir sucesso silencioso. Os jobs "leis" e "portoes-autoteste" existem
 # HOJE precisamente para o caso "portao que varre zero arquivos e diz
-# verde" (GODS_LAWS.md L-09). Refinamento decidido pelo lider em
+# verde" (GODS_LAWS.md GM-09). Refinamento decidido pelo lider em
 # 22/08/2026: enquanto NENHUMA das pastas de camada existir, o portao sai
 # VERDE declarando "NADA A VERIFICAR" -- e proibido de imprimir OK ou
 # limpo, porque isso afirmaria verificacao que nao houve. No instante em
@@ -63,7 +63,7 @@ jobs:
               pacman -Syu --noconfirm gcc cmake ninja pkgconf git
           - nome: CachyOS
             # Imagem oficial da CachyOS (nao Arch renomeado -- GODS_LAWS.md
-            # L-10). Mesma imagem ja em uso no GlintFx.
+            # GM-10). Mesma imagem ja em uso no GlintFx.
             cc: c++
             imagem: cachyos/cachyos:latest
             instalar: >-
@@ -94,8 +94,8 @@ jobs:
           ${{ matrix.cc }} -std=c++23 -o /tmp/c23 /tmp/c23.cpp
           /tmp/c23
 
-      # GODS_LAWS.md L-09: nao finge que buildou. Se nao ha CMakeLists.txt
-      # ainda (L-11, projeto do zero), declara isso e sai 0 -- e uma
+      # GODS_LAWS.md GM-09: nao finge que buildou. Se nao ha CMakeLists.txt
+      # ainda (GM-11, projeto do zero), declara isso e sai 0 -- e uma
       # ausencia REAL de alvo de build, nao um portao de verificacao que
       # "olhou e nao achou nada" (esses dois casos, ver job "leis", tem de
       # FALHAR; um build inexistente e diferente: nao ha o que compilar,
@@ -104,7 +104,7 @@ jobs:
         run: |
           set -eux
           if [ ! -f CMakeLists.txt ]; then
-            echo "AVISO: sem CMakeLists.txt neste commit -- nada para compilar ainda (GODS_LAWS.md L-11). Build pulado, declarado explicitamente."
+            echo "AVISO: sem CMakeLists.txt neste commit -- nada para compilar ainda (GODS_LAWS.md GM-11). Build pulado, declarado explicitamente."
             exit 0
           fi
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=${{ matrix.cc }} -DMAPEDITOR_WERROR=ON
@@ -153,7 +153,7 @@ jobs:
         shell: pwsh
         run: |
           if (-not (Test-Path "CMakeLists.txt")) {
-            Write-Host "AVISO: sem CMakeLists.txt neste commit -- nada para compilar ainda (GODS_LAWS.md L-11). Build pulado, declarado explicitamente."
+            Write-Host "AVISO: sem CMakeLists.txt neste commit -- nada para compilar ainda (GODS_LAWS.md GM-11). Build pulado, declarado explicitamente."
             exit 0
           }
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DMAPEDITOR_WERROR=ON
@@ -164,28 +164,28 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
   # ---------------------------------------------------------------------
-  # Portoes de arquitetura/dependencia (GODS_LAWS.md L-12 e L-01).
+  # Portoes de arquitetura/dependencia (GODS_LAWS.md GM-12 e GM-01).
   # Estatico, sobre texto -- roda uma vez, nao precisa dos cinco alvos.
   # HOJE ESTE JOB SAI VERDE declarando NADA A VERIFICAR, porque nenhuma
   # das pastas domain/application/platform existe ainda. Assim que uma
   # delas aparecer, varrer zero arquivos volta a ser FALHA (a trava da
-  # GODS_LAWS.md L-09, decidida pelo lider em 22/08/2026).
+  # GODS_LAWS.md GM-09, decidida pelo lider em 22/08/2026).
   # ---------------------------------------------------------------------
   leis:
-    name: Portoes de camada e dependencia (L-12, L-01)
+    name: Portoes de camada e dependencia (GM-12, GM-01)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Portao de camadas (domain / application / platform -- L-12)
+      - name: Portao de camadas (domain / application / platform -- GM-12)
         run: python3 tools/ci/check_layers.py .
 
-      - name: Portao de dependencia permitida (lista do permitido -- L-01)
+      - name: Portao de dependencia permitida (lista do permitido -- GM-01)
         run: python3 tools/ci/check_allowed_includes.py .
 
   # ---------------------------------------------------------------------
   # Autoteste dos DOIS portoes acima, com os TRES controles exigidos
-  # (positivo, negativo, vazio e TRAVA -- GODS_LAWS.md L-09). Roda sobre
+  # (positivo, negativo, vazio e TRAVA -- GODS_LAWS.md GM-09). Roda sobre
   # fixtures sinteticas em diretorio temporario, nao sobre este
   # repositorio: um valida o PORTAO, o outro valida o ESTADO ATUAL DO
   # REPO. O quarto controle prova as duas direcoes da trava: sem pasta e
@@ -193,7 +193,7 @@ jobs:
   # que nao casa a extensao) e zero arquivos sai 1.
   # ---------------------------------------------------------------------
   portoes-autoteste:
-    name: Autoteste dos portoes (3 controles -- L-09)
+    name: Autoteste dos portoes (3 controles -- GM-09)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -204,16 +204,16 @@ jobs:
       - name: Autoteste -- portao de dependencia permitida
         run: python3 tools/ci/selftest_check_allowed_includes.py
 
-      - name: Autoteste -- medidor de hotspots (restricao "nunca bloqueia", L-19)
+      - name: Autoteste -- medidor de hotspots (restricao "nunca bloqueia", GM-19)
         run: python3 tools/ci/selftest_measure_hotspots.py
 
   # ---------------------------------------------------------------------
-  # MEDIDOR informativo de L-19 (GODS_LAWS.md), decisao do lider depois do
+  # MEDIDOR informativo de GM-19 (GODS_LAWS.md), decisao do lider depois do
   # CTO propor um numero em vez da regra qualitativa. ISTO NAO E UM PORTAO:
   # nao pode reprovar o CI em circunstancia nenhuma -- zero limite, zero
   # numero magico, zero comparacao com teto, so imprime. Roda uma vez (e
   # analise estatica de texto + `git log`, nao precisa dos cinco alvos da
-  # L-10). `continue-on-error: true` no step e cinto-e-suspensorio alem da
+  # GM-10). `continue-on-error: true` no step e cinto-e-suspensorio alem da
   # garantia do proprio script (que ja sai 0 sempre): mesmo se o ambiente
   # falhar de um jeito que o script nao previu (python3 ausente, etc.),
   # este job nunca deixa o workflow vermelho.
@@ -223,11 +223,11 @@ jobs:
   # o padrao raso do Actions (fetch-depth 1) a deixaria sem o que contar.
   # Se mesmo assim vier raso (ex.: workflow_dispatch com configuracao
   # diferente), o proprio script DETECTA e DECLARA -- nunca imprime lista
-  # vazia como se fosse "ninguem tocou em nada" (GODS_LAWS.md L-09, mesmo
+  # vazia como se fosse "ninguem tocou em nada" (GODS_LAWS.md GM-09, mesmo
   # espirito aplicado a um medidor que nao e portao).
   # ---------------------------------------------------------------------
   hotspots-informativo:
-    name: Medidor de hotspots (informativo, L-19 -- NUNCA bloqueia o CI)
+    name: Medidor de hotspots (informativo, GM-19 -- NUNCA bloqueia o CI)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -249,10 +249,10 @@ jobs:
   # falha real medida em 23/08/2026: "curl: (35) Recv failure: Connection
   # reset by peer" ao baixar o binario -- rede transitoria, nao vazamento
   # e nao defeito de codigo; reexecutar o job resolveu na hora. Pela
-  # GODS_LAWS.md L-17, portao vermelho bloqueia o push seguinte, entao uma
+  # GODS_LAWS.md GM-17, portao vermelho bloqueia o push seguinte, entao uma
   # conexao resetada nao pode continuar derrubando o job por um motivo
   # que nao tem nada a ver com o codigo -- e o habito de reexecutar
-  # vermelho sem ler e exatamente o que a L-09 existe para combater.
+  # vermelho sem ler e exatamente o que a GM-09 existe para combater.
   #
   # A verificacao de checksum CONTINUA obrigatoria e CONTINUA podendo
   # falhar o job: ontem ela estava CERTA em recusar seguir (nao conseguiu

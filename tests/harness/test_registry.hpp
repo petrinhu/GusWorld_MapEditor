@@ -5,7 +5,7 @@
 #include <vector>
 
 // test_registry.hpp - test case registry of gusmap's own harness
-// (COR-1, GODS_LAWS.md L-09: no Catch2/GoogleTest).
+// (COR-1, GODS_LAWS.md GM-09: no Catch2/GoogleTest).
 //
 // Each test TU declares a case with GUSMAP_TEST(name); the macro
 // creates a static object whose constructor registers it in the

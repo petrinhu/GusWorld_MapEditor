@@ -4,7 +4,7 @@
 tools/ci/selftest_measure_hotspots.py
 
 Autoteste da RESTRICAO que measure_hotspots.py nao pode violar (tarefa do
-CTO/lider, GODS_LAWS.md L-19): o medidor NUNCA reprova, em nenhuma
+CTO/lider, GODS_LAWS.md GM-19): o medidor NUNCA reprova, em nenhuma
 circunstancia. Ao contrario dos autotestes de portao (selftest_check_*),
 este NAO tem controle "positivo" que espera exit 1 -- nao existe exit 1
 neste script, por desenho. Todo controle abaixo verifica exit 0 mais o

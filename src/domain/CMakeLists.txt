@@ -2,7 +2,7 @@
 #
 # src/domain/CMakeLists.txt
 #
-# Domain layer (GODS_LAWS.md L-12): pure POCO, zero GlintFx, zero OS,
+# Domain layer (GODS_LAWS.md GM-12): pure POCO, zero GlintFx, zero OS,
 # zero third party. Single subject: the sources of this layer; the
 # mapeditor_domain target's properties (include dirs, compile options,
 # compile definitions) live in the parent src/CMakeLists.txt.

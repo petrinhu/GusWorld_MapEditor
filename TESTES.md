@@ -2,15 +2,15 @@
 
 > Documento instrucional para qualquer agente de IA executar a suíte completa de verificação
 > deste projeto. Stack único: **C++23, sem Qt, sem SQL, sem rede**, única dependência externa
-> e o framework **GlintFx** (`../GlintFx`), incluído apenas na casca de plataforma (L-12).
+> e o framework **GlintFx** (`../GlintFx`), incluído apenas na casca de plataforma (GM-12).
 > **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este guia em qualquer conflito.
-> Cinco alvos de CI (L-10): **Fedora 44 (primário, pinado)**, Ubuntu, Arch, CachyOS, Windows.
+> Cinco alvos de CI (GM-10): **Fedora 44 (primário, pinado)**, Ubuntu, Arch, CachyOS, Windows.
 
 ---
 
 ## Índice
 
-0. [Regra-Mãe de Todo Portão (L-09)](#0--regra-mãe-de-todo-portão-l-09)
+0. [Regra-Mãe de Todo Portão (GM-09)](#0--regra-mãe-de-todo-portão-gm-09)
 1. [T1  -  Testes Unitários](#t1--testes-unitários)
 2. [T2  -  Análise Estática](#t2--análise-estática)
 3. [T3  -  Fuzzing / Teste Baseado em Propriedade](#t3--fuzzing--teste-baseado-em-propriedade)
@@ -29,9 +29,9 @@
 
 ---
 
-## 0.  Regra-Mãe de Todo Portão (L-09)
+## 0.  Regra-Mãe de Todo Portão (GM-09)
 
-O rigor de teste, portão de CI e auditoria deste projeto é o mesmo do GlintFx, adaptado ao nosso domínio, nunca relaxado por sermos menores (L-09, verbatim do líder).
+O rigor de teste, portão de CI e auditoria deste projeto é o mesmo do GlintFx, adaptado ao nosso domínio, nunca relaxado por sermos menores (GM-09, verbatim do líder).
 
 **O defeito já herdado que toda ferramenta nova precisa evitar:** um portão que varre zero arquivos e imprime verde passa nos dois autotestes de praxe (o positivo, que planta uma violação, e o negativo, que prova que entrada limpa sai zero), porque ambos rodam sobre arquivos que existem. "Olhei e está limpo" e "não olhei nada" produzem a mesma saída.
 
@@ -50,7 +50,7 @@ ARQUIVOS=$(find "$ALVO" -name '*.cpp' -o -name '*.h' 2>/dev/null)
 N=$(printf '%s\n' "$ARQUIVOS" | grep -c . || true)
 echo "Arquivos varridos: $N"
 if [ "$N" -eq 0 ]; then
-    echo "FALHA: portão varreu zero arquivos (ver GODS_LAWS L-09)" >&2
+    echo "FALHA: portão varreu zero arquivos (ver GODS_LAWS GM-09)" >&2
     exit 1
 fi
 # ... lógica de verificação real aqui ...
@@ -62,7 +62,7 @@ fi
 
 **Objetivo:** verificar que cada módulo do domínio e da aplicação se comporta conforme especificado, de forma isolada e sem janela (ver T16).
 
-**Ferramenta: harness PRÓPRIO, decidido pelo líder em 22/08/2026 (GODS_LAWS L-09).** Nada de Catch2 nem de qualquer biblioteca de teste de terceiro: framework de teste é biblioteca linkada no binário, e a L-01 proíbe terceiro linkado. O líder recusou tanto o Catch2 quanto abrir exceção declarada na lei -- "terceiro que não conta é como dependência volta a entrar num projeto que a expulsou". O harness do GlintFx é a referência legítima de desenho. **Prefixo de macro `GUSMAP_` e namespace `gusmap::test`** (L-09, 24/08/2026), presentes em toda asserção do projeto.
+**Ferramenta: harness PRÓPRIO, decidido pelo líder em 22/08/2026 (GODS_LAWS GM-09).** Nada de Catch2 nem de qualquer biblioteca de teste de terceiro: framework de teste é biblioteca linkada no binário, e a GM-01 proíbe terceiro linkado. O líder recusou tanto o Catch2 quanto abrir exceção declarada na lei -- "terceiro que não conta é como dependência volta a entrar num projeto que a expulsou". O harness do GlintFx é a referência legítima de desenho. **Prefixo de macro `GUSMAP_` e namespace `gusmap::test`** (GM-09, 24/08/2026), presentes em toda asserção do projeto.
 
 **Critério de aprovação:** 0 falhas. Cobertura mínima de 80% no domínio e na aplicação (camadas 100% testáveis sem janela, ver T16), sem piso definido para a casca de plataforma enquanto o GlintFx não tiver janela.
 
@@ -80,16 +80,16 @@ fi
 
 ## T3  -  Fuzzing / Teste Baseado em Propriedade
 
-Este projeto **não** escreve o parser do formato de mapa (isso é do GlintFx, L-03), então fuzzing de parser de mapa não é responsabilidade nossa. O que **é** nosso e testado aqui:
+Este projeto **não** escreve o parser do formato de mapa (isso é do GlintFx, GM-03), então fuzzing de parser de mapa não é responsabilidade nossa. O que **é** nosso e testado aqui:
 
-1. **Parsing do arquivo de histórico** (arquivo próprio do editor, L-13): gerar entradas aleatórias/corrompidas (truncadas, bytes inválidos, impressão digital de mapa que não bate) e confirmar que o editor **recusa** reaplicar sem crashar, nunca "adivinha" o estado.
-2. **Repartição de polígono côncavo em peças convexas** (fronteira nossa por decisão da L-03): gerar polígonos aleatórios (côncavos, com vértice colinear, com orientação invertida, degenerados) e verificar as invariantes descritas em T17.
+1. **Parsing do arquivo de histórico** (arquivo próprio do editor, GM-13): gerar entradas aleatórias/corrompidas (truncadas, bytes inválidos, impressão digital de mapa que não bate) e confirmar que o editor **recusa** reaplicar sem crashar, nunca "adivinha" o estado.
+2. **Repartição de polígono côncavo em peças convexas** (fronteira nossa por decisão da GM-03): gerar polígonos aleatórios (côncavos, com vértice colinear, com orientação invertida, degenerados) e verificar as invariantes descritas em T17.
 
-**Ferramenta: NUNCA `RapidCheck` nem qualquer motor de propriedade de terceiro (L-01, L-09).** O desenho abaixo foi decidido pelo líder em 24/08/2026 e as três peças são porta de mão única -- não reabrir por conveniência de implementação.
+**Ferramenta: NUNCA `RapidCheck` nem qualquer motor de propriedade de terceiro (GM-01, GM-09).** O desenho abaixo foi decidido pelo líder em 24/08/2026 e as três peças são porta de mão única -- não reabrir por conveniência de implementação.
 
-1. **Gerador PRÓPRIO, nunca da biblioteca padrão para a parte de distribuição.** O padrão da linguagem especifica o motor (`std::mt19937` dá a mesma sequência crua em qualquer lugar) mas **não** especifica as distribuições (`std::uniform_int_distribution` e companhia), que são a conta que transforma o número cru em valor de teste. Consequência medida: mesma semente, mesmo código, casos de teste **diferentes** no Fedora e no Windows, e a receita de reprodução impressa na falha não reproduz nada -- isso mataria a reprodutibilidade nos cinco alvos da L-10. As distribuições nascem escritas em casa, de algoritmo publicado, com **teste de valores dourados** que falha na hora se alguma plataforma divergir.
+1. **Gerador PRÓPRIO, nunca da biblioteca padrão para a parte de distribuição.** O padrão da linguagem especifica o motor (`std::mt19937` dá a mesma sequência crua em qualquer lugar) mas **não** especifica as distribuições (`std::uniform_int_distribution` e companhia), que são a conta que transforma o número cru em valor de teste. Consequência medida: mesma semente, mesmo código, casos de teste **diferentes** no Fedora e no Windows, e a receita de reprodução impressa na falha não reproduz nada -- isso mataria a reprodutibilidade nos cinco alvos da GM-10. As distribuições nascem escritas em casa, de algoritmo publicado, com **teste de valores dourados** que falha na hora se alguma plataforma divergir.
 2. **Semente fixa no CI, exploração à parte, e toda descoberta vira caso fixo:**
-   - **No CI, semente fixa.** Determinístico, reproduzível, nunca instável -- teste que falha por sorteio bloquearia push sob a L-17 sem defeito nenhum no código.
+   - **No CI, semente fixa.** Determinístico, reproduzível, nunca instável -- teste que falha por sorteio bloquearia push sob a GM-17 sem defeito nenhum no código.
    - **Job separado de exploração**, que roda por fora e **não bloqueia push**, com semente do relógio **impressa no log**. É ele que varre território novo, cobrindo a fraqueza da semente fixa (testar sempre os mesmos casos).
    - **Falha achada pela exploração vira caso FIXO no CI**, com a semente dela. O bug encontrado nunca mais volta sem ser notado.
 3. **Redução automática do contraexemplo (shrinking) entra junto, não fica para depois.** Quando uma propriedade falha, a ferramenta encolhe o caso até o menor que ainda quebra -- depurar repartição de polígono com quarenta vértices é outra coisa que depurar com quatro.
@@ -130,11 +130,11 @@ Roda sobre as duas superfícies do topo desta seção; fuzzing puro (libFuzzer) 
 
 **Procedimento obrigatório para qualquer PR que toque leitura/escrita de mapa ou de histórico:**
 
-1. Construir um documento de domínio (mapa) com pelo menos: uma célula de terreno pintada, um objeto posicionado com UUID, um dos seis tipos de volume de colisão (L-14), uma porta e um teleporte.
-2. Gravar via API do GlintFx (leitor/escritor público, L-03).
+1. Construir um documento de domínio (mapa) com pelo menos: uma célula de terreno pintada, um objeto posicionado com UUID, um dos seis tipos de volume de colisão (GM-14), uma porta e um teleporte.
+2. Gravar via API do GlintFx (leitor/escritor público, GM-03).
 3. Ler de volta o arquivo gravado, também via API do GlintFx.
 4. Comparar o documento relido contra o original, campo a campo, e comparar os dois arquivos em disco **byte a byte** (`cmp -s arquivo_a arquivo_b` ou equivalente).
-5. Repetir o mesmo procedimento para o arquivo de histórico próprio (L-13): gravar a pilha de comandos, ler de volta, comparar byte a byte.
+5. Repetir o mesmo procedimento para o arquivo de histórico próprio (GM-13): gravar a pilha de comandos, ler de volta, comparar byte a byte.
 6. Gravar o mesmo estado duas vezes e confirmar que os dois arquivos resultantes são idênticos (idempotência, CONTRACT.md §13.10).
 
 **Critério de aprovação:** identidade byte a byte nos dois arquivos (mapa e histórico), nas duas direções (escrever->ler, e salvar duas vezes). Qualquer divergência é falha bloqueante, não aviso.
@@ -145,7 +145,7 @@ Roda sobre as duas superfícies do topo desta seção; fuzzing puro (libFuzzer) 
 
 **Objetivo:** rodar a MESMA suíte que o CI roda, antes de push/tag, evitando o ciclo "push, esperar, falhar, corrigir". Projeto de stack único (C++23 + CMake + GlintFx): não há script de Python/Rust/Node aqui.
 
-> **Escopo de uso:** rodar APENAS como pre-flight antes de `git push` que dispara CI/release. NÃO substitui o CI remoto: o envio definitivo SEMPRE passa pelos cinco alvos remotos (L-10), que são a fonte de verdade.
+> **Escopo de uso:** rodar APENAS como pre-flight antes de `git push` que dispara CI/release. NÃO substitui o CI remoto: o envio definitivo SEMPRE passa pelos cinco alvos remotos (GM-10), que são a fonte de verdade.
 
 ### T15.0  Gate de memória para CI pesado (container local)
 
@@ -185,7 +185,7 @@ find src/ -name '*.cpp' -exec clang-tidy {} -p "$BUILD" \;
 echo "== cppcheck =="
 cppcheck --enable=all --inline-suppr --error-exitcode=1 --suppress=missingIncludeSystem src/
 
-echo "== verificador de camadas (L-12, ver A2) =="
+echo "== verificador de camadas (GM-12, ver A2) =="
 scripts/verificar_camadas.sh src/
 
 echo "== ctest =="
@@ -213,7 +213,7 @@ exec scripts/preci.sh
 
 ## T16  -  Testabilidade sem Janela (Headless)
 
-**Declaração obrigatória, não escondida:** domínio e aplicação (L-12) MUST ser 100% testáveis sem janela, nos cinco alvos de CI (L-10), porque não incluem GlintFx nem SO. A **casca de plataforma não e testável de ponta a ponta ate o GlintFx ter janela** (GODS_LAWS L-14, item 4: o desenho da tela espera o GlintFx).
+**Declaração obrigatória, não escondida:** domínio e aplicação (GM-12) MUST ser 100% testáveis sem janela, nos cinco alvos de CI (GM-10), porque não incluem GlintFx nem SO. A **casca de plataforma não e testável de ponta a ponta ate o GlintFx ter janela** (GODS_LAWS GM-14, item 4: o desenho da tela espera o GlintFx).
 
 **Consequência prática, para não confundir "sem teste" com "sem prova":**
 
@@ -225,7 +225,7 @@ exec scripts/preci.sh
 
 ## T17  -  Repartição Convexa de Polígono
 
-**Objetivo:** a repartição de um polígono côncavo em peças convexas (fronteira que caiu no nosso colo por decisão da L-03, já que o formato do GlintFx só aceita forma simples) é uma classe de código que falha em silêncio: vértice colinear, orientação invertida, polígono degenerado. Ela **MUST nascer** com os dois testes abaixo, nunca depois.
+**Objetivo:** a repartição de um polígono côncavo em peças convexas (fronteira que caiu no nosso colo por decisão da GM-03, já que o formato do GlintFx só aceita forma simples) é uma classe de código que falha em silêncio: vértice colinear, orientação invertida, polígono degenerado. Ela **MUST nascer** com os dois testes abaixo, nunca depois.
 
 ### T17.1  Ida e volta
 
@@ -250,12 +250,12 @@ Para **cada** peça resultante da repartição:
 
 ## A2  -  Auditoria de Arquitetura e Camadas
 
-**Objetivo:** validar que nenhuma camada viola a regra de dependência da L-12.
+**Objetivo:** validar que nenhuma camada viola a regra de dependência da GM-12.
 
 **Procedimento:**
 
-1. Rodar o verificador de camadas (script próprio, ex.: `scripts/verificar_camadas.sh`, baseado em `grep`/`ast-grep` sobre `#include`) contra `src/domain/`, `src/application/` e `src/platform/` (nomes de diretório em inglês, decisão final da L-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows, L-10).
-2. **O verificador MUST imprimir `Arquivos varridos: N` e falhar se `N == 0` (L-09, ver seção 0 deste documento).**
+1. Rodar o verificador de camadas (script próprio, ex.: `scripts/verificar_camadas.sh`, baseado em `grep`/`ast-grep` sobre `#include`) contra `src/domain/`, `src/application/` e `src/platform/` (nomes de diretório em inglês, decisão final da GM-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows, GM-10).
+2. **O verificador MUST imprimir `Arquivos varridos: N` e falhar se `N == 0` (GM-09, ver seção 0 deste documento).**
 3. Falha se qualquer arquivo de `domain/` incluir header de `application/`, `platform/`, GlintFx ou do SO.
 4. Falha se qualquer arquivo de `application/` incluir header do GlintFx ou do SO.
 5. Falha se algum outro diretório, além de `platform/`, incluir header do GlintFx.
@@ -266,7 +266,7 @@ Para **cada** peça resultante da repartição:
 
 ## A3  -  UI/UX (via GlintFx)
 
-**Objetivo:** verificar que a experiência pedida ao GlintFx (CONTRACT.md §7) é coerente -- contraste, navegação por teclado, consistência de tema -- na medida em que a API deles já expõe esses recursos. Onde não expõe, confirmar que a necessidade foi registrada no bus (L-01), não contornada.
+**Objetivo:** verificar que a experiência pedida ao GlintFx (CONTRACT.md §7) é coerente -- contraste, navegação por teclado, consistência de tema -- na medida em que a API deles já expõe esses recursos. Onde não expõe, confirmar que a necessidade foi registrada no bus (GM-01), não contornada.
 
 ---
 
@@ -274,7 +274,7 @@ Para **cada** peça resultante da repartição:
 
 **Objetivo:** consolidar todos os resultados (T1-T17, A2-A3) em um único documento com score global (0-100), sumário de problemas classificados (ver seção seguinte) e patches unificados.
 
-**Lembrete (L-06):** este relatório e produzido por um C-level em modelo fable, nunca pelo agente que implementou o código auditado.
+**Lembrete (GM-06):** este relatório e produzido por um C-level em modelo fable, nunca pelo agente que implementou o código auditado.
 
 ---
 

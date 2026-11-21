@@ -7,7 +7,7 @@
 #include <string_view>
 
 // check.hpp - non-fatal and fatal-to-the-case assertions of gusmap's
-// own harness (COR-1, GODS_LAWS.md L-09: no Catch2/GoogleTest).
+// own harness (COR-1, GODS_LAWS.md GM-09: no Catch2/GoogleTest).
 //
 // GUSMAP_CHECK does NOT abort the case on failure (unlike assert): the
 // case continues, and the failure is counted. harness_main decides

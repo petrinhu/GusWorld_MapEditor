@@ -15,7 +15,7 @@
 // into a gate: the literals below were generated ONCE on the Fedora 44
 // primary target (desenho-cor1.md §5's documented procedure, a
 // throwaway main() since discarded) and are compared here bit-for-bit.
-// Green on all five CI targets (GODS_LAWS.md L-10) is the actual proof
+// Green on all five CI targets (GODS_LAWS.md GM-10) is the actual proof
 // of cross-platform reproducibility; this file alone, run on a single
 // machine, only proves "did not change since it was written".
 

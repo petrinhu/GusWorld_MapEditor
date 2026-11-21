@@ -24,13 +24,13 @@ add_subdirectory(src)
 # A costura com o GlintFx fica DOCUMENTADA aqui, nao implementada
 # (desenho-cor1.md §2.1: "nenhuma opcao morta, nenhum if especulativo").
 # No dia em que src/platform/ nascer -- bloqueado ate a API publica de
-# janela/desenho do GlintFx existir, GODS_LAWS.md L-01 -- o padrao e:
+# janela/desenho do GlintFx existir, GODS_LAWS.md GM-01 -- o padrao e:
 #
 #   find_package(glintfx CONFIG REQUIRED)
 #   target_link_libraries(mapeditor_platform PRIVATE glintfx::glintfx)
 #
 # Ate la, este projeto configura, compila e testa nos cinco alvos do CI
-# (GODS_LAWS.md L-10) sem uma unica linha de GlintFx.
+# (GODS_LAWS.md GM-10) sem uma unica linha de GlintFx.
 
 # MapeditorTest ANTES de include(CTest) -- licao WIN-HANG do GlintFx:
 # aquele modulo le DART_TESTING_TIMEOUT uma unica vez, no include, para

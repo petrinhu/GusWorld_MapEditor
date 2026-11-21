@@ -3,7 +3,7 @@
 """
 tools/ci/selftest_check_layers.py
 
-Autoteste de check_layers.py com QUATRO controles (GODS_LAWS.md L-09 +
+Autoteste de check_layers.py com QUATRO controles (GODS_LAWS.md GM-09 +
 decisao do lider de 22/08/2026 sobre a TRAVA "verde declarando zero"):
 
     1. POSITIVO -- planta violacao de camada, prova que o portao acusa.
