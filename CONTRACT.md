@@ -647,7 +647,7 @@ test/módulo-testado
 
 **Lembrete permanente (GM-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso.
 
-**Lembrete permanente (GM-06):** implementador, revisor e orquestrador são três agentes diferentes; auditoria e feita por C-level em modelo fable, execução por agents operacionais em modelo sonnet; implementador nunca audita o próprio trabalho.
+**Lembrete permanente (GM-06):** implementador, revisor e orquestrador são três agentes diferentes; planejamento e auditoria são de C-level, criação e execução de agents operacionais, no modelo e effort do `/modelos_sessao`; implementador nunca audita o próprio trabalho.
 
 ### When to Run Tests
 

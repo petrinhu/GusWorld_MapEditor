@@ -274,7 +274,7 @@ Para **cada** peça resultante da repartição:
 
 **Objetivo:** consolidar todos os resultados (T1-T17, A2-A3) em um único documento com score global (0-100), sumário de problemas classificados (ver seção seguinte) e patches unificados.
 
-**Lembrete (GM-06):** este relatório e produzido por um C-level em modelo fable, nunca pelo agente que implementou o código auditado.
+**Lembrete (GM-06):** este relatório e produzido por um C-level, no modelo e effort do `/modelos_sessao`, nunca pelo agente que implementou o código auditado.
 
 ---
 

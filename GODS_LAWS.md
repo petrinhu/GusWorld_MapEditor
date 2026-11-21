@@ -22,7 +22,7 @@
 | [GM-03](#gm-03) | pensar em formato de arquivo de mapa | O formato é do GlintFx. Somos consumidores, não autores dele |
 | [GM-04](#gm-04) | decidir o que o editor edita | Só mapa. Carta, item e NPC estão fora |
 | [GM-05](#gm-05) | precisar de algo do líder, ou ter mais de uma opção | `AskUserQuestion`, sem `preview`, recomendada primeiro |
-| [GM-06](#gm-06) | executar qualquer trabalho de produto ou código | O main orquestra e não implementa. Auditoria com C-level fable, execução com sonnet |
+| [GM-06](#gm-06) | executar qualquer trabalho de produto ou código | O main orquestra e não implementa. C-level planeja e audita; operacional cria e implementa; modelo e effort pelo `/modelos_sessao` |
 | [GM-07](#gm-07) | criar arquivo de licença, ou publicar o repositório | AGPL-3.0-or-later, a mesma do GlintFx |
 | [GM-08](#gm-08) | procurar onde mora o domínio de mapa compartilhado | A `gusmap-core` está aposentada. Não é base, não é referência |
 | [GM-09](#gm-09) | escrever teste, portão de CI ou auditoria | Mesmo rigor do GlintFx, adaptado ao nosso projeto |
@@ -33,7 +33,7 @@
 | [GM-14](#gm-14) | decidir o que entra na primeira versão do editor | Seis tipos de volume, vários mapas em abas, uma camada de terreno mais objetos livres |
 | [GM-15](#gm-15) | escrever memória, nota ou documento sobre algo que deixou de valer | Apagar. Nunca registrar que está parado, aposentado ou inativo |
 | [GM-16](#gm-16) | pensar no papel do editor, ou desenhar qualquer capacidade dele | Implementador de referência do escritor, e utilizável headless |
-| [GM-17](#gm-17) | ir executar qualquer trabalho de produto | Main só orquestra; C-level fable audita e cria; sonnet implementa; commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes. |
+| [GM-17](#gm-17) | ir executar qualquer trabalho de produto | Main só orquestra; C-level planeja e audita; operacional cria e implementa; modelo e effort pelo `/modelos_sessao` (emenda de 20/11/2026); commit ao fim de cada fatia; push ao fim de cada onda só se o GHA fechar verde, se todos os testes verdes. |
 | [GM-18](#gm-18) | o líder aprovar, rejeitar ou mudar algo, ou fechar item de alta prioridade | Avisar o Gus Dragon sem ele perguntar |
 | [GM-19](#gm-19) | criar classe ou caso de uso, acrescentar método ou responsabilidade a unidade existente, ou revisar fatia | Proibido monolito: uma razão de mudar por unidade. Regra qualitativa, julgada na revisão adversarial pelas cinco perguntas |
 
@@ -95,9 +95,17 @@ Toda pergunta ao líder e toda decisão com mais de um caminho vai por `AskUserQ
 
 **Data:** 21/08/2026. **Verbatim:** *"main apenas orquestra, interage comigo e dispara agentes. Auditorias apenas com clevel bigtech fable, trabalhadores sonnet bigtech"*.
 
-O main **não implementa produto nem código**: orquestra, conversa com o líder e despacha agentes. **Auditoria é feita por C-level da constelação bigtech em modelo fable**; execução é feita por agents operacionais em modelo sonnet.
+O main **não implementa produto nem código**: orquestra, conversa com o líder e despacha agentes. **Planejamento e auditoria são de C-level da constelação bigtech; criação e implementação são de agents operacionais.** Nenhum modelo é fixado por esta lei (emenda de 20/11/2026, abaixo).
 
 **Aplicação:** implementador, revisor e orquestrador são **três agentes diferentes**. Relatório de agente não é prova: o main reconfere build limpo e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
+
+**EMENDA de 20/11/2026, ordem do líder: esta lei deixa de fixar modelo, e quem cria é o operacional.** Na sessão `configs`, em 20/11/2026, depois do argumento contra, o líder confirmou por `AskUserQuestion`, verbatim: *"Aplicar como nos outros (Recomendado)"*, a mesma emenda já aplicada ao GusWorld e ao GlintFx. A regra (desdobramento do agente sobre a decisão dele):
+
+- **O C-level planeja e audita; o agente operacional cria e implementa.**
+- **Modelo e effort de todo agente despachado seguem a skill `/modelos_sessao`.** Pela regra por tarefa dessa skill, prosa ou texto longo cujo leitor final é humano vai com `opus` e effort `max`.
+- **O verbatim de 21/08/2026, acima, fica como registro do que foi dito.** O "fable" e o "sonnet" dele não fixam mais modelo.
+
+A redação desta emenda é do agente; o texto do líder é só o das citações.
 
 ## GM-07
 
@@ -258,8 +266,11 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 **Quem faz o quê:**
 
 - **O main só orquestra.** Não implementa produto nem código: conversa com o líder, despacha agentes e verifica o que volta.
-- **C-level em fable audita E CRIA.** Não é só o papel de auditor: planejamento e criação de escopo também são dele, no modelo fable.
-- **Sonnet implementa.** A execução é de agente operacional.
+- **C-level planeja e audita.** Não é só o papel de auditor: planejamento e criação de escopo também são dele.
+- **O agente operacional cria e implementa.** Produto e código saem dele.
+- **Modelo e effort pelo `/modelos_sessao`, sem modelo fixo.** Prosa ou texto longo cujo leitor final é humano vai com `opus` e effort `max`.
+
+**EMENDA de 20/11/2026, ordem do líder.** Na sessão `configs`, em 20/11/2026, depois do argumento contra, o líder confirmou por `AskUserQuestion`, verbatim: *"Aplicar como nos outros (Recomendado)"*, a mesma emenda já aplicada ao GusWorld e ao GlintFx. O verbatim de 22/08 e 23/08/2026, acima, fica como registro do que foi dito: o "fable" e o "sonnet" dele não fixam mais modelo, e o "cria" do C-level é a criação de escopo, porque criar produto é do operacional. A regra inteira está na emenda da GM-06, da mesma data; a redação é do agente.
 
 **Cadência, e ela tem duas velocidades diferentes de propósito:**
 
@@ -272,7 +283,7 @@ Quando algo deixa de valer (biblioteca descontinuada, decisão revogada, bloquei
 
 **Alcance, decidido pelo líder em 23/08/2026: os dois portões valem para TODO push, sem distinção de tipo de commit.** Não existe categoria de commit que não conte, pela mesma razão pela qual ele recusou abrir categoria de dependência que não conta: **"terceiro que não conta" é como a regra volta a vazar.** E o custo de obedecer é zero num commit de documentação, porque os dois portões são mecânicos e medidos pelo mesmo pipeline que roda de qualquer forma.
 
-**Relação com a GM-06:** esta lei **não substitui** a GM-06, **refina**. A GM-06 fixa quem faz o quê; a GM-17 acrescenta a cadência e os dois portões de push, e acrescenta o "cria" ao papel do C-level em fable. Onde as duas falarem do mesmo assunto, valem juntas. **A regra de que implementador, revisor e orquestrador são agentes diferentes continua sendo da GM-06**, e não desta lei.
+**Relação com a GM-06:** esta lei **não substitui** a GM-06, **refina**. A GM-06 fixa quem faz o quê; a GM-17 acrescenta a cadência e os dois portões de push, e acrescenta ao papel do C-level o planejamento e a criação de escopo. Onde as duas falarem do mesmo assunto, valem juntas. **A regra de que implementador, revisor e orquestrador são agentes diferentes continua sendo da GM-06**, e não desta lei.
 
 **Aplicação:** antes de todo push, diga em qual estado está cada um dos dois portões. **Silêncio sobre um deles conta como vermelho**, pela mesma razão do protocolo deste arquivo: silêncio não é prova de conformidade.
 
@@ -355,7 +366,7 @@ Regra sem fronteira vira desculpa para fragmentar tudo, e aí o remédio é a do
 Lei qualitativa sem lugar no processo é lei que ninguém aplica. Três amarras:
 
 1. **Na revisão adversarial de cada fatia** (implementador, revisor e orquestrador são três agentes, GM-06): para **cada unidade criada ou crescida** na fatia, o revisor responde as cinco perguntas e grava as respostas no relatório de revisão. **Silêncio sobre uma unidade conta como unidade não revisada**, pelo mesmo princípio da GM-17: silêncio não é prova de conformidade. A quinta pergunta se responde sempre, porque o diff sempre existe.
-2. **No `AUDITORIAS.md`:** a seção 1 ganha item CRÍTICO ("nenhuma unidade acumula razões de mudar de mais de uma lei; os relatórios de revisão das fatias auditadas contêm as cinco perguntas respondidas por unidade") e a seção 6 passa a apontar para esta lei. O auditor (C-level em fable, GM-06) não confia nos relatórios: pega o maior arquivo de cada camada e o arquivo com mais aparições no `git log --stat`, responde ele mesmo as cinco perguntas e compara com o que os relatórios disseram.
+2. **No `AUDITORIAS.md`:** a seção 1 ganha item CRÍTICO ("nenhuma unidade acumula razões de mudar de mais de uma lei; os relatórios de revisão das fatias auditadas contêm as cinco perguntas respondidas por unidade") e a seção 6 passa a apontar para esta lei. O auditor (C-level, GM-06) não confia nos relatórios: pega o maior arquivo de cada camada e o arquivo com mais aparições no `git log --stat`, responde ele mesmo as cinco perguntas e compara com o que os relatórios disseram.
 3. **Divergência tem dono.** Se implementador e revisor discordarem, ou se a separação exigida tiver custo real (reescrita grande, fronteira genuinamente duvidosa), a decisão vai ao líder por GM-05, nunca sai no silêncio de um agente.
 
 **Ao despachar subagent** que crie classe ou caso de uso, o texto desta lei vai no prompt da task (protocolo deste arquivo, item 2); a ordem de serviço do revisor cita as cinco perguntas como parte do entregável dele.

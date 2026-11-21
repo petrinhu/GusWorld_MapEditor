@@ -17,7 +17,7 @@ repositório público e independente (GM-07).
 - [`TESTES.md`](TESTES.md): testes, portões de CI e auditoria (T1-T17, A2/A3/A10), adaptado ao
   stack único deste projeto (C++23 + GlintFx, cinco alvos de CI, GM-10).
 - [`AUDITORIAS.md`](AUDITORIAS.md): checklists de auditoria por prioridade (CRÍTICO/IMPORTANTE/
-  COSMÉTICO), separação fable/sonnet (GM-06).
+  COSMÉTICO), separação entre quem audita e quem implementa (GM-06).
 - [`DEPLOY_CHECKLIST.md`](DEPLOY_CHECKLIST.md): checklist de release de aplicação desktop (sem
   produção/servidor).
 - [`AGILE.md`](AGILE.md): metodologia ágil (não alterado nesta poda; cópia da referência do

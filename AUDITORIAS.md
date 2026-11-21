@@ -7,8 +7,9 @@
 
 **Lembrete permanente (GM-06, verbatim do líder):** "main apenas orquestra, interage comigo e
 dispara agentes. Auditorias apenas com clevel bigtech fable, trabalhadores sonnet bigtech."
-Toda auditoria abaixo é conduzida por um C-level em modelo fable; a implementação auditada foi
-feita por um agent operacional em modelo sonnet; **o implementador nunca audita o próprio
+Toda auditoria abaixo é conduzida por um C-level; a implementação auditada foi feita por um agent
+operacional; o modelo e o effort de cada um seguem o `/modelos_sessao` (emenda de 20/11/2026 da
+GM-06, que deixa a citação acima só como registro); **o implementador nunca audita o próprio
 trabalho**. O relatório de um agente não é prova: quem recebe o relatório reconfere build limpo
 e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 
@@ -130,6 +131,6 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 **Entregável obrigatório:** documento com score global (0-100), lista de problemas por prioridade
 (🔴/🟠/🟢) e patches unificados (formato descrito em [TESTES.md, Formato de Patch](TESTES.md#formato-de-patch)).
 
-Produzido por um C-level em modelo fable (GM-06); nunca pelo agente que implementou o código
+Produzido por um C-level (GM-06), no modelo e effort do `/modelos_sessao`; nunca pelo agente que implementou o código
 auditado. Antes de aceitar o relatório, o orquestrador reconfere o build e faz spot-check de pelo
 menos três afirmações do relatório contra arquivo e linha reais.
