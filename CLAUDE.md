@@ -16,6 +16,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Os gatilhos vivem no índice do próprio `GODS_LAWS.md`**, na tabela "Índice de gatilhos" no topo do arquivo, com uma linha por lei. Não há cópia deles aqui: índice duplicado envelhece em silêncio e passa a mentir sobre quais leis existem.
 
+**Prefixo das leis.** As leis deste projeto se citam como `GM-NN` (ordem do líder de 20/11/2026: *"Gm"*). `L-NN` sem outra marca é lei do `~/.claude/GODS_LAWS.md` global. Lei de projeto irmão se cita com o nome do projeto junto; o GlintFx usa `GL-NN` e o GusWorld usa `GW-NN`.
+
+**Merge, tag e deploy só com o OK do líder** no contexto, mesmo com a onda fechada e tudo verde, como manda a L-24 global. O push segue os portões da GM-17.
+
 ## Pendências
 
 A tabela de pendências e planejamento do projeto está em `TODO.md` na raiz, ordenada por execução; a coluna `Onda` marca passos paralelizáveis e a coluna `WSJF` traz o valor calculado de cada item. A seção de **Proveniência** do próprio arquivo diz de onde veio cada peça: lei e decisão guardam a conclusão, não a procedência.
