@@ -35,7 +35,7 @@ e faz spot-check das afirmações contra arquivo e linha antes de aceitar.
 - [ ] Nenhum arquivo de domínio inclui header de aplicação, casca de plataforma, GlintFx ou do SO.
 - [ ] Nenhum arquivo de aplicação inclui header de GlintFx ou do SO.
 - [ ] Só a casca de plataforma inclui header de GlintFx, e o chama direto, sem interface própria.
-- [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (GM-09; ver TESTES.md seção 0).
+- [ ] O portão automático que checou isso declarou `Arquivos varridos: N` com `N > 0` (GM-12 e L-36 global; ver TESTES.md seção 0).
 - [ ] Nenhuma dependência circular entre módulos.
 - [ ] Nenhum "serviço-deus" na aplicação com dezenas de casos de uso; um caso de uso por operação de edição.
 

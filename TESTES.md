@@ -10,7 +10,7 @@
 
 ## Índice
 
-0. [Regra-Mãe de Todo Portão (GM-09)](#0--regra-mãe-de-todo-portão-gm-09)
+0. [Regra-Mãe de Todo Portão (L-36 global)](#0--regra-mãe-de-todo-portão-l-36-global)
 1. [T1  -  Testes Unitários](#t1--testes-unitários)
 2. [T2  -  Análise Estática](#t2--análise-estática)
 3. [T3  -  Fuzzing / Teste Baseado em Propriedade](#t3--fuzzing--teste-baseado-em-propriedade)
@@ -29,17 +29,17 @@
 
 ---
 
-## 0.  Regra-Mãe de Todo Portão (GM-09)
+## 0.  Regra-Mãe de Todo Portão (L-36 global)
 
-O rigor de teste, portão de CI e auditoria deste projeto é o mesmo do GlintFx, adaptado ao nosso domínio, nunca relaxado por sermos menores (GM-09, verbatim do líder).
+Faça o portão que conta o que varre reprovar quando contar zero, porque zero é sinal de varredura quebrada, nunca de código limpo (L-36 global, piso de varredura não-vazia).
 
 **O defeito já herdado que toda ferramenta nova precisa evitar:** um portão que varre zero arquivos e imprime verde passa nos dois autotestes de praxe (o positivo, que planta uma violação, e o negativo, que prova que entrada limpa sai zero), porque ambos rodam sobre arquivos que existem. "Olhei e está limpo" e "não olhei nada" produzem a mesma saída.
 
-**Regra concreta, válida para TODO script de portão deste projeto** (verificador de camadas, scanner de secrets, análise estática, o que for):
+**Regra concreta, válida para TODO script de portão deste projeto que conta o que varre** (verificador de camadas, scanner de secrets, análise estática, o que for):
 
 1. O script MUST imprimir explicitamente `Arquivos varridos: N` antes de declarar o resultado.
 2. Se `N == 0`, o script MUST sair com código de falha (não-zero), mesmo que nenhuma violação tenha sido encontrada. Zero arquivos varridos é falha, não sucesso.
-3. O autoteste do portão (positivo e negativo) MUST incluir um terceiro caso: apontar o portão para um diretório vazio ou inexistente e confirmar que ele falha por `N == 0`, não que ele "passe verde".
+3. No portão de segurança, privacidade ou deploy irreversível, o autoteste (positivo e negativo) MUST incluir um terceiro caso, a varredura vazia (L-36 global): apontar o portão para um diretório vazio ou inexistente e confirmar que ele falha por `N == 0`, não que ele "passe verde".
 
 ```bash
 #!/usr/bin/env bash
@@ -50,7 +50,7 @@ ARQUIVOS=$(find "$ALVO" -name '*.cpp' -o -name '*.h' 2>/dev/null)
 N=$(printf '%s\n' "$ARQUIVOS" | grep -c . || true)
 echo "Arquivos varridos: $N"
 if [ "$N" -eq 0 ]; then
-    echo "FALHA: portão varreu zero arquivos (ver GODS_LAWS GM-09)" >&2
+    echo "FALHA: portão varreu zero arquivos (ver a L-36 do GODS_LAWS global)" >&2
     exit 1
 fi
 # ... lógica de verificação real aqui ...
@@ -85,11 +85,11 @@ Este projeto **não** escreve o parser do formato de mapa (isso é do GlintFx, G
 1. **Parsing do arquivo de histórico** (arquivo próprio do editor, GM-13): gerar entradas aleatórias/corrompidas (truncadas, bytes inválidos, impressão digital de mapa que não bate) e confirmar que o editor **recusa** reaplicar sem crashar, nunca "adivinha" o estado.
 2. **Repartição de polígono côncavo em peças convexas** (fronteira nossa por decisão da GM-03): gerar polígonos aleatórios (côncavos, com vértice colinear, com orientação invertida, degenerados) e verificar as invariantes descritas em T17.
 
-**Ferramenta: NUNCA `RapidCheck` nem qualquer motor de propriedade de terceiro (GM-01, GM-09).** O desenho abaixo foi decidido pelo líder em 24/08/2026 e as três peças são porta de mão única -- não reabrir por conveniência de implementação.
+**Ferramenta: NUNCA `RapidCheck` nem qualquer motor de propriedade de terceiro (GM-01, GM-09).** O desenho abaixo foi decidido pelo líder em 24/08/2026.
 
 1. **Gerador PRÓPRIO, nunca da biblioteca padrão para a parte de distribuição.** O padrão da linguagem especifica o motor (`std::mt19937` dá a mesma sequência crua em qualquer lugar) mas **não** especifica as distribuições (`std::uniform_int_distribution` e companhia), que são a conta que transforma o número cru em valor de teste. Consequência medida: mesma semente, mesmo código, casos de teste **diferentes** no Fedora e no Windows, e a receita de reprodução impressa na falha não reproduz nada -- isso mataria a reprodutibilidade nos cinco alvos da GM-10. As distribuições nascem escritas em casa, de algoritmo publicado, com **teste de valores dourados** que falha na hora se alguma plataforma divergir.
 2. **Semente fixa no CI, exploração à parte, e toda descoberta vira caso fixo:**
-   - **No CI, semente fixa.** Determinístico, reproduzível, nunca instável -- teste que falha por sorteio bloquearia push sob a GM-17 sem defeito nenhum no código.
+   - **No CI, semente fixa.** Determinístico, reproduzível, nunca instável, porque teste que falha por sorteio deixaria vermelho o CI, que é o portão da GM-17, sem defeito nenhum no código.
    - **Job separado de exploração**, que roda por fora e **não bloqueia push**, com semente do relógio **impressa no log**. É ele que varre território novo, cobrindo a fraqueza da semente fixa (testar sempre os mesmos casos).
    - **Falha achada pela exploração vira caso FIXO no CI**, com a semente dela. O bug encontrado nunca mais volta sem ser notado.
 3. **Redução automática do contraexemplo (shrinking) entra junto, não fica para depois.** Quando uma propriedade falha, a ferramenta encolhe o caso até o menor que ainda quebra -- depurar repartição de polígono com quarenta vértices é outra coisa que depurar com quatro.
@@ -255,7 +255,7 @@ Para **cada** peça resultante da repartição:
 **Procedimento:**
 
 1. Rodar o verificador de camadas (script próprio, ex.: `scripts/verificar_camadas.sh`, baseado em `grep`/`ast-grep` sobre `#include`) contra `src/domain/`, `src/application/` e `src/platform/` (nomes de diretório em inglês, decisão final da GM-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows, GM-10).
-2. **O verificador MUST imprimir `Arquivos varridos: N` e falhar se `N == 0` (GM-09, ver seção 0 deste documento).**
+2. **O verificador MUST imprimir `Arquivos varridos: N` e falhar se `N == 0` (GM-12 e L-36 global, ver seção 0 deste documento).**
 3. Falha se qualquer arquivo de `domain/` incluir header de `application/`, `platform/`, GlintFx ou do SO.
 4. Falha se qualquer arquivo de `application/` incluir header do GlintFx ou do SO.
 5. Falha se algum outro diretório, além de `platform/`, incluir header do GlintFx.

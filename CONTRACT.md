@@ -3,7 +3,7 @@
 > **Audience:** AI coding agents (Claude, GPT, Gemini, Copilot, etc.)
 > **Purpose:** Mandatory reference before writing, modifying, or reviewing any code neste projeto.
 > **Authority:** Rules use RFC 2119 keywords  -  MUST, MUST NOT, SHOULD, SHOULD NOT, MAY.
-> **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este contrato em qualquer conflito. Leia-o antes de agir; os gatilhos relevantes (GM-01, GM-04, GM-05, GM-06, GM-09, GM-10, GM-12, GM-13, GM-14) estão citados abaixo nos pontos onde se aplicam.
+> **Precedência:** [`GODS_LAWS.md`](GODS_LAWS.md) vence este contrato em qualquer conflito. Leia-o antes de agir; os gatilhos relevantes (GM-01, GM-04, GM-05, GM-06, GM-10, GM-12, GM-13, GM-14) estão citados abaixo nos pontos onde se aplicam.
 > **Testing & Audit:** All testing, quality and audit procedures are defined in [TESTES.md](TESTES.md). Checklists de auditoria em [AUDITORIAS.md](AUDITORIAS.md).
 > **Escopo:** este é um editor de mapa desktop, local, de usuário único, construído em C++23 sobre o framework GlintFx (`../GlintFx` / `github.com/petrinhu/GlintFx`), sem rede, sem banco de dados, sem servidor. Seções da versão genérica deste contrato que pressupunham Qt, SQL, REST/HTTP ou frontend web foram removidas ou reescritas; ver seção 14 para o detalhe.
 
@@ -122,8 +122,8 @@ public:
 - **This number is orientation, not the criterion (GODS_LAWS.md GM-19).** The rule that decides
   monolith is REASON TO CHANGE, not line count: a unit is sane at 500 coherent lines with one law
   behind it, and rotten at 80 lines if two unrelated laws force it to change. Exceeding 300 lines
-  MUST NOT trigger an automatic split; it MUST trigger the five GM-19 questions in adversarial
-  review, answered against the actual unit. Splitting a coherent unit to please the number is the
+  does not oblige a split and MUST NOT trigger an automatic one; judge the unit in adversarial
+  review by its reasons to change. Splitting a coherent unit to please the number is the
   remedy becoming the disease -- see GM-19, "O que esta lei NÃO proíbe".
 - Constructor MUST NOT perform heavy work (I/O, cálculo pesado). Use an `inicializar()` method.
 - MUST implement the Rule of Five/Zero or equivalent resource management.
@@ -335,7 +335,7 @@ Este projeto usa camadas horizontais finas, com a dependência apontando só par
 - `domain` nunca inclui header de `application` nem de `platform`, nem de GlintFx, nem do SO.
 - `application` nunca inclui header de GlintFx nem do SO.
 - Só `platform` inclui GlintFx.
-- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (GM-09)**: procedimento e exemplo concreto em [TESTES.md seção A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
+- **O portão que fiscaliza isso DEVE declarar quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso (GM-12 e L-36 global)**: procedimento e exemplo concreto em [TESTES.md seção A2](TESTES.md#a2--auditoria-de-arquitetura-e-camadas).
 
 **Nomenclatura de diretório real, decidida em 22/08/2026 (GM-12):** os nomes conceituais acima (domínio, aplicação, casca de plataforma) descrevem a camada em prosa; os diretórios de verdade em `src/` usam os nomes em **INGLÊS**: `domain/`, `application/`, `platform/`. Três razões, todas de GM-12: é o que o portão de CI já procura, é coerente com a lei do GlintFx que exige identificador em inglês, e evita acento em caminho de arquivo no alvo Windows (um dos cinco alvos de CI, GM-10). A prosa deste contrato e as mensagens de commit continuam em português; só o nome do diretório e do identificador de código muda de idioma.
 
@@ -645,7 +645,7 @@ test/módulo-testado
 
 > Full procedures, commands, and tools: **[TESTES.md](TESTES.md)**. Checklists de auditoria: **[AUDITORIAS.md](AUDITORIAS.md)**.
 
-**Lembrete permanente (GM-09):** todo portão automático (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso.
+**Lembrete permanente (L-36 global):** todo portão automático que conta o que varre (script de CI, verificador de camadas, scanner) DEVE imprimir quantos arquivos varreu, e sair com zero arquivos varridos é falha, não sucesso.
 
 **Lembrete permanente (GM-06):** implementador, revisor e orquestrador são três agentes diferentes; planejamento e auditoria são de C-level, criação e execução de agents operacionais, no modelo e effort do `/modelos_sessao`; implementador nunca audita o próprio trabalho.
 
