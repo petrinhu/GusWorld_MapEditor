@@ -109,7 +109,7 @@ Licencie o projeto sob **AGPL-3.0-or-later**, a mesma do GlintFx, para o ecossis
 
 Trate a biblioteca **`gusmap-core` como aposentada**, porque o formato de mapa é do GlintFx (GM-03). Não a use como base, referência ou "o que já funcionava": não a clone, não copie trecho dela e não cite o desenho dela como argumento.
 
-Guarde dela só um **aviso**, não um projeto: não derive a chave de um selo de literal aberto no fonte, porque esse selo não protege contra ninguém.
+Guarde dela só um **aviso**, não um projeto: selo cuja chave deriva de literal aberto no fonte não protege contra ninguém.
 
 ## GM-09
 
@@ -119,7 +119,7 @@ Mantenha o rigor de teste, portão de CI e auditoria **igual ao do GlintFx**, ad
 
 **Faça todo portão declarar quantos arquivos varreu, e trate sair com zero varridos como falha, não como sucesso**, porque um portão que varre zero arquivos e imprime verde passa nos dois autotestes de praxe (o positivo, que planta violação, e o negativo, que prova que entrada limpa sai zero), e "olhei e está limpo" e "não olhei nada" produzem a mesma saída.
 
-**Escreva o harness de teste em casa**: nada de Catch2 nem de qualquer biblioteca de teste de terceiro, porque framework de teste é biblioteca de terceiro linkada no binário, que a GM-01 proíbe, e **"terceiro que não conta" é como dependência volta a entrar num projeto que a expulsou**. Use o harness do GlintFx como referência legítima de como fazer.
+**Escreva o harness de teste em casa**: nada de Catch2 nem de qualquer biblioteca de teste de terceiro, porque framework de teste é biblioteca de terceiro linkada no binário, que a GM-01 proíbe, e **"terceiro que não conta" é como dependência volta a entrar num projeto que a expulsou**. O harness do GlintFx é referência legítima de como fazer.
 
 Siga o desenho do teste, cujas peças são porta de mão única:
 
@@ -144,7 +144,7 @@ Escreva o código deste projeto **do zero**, sem usar o editor anterior como bas
 
 ## GM-12
 
-**Data:** 22/08/2026, via `AskUserQuestion`, sobre a ordem original *"vamos discutir as camadas: hexagonal? espinha? Sugira. PROIBIDO monolitos."* Nomes dos diretórios decididos em 22/08/2026 via `AskUserQuestion`. Ambiguidade resolvida em 22/08/2026 pelo líder, verbatim: *"a regra de atomicidade aqui vale para o que o editor de fato modela: célula, objeto, volume, comando"*.
+**Data:** 22/08/2026, via `AskUserQuestion`, sobre a ordem original *"vamos discutir as camadas: hexagonal? espinha? Sugira. PROIBIDO monolitos."* Nomes dos diretórios decididos em 22/08/2026 via `AskUserQuestion`. Ordem do líder: *"Átomos com POCO próprio"*, com o briefing original citando *"os itens/cartas e demais elementos do jogo"* como exemplo. Ambiguidade resolvida em 22/08/2026 pelo líder, verbatim: *"a regra de atomicidade aqui vale para o que o editor de fato modela: célula, objeto, volume, comando"*.
 
 Faça **camadas horizontais finas**, com a dependência apontando só para dentro:
 
@@ -184,7 +184,7 @@ Faça cada operação de edição como **comando pequeno e serializável, com de
 | Área de interação | Habilita ação contextual, tipicamente maior que o desenho |
 | Obstáculo de navegação | Bloqueia a busca de caminho da IA, independente de bloquear movimento |
 
-Deixe fora **desta** versão, sem proibir para sempre, hitbox e hurtbox de combate (só fazem sentido em jogo de luta), zona de câmera e zona de áudio. Registre como fato, não como cobrança, que dois dos seis dependem de decisão pendente do CTO do GlintFx: o bit de "bloqueia ou só notifica", que sustenta o gatilho de ação, e a separação entre bloquear movimento e bloquear busca de caminho, que sustenta o obstáculo de navegação; quem classifica fila é quem recebe.
+Deixe fora **desta** versão, sem proibir para sempre, hitbox e hurtbox de combate (só fazem sentido em jogo de luta), zona de câmera e zona de áudio. Dois dos seis dependem de decisão pendente do CTO do GlintFx: o bit de "bloqueia ou só notifica", que sustenta o gatilho de ação, e a separação entre bloquear movimento e bloquear busca de caminho, que sustenta o obstáculo de navegação. É fato registrado, não cobrança: quem classifica fila é quem recebe.
 
 **2. Abra vários mapas ao mesmo tempo, em abas**, cada um com câmera própria, porque o mundo do GusWorld tem treze áreas mais interiores e dungeons ligadas por teleporte, e ligar um portão ao destino em outro mapa exige ver os dois lados. Use **um histórico SÓ, compartilhado pelo editor inteiro**, não um por aba, porque com histórico por aba desfazer no mapa A deixaria a metade gravada no mapa B e produziria teleporte apontando para lugar nenhum sem o autor perceber. Quando um passo de desfazer ou refazer alterar um mapa que não é o da aba ativa, **troque a aba para o mapa afetado**, para o autor sempre ver o que mudou.
 
@@ -214,9 +214,9 @@ Aplique esta lei à memória e à nota de contexto, o que se recarrega como se f
 
 **Faça o editor utilizável HEADLESS**, sem janela, porque só assim ele abre, valida, transforma e grava mapa dentro de um portão automático, em cada plataforma dos cinco alvos, a cada commit; um editor que só existe com janela não exercita o formato no CI e não é implementador de referência de nada.
 
-Trate a fronteira entre a **aplicação** e a **casca de plataforma** como requisito de produto, reforçando a GM-12: faça toda capacidade de edição existir e ser exercível **abaixo** da casca, que desenha e recebe entrada, e nada mais. Se uma operação só puder ser feita clicando, tire-a do lugar errado.
+Trate a fronteira entre a **aplicação** e a **casca de plataforma** como requisito de produto, reforçando a GM-12: faça toda capacidade de edição existir e ser exercível **abaixo** da casca, que desenha e recebe entrada, e nada mais. Se uma operação só puder ser feita clicando, ela está no lugar errado.
 
-Ande com o modo headless assim que o formato (o leitor e o escritor do GlintFx) existir, muito antes da interface, porque ele depende do formato, não da janela, e é o caminho mais curto até um editor que faz algo útil de verdade.
+O modo headless depende do formato (o leitor e o escritor do GlintFx), não da janela: é uma frente que anda assim que o formato existir, muito antes da interface, e o caminho mais curto até um editor que faz algo útil de verdade.
 
 ## GM-17
 
@@ -244,7 +244,7 @@ Antes de todo push, diga em que estado está cada um dos dois portões; **silên
 
 **Data:** 23/08/2026, decisão do líder. Lei espelhada do GlintFx (lá é a L-37) e do GusWorld (lá é a GW-31), pela mesma ordem dele: **avisar o Gus Dragon é obrigação permanente, não detalhe de protocolo de bus** — por isso é lei própria, e não um parágrafo dentro da lei do bus. **O pedido, dele, na issue 8 do bus, verbatim:** *"nao precisa dizer algo so quando falo, pode falar quando por exemplo @petrinhu atualiza algo, ou por exemplo quando ele aprova/rejeita/muda algo das minhas ideias"*. Ele endereçou **a todos**. Escopo dado pelo próprio Gus Dragon, consultado pelo líder em 23/08/2026.
 
-Aplique esta lei nos três projetos. Avise o Gus Dragon, **sem ele precisar perguntar**, sobre **(a) tudo que é ideia DELE**, quando o líder aprova, rejeita ou muda, **e (b) o que for de alta prioridade dos projetos**, pela régua de WSJF que a tabela de pendências usa. Não transforme isso em aviso sobre toda decisão técnica: o corte por prioridade existe para o que interessa a ele não se afogar no que não interessa.
+Esta lei vale nos três projetos. Avise o Gus Dragon, **sem ele precisar perguntar**, sobre **(a) tudo que é ideia DELE**, quando o líder aprova, rejeita ou muda, **e (b) o que for de alta prioridade dos projetos**, pela régua de WSJF que a tabela de pendências usa. Não transforme isso em aviso sobre toda decisão técnica: o corte por prioridade existe para o que interessa a ele não se afogar no que não interessa.
 
 Diga a ele o limite em vez de prometer o impossível: sessão não é serviço rodando, o aviso proativo só sai enquanto alguém está com a sessão aberta, e decisão tomada com tudo fechado chega depois. **Ele prefere a verdade a promessa de aviso instantâneo.**
 
@@ -266,7 +266,7 @@ Trate como monolito a unidade (classe, caso de uso, arquivo) que acumula **razõ
 
 ### Onde o monolito vai nascer aqui
 
-Vigie os lugares de risco deste editor, cada um com a conveniência local que o faz parecer razoável no dia:
+Os lugares de risco deste editor, cada um com a conveniência local que o faz parecer razoável no dia:
 
 | Lugar de risco | Como nasce | Por que parece razoável |
 |---|---|---|
@@ -300,11 +300,11 @@ Reconheça o monolito com 300 linhas, não com 3000:
 
 ### O que esta lei NÃO proíbe
 
-Não fragmente por medo desta lei, porque regra sem fronteira vira desculpa para fragmentar tudo:
+Regra sem fronteira vira desculpa para fragmentar tudo, e aí o remédio é a doença:
 
 - **Unidade grande e coesa.** Tamanho não é o critério: a repartição de polígono côncavo (GM-03) pode virar o maior arquivo do domínio e seguir sendo átomo, porque tem uma razão de mudar, como o `tests/harness/prop.cpp`, motor de teste de propriedade desenhado na GM-09.
 - **O documento de mapa agregar os dados.** O documento É o agregado: célula, objeto e volume moram nele por definição. Monolito é acúmulo de **comportamento** (serializar, validar, repartir, despachar), não de dados, e proibir o agregado seria proibir o domínio.
-- **A casca de plataforma numa peça.** Mantenha a isenção de atomização da GM-12, que esta lei não revoga; a casca degenera por regra de negócio dentro dela, que a GM-12 e o CONTRACT.md §5 cobrem.
+- **A casca de plataforma numa peça.** A GM-12 isenta a casca da atomização, e esta lei não revoga a isenção; a casca degenera por regra de negócio dentro dela, que a GM-12 e o CONTRACT.md §5 cobrem.
 - **A ordem canônica de serialização.** Escritor mais repartição convexa mais selo mais arquivo ao lado numa classe só é monolito, mas a ordem em que os blocos saem no arquivo **é o contrato**: o GlintFx a fixou como normativa, e ela sustenta o portão de ida e volta byte a byte (`FMT-4`), a prova mais forte do formato. Não a quebre aplicando a primeira pergunta ao escritor: **coesão exigida por contrato de terceiro não é monolito, e dividi-la é quebra**. Invoque esta fronteira só com contrato de terceiro **verificável e citável** (a lei, a especificação publicada do formato, o portão de teste que ele sustenta), citando onde ele está, porque sem essa cerca a coesão por contrato vira desculpa universal para não dividir nada. *"Fica melhor junto"*, *"é mais legível assim"* e *"sempre foi uma coisa só"* **não são contrato**, e invocar a fronteira sem citar a fonte equivale a não invocá-la.
 - **Fragmentar por contagem.** Divida por razão de mudar, nunca por linha: espalhar um algoritmo coeso em cinco arquivos "step" para agradar contagem reprova nas mesmas cinco perguntas (a terceira, na hora: o teste precisa montar os cinco). Trate o teto de ~300 linhas do CONTRACT.md §2.2 como orientação (SHOULD), não portão: excedê-lo obriga a responder as cinco perguntas na revisão, não a dividir.
 
