@@ -2,23 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## LEIS CANÔNICAS: leia `GODS_LAWS.md` ANTES de agir
+## Leis: leia `GODS_LAWS.md` antes de agir
 
-**[`GODS_LAWS.md`](GODS_LAWS.md) contém as ordens expressas do líder e tem precedência sobre este arquivo, sobre os manuais e sobre qualquer preferência sua.** Ele não existe para ser declarado, existe para ser **usado no momento da ação**.
+Siga as ordens expressas do líder em [`GODS_LAWS.md`](GODS_LAWS.md), que vencem este arquivo, os manuais e qualquer preferência sua. Antes do primeiro comando de cada tarefa, varra o índice de gatilhos no topo de lá e leia inteira a lei cujo gatilho casa, antes de agir; o protocolo de uso (subagent, relato, lei nova) também mora lá. Não copie o índice para cá, porque índice duplicado envelhece em silêncio e mente sobre quais leis existem.
 
-**Como usar, sem exceção:**
+**Prefixo das leis.** **Data:** ordem do líder de 20/11/2026: *"Gm"*. Cite as leis deste projeto como `GM-NN`. Leia `L-NN` sem outra marca como lei do `~/.claude/GODS_LAWS.md` global, e cite lei de projeto irmão com o nome do projeto junto: o GlintFx usa `GL-NN` e o GusWorld usa `GW-NN`.
 
-1. Antes do primeiro comando de qualquer tarefa, confira se um dos gatilhos abaixo casa com o que você vai fazer. Casou: **abra `GODS_LAWS.md` e leia a lei inteira antes de agir**, não depois.
-2. Ao despachar subagent, **cole no prompt da task** o texto das leis cujo gatilho casa com ela, mais o caminho absoluto de `GODS_LAWS.md`. Subagent não herda este contexto.
-3. Ao relatar ao líder, diga qual lei aplicou e como.
-4. Ordem nova do líder entra em `GODS_LAWS.md` **no instante em que ele a dá**, com data e o texto dele verbatim.
-5. Agente nenhum revoga, flexibiliza ou reinterpreta lei. Só o líder.
-
-**Os gatilhos vivem no índice do próprio `GODS_LAWS.md`**, na tabela "Índice de gatilhos" no topo do arquivo, com uma linha por lei. Não há cópia deles aqui: índice duplicado envelhece em silêncio e passa a mentir sobre quais leis existem.
-
-**Prefixo das leis.** As leis deste projeto se citam como `GM-NN` (ordem do líder de 20/11/2026: *"Gm"*). `L-NN` sem outra marca é lei do `~/.claude/GODS_LAWS.md` global. Lei de projeto irmão se cita com o nome do projeto junto; o GlintFx usa `GL-NN` e o GusWorld usa `GW-NN`.
-
-**Merge, tag e deploy só com o OK do líder** no contexto, mesmo com a onda fechada e tudo verde, como manda a L-24 global. O push segue os portões da GM-17.
+Faça merge, tag e deploy só com o OK do líder no contexto, mesmo com a onda fechada e tudo verde, como manda a L-24 global; o push segue os portões da GM-17.
 
 ## Pendências
 
